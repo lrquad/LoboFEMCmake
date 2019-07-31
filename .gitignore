@@ -44,3 +44,6 @@ _deps
 *.app
 
 external/eigen-git-mirror/
+bin/
+build/
+lib/
