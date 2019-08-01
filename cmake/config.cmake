@@ -23,15 +23,16 @@ macro(make_project_)
     endif()
     
     if (NOT DEFINED HEADERS)
-        file(GLOB HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
+        file(GLOB_RECURSE HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
     endif ()
 
     if (NOT DEFINED SOURCES)
-        file(GLOB SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+        file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
     endif ()
 
     source_group("Header Files" FILES ${HEADERS})
     source_group("Source Files" FILES ${SOURCES})
+    message(${SOURCES})
 endmacro ()
 
 macro(make_executable)
