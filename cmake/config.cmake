@@ -32,7 +32,6 @@ macro(make_project_)
 
     source_group("Header Files" FILES ${HEADERS})
     source_group("Source Files" FILES ${SOURCES})
-    message(${SOURCES})
 endmacro ()
 
 macro(make_executable)
