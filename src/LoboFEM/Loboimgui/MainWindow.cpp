@@ -1,12 +1,19 @@
 #include "MainWindow.h"
+#include <iostream>
 
+static void ShowAppMainMenuBar(ImGui::FileBrowser* fileDialog);
+static void ShowMenuFile(ImGui::FileBrowser* fileDialog);
 
-static void ShowAppMainMenuBar();
-static void ShowMenuFile();
-
-void Lobo::ShowMainWindow(bool* p_open)
+void Lobo::ShowMainWindow(ImGui::FileBrowser* fileDialog,bool* p_open)
 {
-    ShowAppMainMenuBar();
+    ShowAppMainMenuBar(fileDialog);
+    fileDialog->Display();
+
+    if(fileDialog->HasSelected())
+        {
+            std::cout<<"Selected filename "<<fileDialog->GetSelected().string()<<std::endl;
+            fileDialog->ClearSelected();
+        }
 
     static float f = 0.0f;
     static int counter = 0;
@@ -27,13 +34,13 @@ void Lobo::ShowMainWindow(bool* p_open)
 
 
 
-static void ShowAppMainMenuBar()
+static void ShowAppMainMenuBar(ImGui::FileBrowser* fileDialog)
 {
     if (ImGui::BeginMainMenuBar())
     {
         if (ImGui::BeginMenu("File"))
         {
-            ShowMenuFile();
+            ShowMenuFile(fileDialog);
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("Edit"))
@@ -50,11 +57,15 @@ static void ShowAppMainMenuBar()
     }
 }
 
-static void ShowMenuFile()
+static void ShowMenuFile(ImGui::FileBrowser* fileDialog)
 {
     ImGui::MenuItem("(dummy menu)", NULL, false, false);
     if (ImGui::MenuItem("New")) {}
-    if (ImGui::MenuItem("Open", "Ctrl+O")) {}
+    if (ImGui::MenuItem("Open", "Ctrl+O")) {
+        fileDialog->Open();
+        //ImGui::FileBrowser filebrowser;
+        //filebrowser.Display();
+    }
     if (ImGui::BeginMenu("Open Recent"))
     {
         ImGui::MenuItem("fish_hat.c");
@@ -66,7 +77,7 @@ static void ShowMenuFile()
             ImGui::MenuItem("Sailor");
             if (ImGui::BeginMenu("Recurse.."))
             {
-                ShowMenuFile();
+                ShowMenuFile(fileDialog);
                 ImGui::EndMenu();
             }
             ImGui::EndMenu();

@@ -13,7 +13,7 @@ macro(make_project_)
         # Ignore 4055 for glad
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /IGNORE:4055")
     else ()
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -std=c++11 -w")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -std=c++14 -w")
     endif ()
 
     if(MSVC)
@@ -28,10 +28,11 @@ macro(make_project_)
 
     if (NOT DEFINED SOURCES)
         file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+        file(GLOB_RECURSE CSOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.c)
     endif ()
 
     source_group("Header Files" FILES ${HEADERS})
-    source_group("Source Files" FILES ${SOURCES})
+    source_group("Source Files" FILES ${SOURCES} ${CSOURCES})
 endmacro ()
 
 macro(make_executable)

@@ -7,6 +7,8 @@
 #include "imgui_impl_opengl3.h"
 
 #include "Loboimgui/MainWindow.h"
+#include "Loboimgui/imfilebrowser.h"
+
 
 #include <stdio.h>
 // About OpenGL function loaders: modern OpenGL doesn't have a standard header file and requires individual function pointers to be loaded manually.
@@ -28,6 +30,7 @@
 #include <iostream>
 #include <Eigen/Dense>
 #include "VolumetricMesh/MyClass.h"
+
 
 static void glfw_error_callback(int error, const char* description)
 {
@@ -81,9 +84,10 @@ int main()
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
-    bool show_demo_window = false;
+    bool show_demo_window = true;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
+    ImGui::FileBrowser fileDialog;
     // Main loop
     while (!glfwWindowShouldClose(window))
     {
@@ -99,7 +103,7 @@ int main()
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        Lobo::ShowMainWindow();
+        Lobo::ShowMainWindow(&fileDialog);
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
         if (show_demo_window)
             ImGui::ShowDemoWindow(&show_demo_window);
