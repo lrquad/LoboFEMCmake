@@ -47,3 +47,4 @@ external/eigen-git-mirror/
 bin/
 build/
 lib/
+models/
