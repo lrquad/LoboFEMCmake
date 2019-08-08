@@ -36,7 +36,7 @@ void LoboMesh::drawImGui(bool *p_open)
     ImGui::Begin("Obj mesh", p_open, ImGuiWindowFlags_AlwaysAutoResize); // Create a window called "Hello, world!" and append into it.
     ImGui::Text("File name: %s ", obj_file_name.c_str());
 
-    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+    
 
     ImGui::Text("num vertices: %d ", attrib.vertices.size() / 3);
     ImGui::Text("num normals: %d ", attrib.normals.size() / 3);
