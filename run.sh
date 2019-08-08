@@ -7,7 +7,7 @@ fi
 
 cd build
 
-if [ $cmake_if = "r" ] || [$cmake_if = "c" ]; then
+if [ "$cmake_if" = "r" ] || [ "$cmake_if" = "c" ]; then
     cmake ..
 fi
 

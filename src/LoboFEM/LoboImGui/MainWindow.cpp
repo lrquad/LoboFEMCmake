@@ -1,40 +1,22 @@
 #include "MainWindow.h"
 #include <iostream>
 
-static void ShowAppMainMenuBar(ImGui::FileBrowser* fileDialog);
-static void ShowMenuFile(ImGui::FileBrowser* fileDialog);
+static void ShowAppMainMenuBar(ImGui::FileBrowser *fileDialog);
+static void ShowMenuFile(ImGui::FileBrowser *fileDialog);
 
-void Lobo::ShowMainWindow(ImGui::FileBrowser* fileDialog,bool* p_open)
+void Lobo::ShowMainWindow(ImGui::FileBrowser *fileDialog, bool *p_open)
 {
     ShowAppMainMenuBar(fileDialog);
     fileDialog->Display();
 
-    if(fileDialog->HasSelected())
-        {
-            std::cout<<"Selected filename "<<fileDialog->GetSelected().string()<<std::endl;
-            fileDialog->ClearSelected();
-        }
-
-    static float f = 0.0f;
-    static int counter = 0;
-    ImGui::Begin("Hello, world!",p_open,ImGuiWindowFlags_AlwaysAutoResize);                          // Create a window called "Hello, world!" and append into it.
-
-    ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-
-    ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-
-    if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-        counter++;
-    ImGui::SameLine();
-    ImGui::Text("counter = %d", counter);
-
-    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-    ImGui::End();
+    if (fileDialog->HasSelected())
+    {
+        std::cout << "Selected filename " << fileDialog->GetSelected().string() << std::endl;
+        fileDialog->ClearSelected();
+    }
 }
 
-
-
-static void ShowAppMainMenuBar(ImGui::FileBrowser* fileDialog)
+static void ShowAppMainMenuBar(ImGui::FileBrowser *fileDialog)
 {
     if (ImGui::BeginMainMenuBar())
     {
@@ -45,23 +27,36 @@ static void ShowAppMainMenuBar(ImGui::FileBrowser* fileDialog)
         }
         if (ImGui::BeginMenu("Edit"))
         {
-            if (ImGui::MenuItem("Undo", "CTRL+Z")) {}
-            if (ImGui::MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
+            if (ImGui::MenuItem("Undo", "CTRL+Z"))
+            {
+            }
+            if (ImGui::MenuItem("Redo", "CTRL+Y", false, false))
+            {
+            } // Disabled item
             ImGui::Separator();
-            if (ImGui::MenuItem("Cut", "CTRL+X")) {}
-            if (ImGui::MenuItem("Copy", "CTRL+C")) {}
-            if (ImGui::MenuItem("Paste", "CTRL+V")) {}
+            if (ImGui::MenuItem("Cut", "CTRL+X"))
+            {
+            }
+            if (ImGui::MenuItem("Copy", "CTRL+C"))
+            {
+            }
+            if (ImGui::MenuItem("Paste", "CTRL+V"))
+            {
+            }
             ImGui::EndMenu();
         }
         ImGui::EndMainMenuBar();
     }
 }
 
-static void ShowMenuFile(ImGui::FileBrowser* fileDialog)
+static void ShowMenuFile(ImGui::FileBrowser *fileDialog)
 {
     ImGui::MenuItem("(dummy menu)", NULL, false, false);
-    if (ImGui::MenuItem("New")) {}
-    if (ImGui::MenuItem("Open", "Ctrl+O")) {
+    if (ImGui::MenuItem("New"))
+    {
+    }
+    if (ImGui::MenuItem("Open", "Ctrl+O"))
+    {
         fileDialog->Open();
         //ImGui::FileBrowser filebrowser;
         //filebrowser.Display();
@@ -84,8 +79,12 @@ static void ShowMenuFile(ImGui::FileBrowser* fileDialog)
         }
         ImGui::EndMenu();
     }
-    if (ImGui::MenuItem("Save", "Ctrl+S")) {}
-    if (ImGui::MenuItem("Save As..")) {}
+    if (ImGui::MenuItem("Save", "Ctrl+S"))
+    {
+    }
+    if (ImGui::MenuItem("Save As.."))
+    {
+    }
     ImGui::Separator();
     if (ImGui::BeginMenu("Options"))
     {
@@ -109,9 +108,9 @@ static void ShowMenuFile(ImGui::FileBrowser* fileDialog)
         float sz = ImGui::GetTextLineHeight();
         for (int i = 0; i < ImGuiCol_COUNT; i++)
         {
-            const char* name = ImGui::GetStyleColorName((ImGuiCol)i);
+            const char *name = ImGui::GetStyleColorName((ImGuiCol)i);
             ImVec2 p = ImGui::GetCursorScreenPos();
-            ImGui::GetWindowDrawList()->AddRectFilled(p, ImVec2(p.x+sz, p.y+sz), ImGui::GetColorU32((ImGuiCol)i));
+            ImGui::GetWindowDrawList()->AddRectFilled(p, ImVec2(p.x + sz, p.y + sz), ImGui::GetColorU32((ImGuiCol)i));
             ImGui::Dummy(ImVec2(sz, sz));
             ImGui::SameLine();
             ImGui::MenuItem(name);
@@ -122,6 +121,10 @@ static void ShowMenuFile(ImGui::FileBrowser* fileDialog)
     {
         IM_ASSERT(0);
     }
-    if (ImGui::MenuItem("Checked", NULL, true)) {}
-    if (ImGui::MenuItem("Quit", "Alt+F4")) {}
+    if (ImGui::MenuItem("Checked", NULL, true))
+    {
+    }
+    if (ImGui::MenuItem("Quit", "Alt+F4"))
+    {
+    }
 }

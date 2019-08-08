@@ -3,5 +3,5 @@
 
 namespace Lobo
 {
-    void ShowMainWindow(ImGui::FileBrowser* fileDialog,bool* p_open = NULL);
+void ShowMainWindow(ImGui::FileBrowser *fileDialog, bool *p_open = NULL);
 }

@@ -19,20 +19,39 @@ public:
     }
     ~LoboMesh() {}
 
-    virtual void loadObj(const char *filename, bool verbose = true);
+    virtual void loadObj(const char *filename, bool verbose = false);
+    virtual void drawImGui(bool *p_open = NULL);
 
 protected:
+    std::string obj_file_name;
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
 };
 
-void LoboMesh::loadObj(const char *filename, bool verbose = true)
+void LoboMesh::drawImGui(bool *p_open)
+{
+    static float f = 0.0f;
+    static int counter = 0;
+    ImGui::Begin("Obj mesh", p_open, ImGuiWindowFlags_AlwaysAutoResize); // Create a window called "Hello, world!" and append into it.
+    ImGui::Text("File name: %s ", obj_file_name.c_str());
+
+    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+
+    ImGui::Text("num vertices: %d ", attrib.vertices.size() / 3);
+    ImGui::Text("num normals: %d ", attrib.normals.size() / 3);
+    ImGui::Text("num texcoords: %d ", attrib.texcoords.size() / 2);
+
+    ImGui::End();
+}
+
+void LoboMesh::loadObj(const char *filename, bool verbose)
 {
     std::string warn;
     std::string err;
     fs::path p = filename;
     std::string mtl_base_dir = p.parent_path().string();
+    obj_file_name = p.filename().string();
     bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filename, mtl_base_dir.c_str());
 
     if (!warn.empty())
