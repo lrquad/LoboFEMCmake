@@ -48,3 +48,5 @@ bin/
 build/
 lib/
 models/
+!models/cornell_box.obj
+!models/cornell_box.mtl
