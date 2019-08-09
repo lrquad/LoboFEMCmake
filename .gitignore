@@ -47,6 +47,6 @@ external/eigen-git-mirror/
 bin/
 build/
 lib/
-models/
-!models/cornell_box.obj
-!models/cornell_box.mtl
+models/*
+!/models/cornell_box.obj
+!/models/cornell_box.mtl
