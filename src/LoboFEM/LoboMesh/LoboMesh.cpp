@@ -1,9 +1,10 @@
 #include "LoboMesh.h"
 #include <iostream>
-
 #include "imgui.h"
-
 #include <experimental/filesystem>
+#include <GLFW/glfw3.h>
+#include <glad/glad.h>
+
 
 namespace fs = std::experimental::filesystem;
 
@@ -64,10 +65,14 @@ void Lobo::LoboMesh::loadObj(const char *filename, bool verbose)
 
 void Lobo::LoboMesh::initialGL()
 {
+    glGenBuffers(1, &VBO);
     
 }
 
 void Lobo::LoboMesh::paintGL()
 {
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);  
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
 
 }

@@ -8,7 +8,12 @@
 
 #include "LoboImGui/MainWindow.h"
 #include "LoboImGui/imfilebrowser.h"
+
+//These headers are for test
+//will be refactored in the future
 #include "LoboMesh/LoboMesh.h"
+#include "Shaders/LoboShader.h"
+
 
 #include <stdio.h>
 // About OpenGL function loaders: modern OpenGL doesn't have a standard header file and requires individual function pointers to be loaded manually.
@@ -26,6 +31,7 @@
 
 // Include glfw3.h after our OpenGL definitions
 #include <GLFW/glfw3.h>
+#include <glad/glad.h> 
 
 #include <Eigen/Dense>
 #include <iostream>
@@ -52,6 +58,12 @@ int main()
         return 1;
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1); // Enable vsync
+
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    {
+        std::cout << "Failed to initialize GLAD" << std::endl;
+        return -1;
+    }
 
     // Initialize OpenGL loader
 #if defined(IMGUI_IMPL_OPENGL_LOADER_GL3W)
@@ -88,6 +100,11 @@ int main()
 
     ImGui::FileBrowser fileDialog;
     Lobo::LoboMesh objmesh("/home/ranluo/Code/LoboFEMCmake/models/cornell_box.obj");
+    objmesh.initialGL();
+
+    //init shader
+    Lobo::LoboShader default_shader;
+    default_shader.loadShader();
     // Main loop
     while (!glfwWindowShouldClose(window))
     {
@@ -119,6 +136,7 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         //more opengl stuff
+        objmesh.paintGL();
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 

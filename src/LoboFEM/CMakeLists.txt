@@ -11,7 +11,8 @@ include_directories(
     ${IMGUI_INCLUDE_DIR}
     ${EIGEN3_INCLUDE_DIR}
     )
-    
+message(${GLFW_INCLUDE_DIR})
+
 target_link_libraries(${PROJECT}
     ${OPENGL_LIBRARIES}
     ${GLFW_LIBRARIES}
