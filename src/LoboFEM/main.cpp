@@ -99,12 +99,12 @@ int main()
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     ImGui::FileBrowser fileDialog;
-    Lobo::LoboMesh objmesh("/home/ranluo/Code/LoboFEMCmake/models/cornell_box.obj");
+    Lobo::LoboMesh objmesh("./models/cornell_box.obj");
     objmesh.initialGL();
 
     //init shader
     Lobo::LoboShader default_shader;
-    default_shader.loadShader();
+    default_shader.loadShaderFile("./shaders/simplevertex.glsl","./shaders/simplefrag.glsl");
     // Main loop
     while (!glfwWindowShouldClose(window))
     {
@@ -121,7 +121,10 @@ int main()
         ImGui::NewFrame();
 
         Lobo::ShowMainWindow(&fileDialog);
+        
         objmesh.drawImGui();
+        default_shader.drawImGui();
+
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
         if (show_demo_window)
             ImGui::ShowDemoWindow(&show_demo_window);

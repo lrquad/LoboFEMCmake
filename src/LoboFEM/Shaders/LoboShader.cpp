@@ -1,25 +1,47 @@
 #include "LoboShader.h"
 #include <iostream>
+#include <fstream>
+#include "imgui.h"
+
+std::string Lobo::LoboShader::readFile(const char *filename)
+{
+    std::string line, text;
+    std::ifstream in(filename);
+    while (std::getline(in, line))
+    {
+        text += line + "\n";
+    }
+    text += "\0";
+    return text;
+}
+
+
+void Lobo::LoboShader::drawImGui(bool *p_open)
+{
+    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+    ImGui::Begin("Shader control", p_open);
+    ImGui::Text("Output color"); 
+    ImGui::ColorEdit3("clear color", (float*)&clear_color);
+    ImGui::End();
+}
 
 void Lobo::LoboShader::loadShader()
 {
-    const char *vertexShaderSource = "#version 330 core\n"
-                                     "layout (location = 0) in vec3 aPos;\n"
-                                     "void main()\n"
-                                     "{\n"
-                                     "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-                                     "}\0";
-    const char *fragmentShaderSource = "#version 330 core\n"
-                                       "out vec4 FragColor;\n"
-                                       "void main()\n"
-                                       "{\n"
-                                       "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-                                       "}\n\0";
+    std::string vertexShaderSource = readFile("./shaders/simplevertex.glsl");
+    std::string fragmentShaderSource = readFile("./shaders/simplefrag.glsl");
 
-    this->loadShader(vertexShaderSource, fragmentShaderSource);
+    this->loadShaderStream(vertexShaderSource.c_str(), fragmentShaderSource.c_str());
 }
 
-void Lobo::LoboShader::loadShader(const char *vertexShaderSource, const char *fragmentShaderSource)
+void Lobo::LoboShader::loadShaderFile(const char *vsfile, const char *vffile)
+{
+    std::string vertexShaderSource = readFile(vsfile);
+    std::string fragmentShaderSource = readFile(vffile);
+
+    this->loadShaderStream(vertexShaderSource.c_str(), fragmentShaderSource.c_str());
+}
+
+void Lobo::LoboShader::loadShaderStream(const char *vertexShaderSource, const char *fragmentShaderSource)
 {
     vertex_shader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertex_shader, 1, &vertexShaderSource, NULL);
@@ -53,9 +75,11 @@ void Lobo::LoboShader::loadShader(const char *vertexShaderSource, const char *fr
     glLinkProgram(shader_program);
     // check for linking errors
     glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
-    if (!success) {
+    if (!success)
+    {
         glGetProgramInfoLog(shader_program, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+        std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n"
+                  << infoLog << std::endl;
     }
 
     glDeleteShader(vertex_shader);
@@ -65,4 +89,22 @@ void Lobo::LoboShader::loadShader(const char *vertexShaderSource, const char *fr
 void Lobo::LoboShader::useProgram()
 {
     glUseProgram(shader_program);
+}
+
+void Lobo::LoboShader::setBool(const std::string &name, bool value) const
+{
+    glUniform1i(glGetUniformLocation(shader_program, name.c_str()), (int)value);
+}
+void Lobo::LoboShader::setInt(const std::string &name, int value) const
+{
+    glUniform1i(glGetUniformLocation(shader_program, name.c_str()), value);
+}
+void Lobo::LoboShader::setFloat(const std::string &name, float value) const
+{
+    glUniform1f(glGetUniformLocation(shader_program, name.c_str()), value);
+}
+
+void Lobo::LoboShader::setFloat4(const std::string &name, float v0, float v1, float v2, float v3) const
+{
+    glUniform4f(glGetUniformLocation(shader_program, name.c_str()), v0, v1, v2, v3);
 }

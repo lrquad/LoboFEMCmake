@@ -47,6 +47,21 @@
         "type_traits": "cpp",
         "tuple": "cpp",
         "typeinfo": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "condition_variable": "cpp",
+        "unordered_set": "cpp",
+        "iterator": "cpp",
+        "map": "cpp",
+        "memory_resource": "cpp",
+        "numeric": "cpp",
+        "random": "cpp",
+        "set": "cpp",
+        "string": "cpp",
+        "hash_map": "cpp",
+        "future": "cpp",
+        "iomanip": "cpp",
+        "mutex": "cpp",
+        "valarray": "cpp",
+        "algorithm": "cpp"
     }
 }
