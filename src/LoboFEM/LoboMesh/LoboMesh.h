@@ -21,11 +21,8 @@ static unsigned int indices[] = {
 class LoboMesh
 {
 public:
-    LoboMesh():glinitialized(false) {}
-    LoboMesh(const char *filename):glinitialized(false)
-    {
-        loadObj(filename);
-    }
+    LoboMesh();
+    LoboMesh(const char *filename);
     ~LoboMesh();
 
     virtual void loadObj(const char *filename, bool verbose = false);
@@ -36,6 +33,7 @@ public:
     virtual void deleteGL();
 
 protected:
+
     std::string obj_file_name;
 
     tinyobj::attrib_t attrib;
@@ -47,7 +45,11 @@ protected:
     unsigned int VAO; //vertex array buffer
     unsigned int EBO; //element buffer
 
+    bool wireframe_mode;
+
     bool glinitialized;
+
+    virtual void defaultValue();
 
 };
 

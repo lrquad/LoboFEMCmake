@@ -7,21 +7,47 @@
 
 namespace fs = std::experimental::filesystem;
 
+Lobo::LoboMesh::LoboMesh()
+{
+    defaultValue();
+}
+
+Lobo::LoboMesh::LoboMesh(const char *filename)
+{
+    loadObj(filename);
+    defaultValue();
+}
+
 Lobo::LoboMesh::~LoboMesh()
 {
     this->deleteGL();
+}
+
+void Lobo::LoboMesh::defaultValue()
+{
+    wireframe_mode = false;
+    glinitialized = false;
 }
 
 void Lobo::LoboMesh::drawImGui(bool *p_open)
 {
     static float f = 0.0f;
     static int counter = 0;
-    ImGui::Begin("Obj mesh", p_open, ImGuiWindowFlags_AlwaysAutoResize); // Create a window called "Hello, world!" and append into it.
+    ImGui::Begin("Obj mesh", p_open); // Create a window called "Hello, world!" and append into it.
+
     ImGui::Text("File name: %s ", obj_file_name.c_str());
 
-    ImGui::Text("num vertices: %d ", attrib.vertices.size() / 3);
-    ImGui::Text("num normals: %d ", attrib.normals.size() / 3);
-    ImGui::Text("num texcoords: %d ", attrib.texcoords.size() / 2);
+    if (ImGui::CollapsingHeader("Info",ImGuiWindowFlags_NoCollapse))
+    {
+        ImGui::Text("num vertices: %d ", attrib.vertices.size() / 3);
+        ImGui::Text("num normals: %d ", attrib.normals.size() / 3);
+        ImGui::Text("num texcoords: %d ", attrib.texcoords.size() / 2);
+    }
+
+    if (ImGui::CollapsingHeader("Configuration",ImGuiWindowFlags_NoCollapse))
+    {
+        ImGui::Checkbox("wireframe_mode", &wireframe_mode);
+    }
 
     ImGui::End();
 }
@@ -90,6 +116,11 @@ void Lobo::LoboMesh::initialGL()
 
 void Lobo::LoboMesh::paintGL()
 {
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    if (wireframe_mode == true)
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
