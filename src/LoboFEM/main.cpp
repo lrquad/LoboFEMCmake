@@ -14,13 +14,13 @@
 #include "LoboMesh/LoboMesh.h"
 #include "Shaders/LoboShader.h"
 
-
 #include <stdio.h>
 // About OpenGL function loaders: modern OpenGL doesn't have a standard header file and requires individual function pointers to be loaded manually.
 // Helper libraries are often used for this purpose! Here we are supporting a few common ones: gl3w, glew, glad.
 // You may use another loader/header of your choice (glext, glLoadGen, etc.), or chose to manually implement your own.
 #if defined(IMGUI_IMPL_OPENGL_LOADER_GL3W)
 #include <GL/gl3w.h> // Initialize with gl3wInit()
+#pragma message ( "C Preprocessor got here!" )
 #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLEW)
 #include <GL/glew.h> // Initialize with glewInit()
 #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLAD)
@@ -31,7 +31,7 @@
 
 // Include glfw3.h after our OpenGL definitions
 #include <GLFW/glfw3.h>
-#include <glad/glad.h> 
+#include <glad/glad.h>
 
 #include <Eigen/Dense>
 #include <iostream>
@@ -136,6 +136,7 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         //more opengl stuff
+        default_shader.useProgram();
         objmesh.paintGL();
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -144,6 +145,7 @@ int main()
         glfwSwapBuffers(window);
     }
 
+    objmesh.deleteGL();
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();

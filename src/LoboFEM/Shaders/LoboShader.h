@@ -12,10 +12,12 @@ public:
 
     virtual void loadShader(const char *vertexShaderSource, const char *fragmentShaderSource);
     virtual void loadShader();
+    virtual void useProgram();
 
 protected:
     int vertex_shader;
     int fragment_shader;
+    int shader_program;
 };
 
 } // namespace Lobo
