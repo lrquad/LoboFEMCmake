@@ -4,6 +4,8 @@
 #include <experimental/filesystem>
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
+#include "stb_image.h"
+#include "OpenGLutils/glfunctions.h"
 
 namespace fs = std::experimental::filesystem;
 
@@ -95,27 +97,50 @@ void Lobo::LoboMesh::loadObj(const char *filename, bool verbose)
 
 void Lobo::LoboMesh::initialGL()
 {
+    std::vector<float> buffer;
+    buffer.resize(sizeof(vertices) / sizeof(float));
+    memcpy(buffer.data(), vertices, sizeof(vertices));
+
+    std::vector<unsigned int> indices_b;
+    indices_b.resize(sizeof(indices) / sizeof(unsigned int));
+
+    memcpy(indices_b.data(), indices, sizeof(indices));
+
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
     glBindVertexArray(VAO);
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    Lobo::bindShapeBuffer(VBO,EBO,buffer,indices_b);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    // glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    // glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
-    glEnableVertexAttribArray(0);
-    // color attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
+    setPositionAttribute(0,3,8,0);
+    setPositionAttribute(1,3,8,3);
+    setPositionAttribute(2,2,8,6);
 
+    // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
+    // glEnableVertexAttribArray(0);
+    // // color attribute
+    // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
+    // glEnableVertexAttribArray(1);
+
+    // glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
+    // glEnableVertexAttribArray(2);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
     glinitialized = true;
+
+    //texture
+    glGenTextures(1, &texture);
+    bindTextureBuffer("./models/earth/4096_night_lights.jpg",texture);
 }
 
 void Lobo::LoboMesh::paintGL()
@@ -124,6 +149,8 @@ void Lobo::LoboMesh::paintGL()
 
     if (wireframe_mode == true)
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+    glBindTexture(GL_TEXTURE_2D, texture);
 
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

@@ -1,0 +1,55 @@
+#include <GLFW/glfw3.h>
+#include <glad/glad.h>
+#include "stb_image.h"
+
+namespace Lobo
+{
+void bindShapeBuffer(unsigned int &VBO, unsigned int &EBO, std::vector<float> &buffer, std::vector<unsigned int> &indices);
+
+void setPositionAttribute(int location, int size, int stride, int offset);
+
+void bindTextureBuffer(const char *filename, unsigned int &texture_id);
+
+inline void bindShapeBuffer(unsigned int &VBO, unsigned int &EBO, std::vector<float> &buffer, std::vector<unsigned int> &indices)
+{
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, buffer.size() * sizeof(float), &buffer[0], GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+}
+
+inline void setPositionAttribute(int location, int size, int stride, int offset)
+{
+    glVertexAttribPointer(location, size, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void *)(offset * sizeof(float)));
+    glEnableVertexAttribArray(location);
+}
+
+inline void bindTextureBuffer(const char *filename, unsigned int &texture_id)
+{
+    stbi_set_flip_vertically_on_load(true);
+    glBindTexture(GL_TEXTURE_2D, texture_id);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // load and generate the texture
+    int width, height, nrChannels;
+
+    unsigned char *data = stbi_load(filename, &width, &height, &nrChannels, 0);
+    
+    if (data&&nrChannels>=3)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout<<width<<" " << height<<" " << nrChannels<<std::endl;
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
+}
+
+} // namespace Lobo
