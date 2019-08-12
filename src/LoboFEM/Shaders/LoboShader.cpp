@@ -19,7 +19,7 @@ std::string Lobo::LoboShader::readFile(const char *filename)
 void Lobo::LoboShader::drawImGui(bool *p_open)
 {
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-    ImGui::Begin("Shader control", p_open);
+    ImGui::Begin("Shader control", p_open,ImGuiWindowFlags_AlwaysAutoResize);
     ImGui::Text("Output color"); 
     ImGui::ColorEdit3("clear color", (float*)&clear_color);
     ImGui::End();

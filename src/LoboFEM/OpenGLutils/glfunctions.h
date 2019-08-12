@@ -22,8 +22,9 @@ inline void bindShapeBuffer(unsigned int &VBO, unsigned int &EBO, std::vector<fl
 
 inline void setPositionAttribute(int location, int size, int stride, int offset)
 {
-    glVertexAttribPointer(location, size, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void *)(offset * sizeof(float)));
     glEnableVertexAttribArray(location);
+    //glVertexAttribFormat()
+    glVertexAttribPointer(location, size, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void *)(offset * sizeof(float)));
 }
 
 inline void bindTextureBuffer(const char *filename, unsigned int &texture_id)
@@ -38,15 +39,16 @@ inline void bindTextureBuffer(const char *filename, unsigned int &texture_id)
     int width, height, nrChannels;
 
     unsigned char *data = stbi_load(filename, &width, &height, &nrChannels, 0);
-    
-    if (data&&nrChannels>=3)
+
+    if (data && nrChannels >= 3)
     {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     }
     else
     {
-        std::cout<<width<<" " << height<<" " << nrChannels<<std::endl;
+        std::cout << width << " " << height << " " << nrChannels << std::endl;
+        std::cout << filename << std::endl;
         std::cout << "Failed to load texture" << std::endl;
     }
     stbi_image_free(data);

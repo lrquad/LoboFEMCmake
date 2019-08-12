@@ -1,31 +1,30 @@
 #pragma once
 
 #include "ObjLoader/tiny_obj_loader.h"
+#include <map>
+#include <glm/glm.hpp>
 
 namespace Lobo
 {
 
-//test data info
+struct ShapeBuffer
+{
+    unsigned int VBO; //vertex array buffer
 
-static float vertices[] = {
-    // positions          // colors           // texture coords
-    1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,   // top right
-    1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,  // bottom right
-    -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom left
-    -1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f   // top left
+	std::vector<float> vb;
+	int size_per_vertex;
+	int material_id;
 };
 
-static unsigned int indices[] = {
-    // note that we start from 0!
-    0, 1, 3, // first Triangle
-    1, 2, 3  // second Triangle
+struct MaterialBuffer
+{
+    unsigned int diffuse_texid; //vertex array buffer
+    std::string diffuse_texname;
+    //std::map<std::string,unsigned int> disffues_tex;
+    bool diffuse_texture;
 };
 
-static float texCoords[] = {
-    0.0f, 0.0f, // lower-left corner
-    1.0f, 0.0f, // lower-right corner
-    0.5f, 1.0f  // top-center corner
-};
+class LoboShader;
 
 class LoboMesh
 {
@@ -35,30 +34,31 @@ public:
     ~LoboMesh();
 
     virtual void loadObj(const char *filename, bool verbose = false);
+    virtual void uniformMesh();
     virtual void drawImGui(bool *p_open = NULL);
 
     virtual void initialGL();
-    virtual void paintGL();
+    virtual void paintGL(LoboShader* shader);
     virtual void deleteGL();
 
 protected:
     std::string obj_file_name;
 
     tinyobj::attrib_t attrib;
+    std::vector<float> vertex_color;
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
 
     //GL
-    unsigned int VBO; //vertex buffer
+    std::vector<ShapeBuffer> shape_buffer;
+    std::vector<MaterialBuffer> material_buffer;
     unsigned int VAO; //vertex array buffer
-    unsigned int EBO; //element buffer
-
-    unsigned int texture;
 
     bool wireframe_mode;
 
     bool glinitialized;
 
+    virtual void updateShapeArrayBuffer(int shape_id);
     virtual void defaultValue();
 };
 

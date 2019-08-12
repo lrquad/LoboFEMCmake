@@ -1,0 +1,101 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include <GLFW/glfw3.h>
+#include <glad/glad.h>
+#include <iostream>
+double old = 0;
+void blockFramerate()
+{
+    if (old == 0)
+    {
+        old = glfwGetTime();
+    }
+    while (glfwGetTime() - old < 1.0 / 61)
+    {
+    }
+    old = glfwGetTime();
+}
+
+static void glfw_error_callback(int error, const char *description)
+{
+    fprintf(stderr, "Glfw Error %d: %s\n", error, description);
+}
+int main(void)
+{
+    int i = 0, mode = 0;
+    glfwSetErrorCallback(glfw_error_callback);
+    if (!glfwInit())
+        return -1;
+
+    GLFWwindow *window = glfwCreateWindow(1280, 720, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL);
+
+    if (!window)
+    {
+        glfwTerminate();
+        return -1;
+    }
+
+    glfwMakeContextCurrent(window);
+    glfwSwapInterval(1);
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    {
+        std::cout << "Failed to initialize GLAD" << std::endl;
+        return -1;
+    }
+
+    // Initialize OpenGL loader
+#if defined(IMGUI_IMPL_OPENGL_LOADER_GL3W)
+    bool err = gl3wInit() != 0;
+#elif defined(IMGUI_IMPL_OPENGL_LOADER_GLEW)
+    bool err = glewInit() != GLEW_OK;
+#elif defined(IMGUI_IMPL_OPENGL_LOADER_GLAD)
+    bool err = gladLoadGL() == 0;
+#else
+    bool err = false; // If you use IMGUI_IMPL_OPENGL_LOADER_CUSTOM, your loader is likely to requires some form of initialization.
+#endif
+    if (err)
+    {
+        fprintf(stderr, "Failed to initialize OpenGL loader!\n");
+        return 1;
+    }
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0, 1280, 0, 720, -1, 1);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_BLEND);
+    glDisable(GL_TEXTURE_2D);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glColor3f(1.0, 1.0, 1.0);
+
+    while (!glfwWindowShouldClose(window))
+    {
+        blockFramerate();
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glRecti(i, 190, i + 100, 290);
+
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+
+        if (!mode)
+        {
+            i++;
+            if (i >= 539)
+                mode = 1;
+        }
+        else
+        {
+            i--;
+            if (i <= 0)
+                mode = 0;
+        }
+    }
+
+    glfwTerminate();
+
+    return 0;
+}

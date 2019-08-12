@@ -63,5 +63,6 @@
         "mutex": "cpp",
         "valarray": "cpp",
         "algorithm": "cpp"
-    }
+    },
+    "C_Cpp.configurationWarnings": "Disabled"
 }

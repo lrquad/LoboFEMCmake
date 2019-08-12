@@ -13,6 +13,7 @@
 //will be refactored in the future
 #include "LoboMesh/LoboMesh.h"
 #include "Shaders/LoboShader.h"
+#include "OpenGLutils/LoboCamera.h"
 
 #include <stdio.h>
 // About OpenGL function loaders: modern OpenGL doesn't have a standard header file and requires individual function pointers to be loaded manually.
@@ -20,7 +21,7 @@
 // You may use another loader/header of your choice (glext, glLoadGen, etc.), or chose to manually implement your own.
 #if defined(IMGUI_IMPL_OPENGL_LOADER_GL3W)
 #include <GL/gl3w.h> // Initialize with gl3wInit()
-#pragma message ( "C Preprocessor got here!" )
+#pragma message("C Preprocessor got here!")
 #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLEW)
 #include <GL/glew.h> // Initialize with glewInit()
 #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLAD)
@@ -51,6 +52,7 @@ int main()
     const char *glsl_version = "#version 130";
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    glfwWindowHint(GLFW_SAMPLES, 4);
 
     // Create window with graphics context
     GLFWwindow *window = glfwCreateWindow(1280, 720, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL);
@@ -99,12 +101,16 @@ int main()
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     ImGui::FileBrowser fileDialog;
-    Lobo::LoboMesh objmesh("./models/cornell_box.obj");
+    Lobo::LoboMesh objmesh("./models/cube.obj");
     objmesh.initialGL();
 
     //init shader
     Lobo::LoboShader default_shader;
-    default_shader.loadShaderFile("./shaders/simplevertex.glsl","./shaders/simplefrag.glsl");
+    default_shader.loadShaderFile("./shaders/simplevertex.glsl", "./shaders/simplefrag.glsl");
+
+    //init camera
+    Lobo::Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+
     // Main loop
     while (!glfwWindowShouldClose(window))
     {
@@ -121,9 +127,10 @@ int main()
         ImGui::NewFrame();
 
         Lobo::ShowMainWindow(&fileDialog);
-        
+
         objmesh.drawImGui();
         default_shader.drawImGui();
+        camera.drawImGui();
 
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
         if (show_demo_window)
@@ -132,19 +139,32 @@ int main()
         // Rendering
         ImGui::Render();
         int display_w, display_h;
-        glfwMakeContextCurrent(window);
+        //glfwMakeContextCurrent(window);
         glfwGetFramebufferSize(window, &display_w, &display_h);
         glViewport(0, 0, display_w, display_h);
         glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_MULTISAMPLE);
+
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         //more opengl stuff
         default_shader.useProgram();
-        objmesh.paintGL();
+        // create transformations
+        glm::mat4 model = glm::mat4(1.0f);
+
+        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)display_w / (float)display_h, 0.001f, 100.0f);
+        glm::mat4 view = camera.GetViewMatrix();
+
+        default_shader.setMat4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
+        default_shader.setMat4("view", view);
+        default_shader.setMat4("model", model);
+        objmesh.paintGL(&default_shader);
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-        glfwMakeContextCurrent(window);
+        glfwSwapInterval(1); // Enable vsync
+
         glfwSwapBuffers(window);
     }
 
