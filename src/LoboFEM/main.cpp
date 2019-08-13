@@ -101,7 +101,7 @@ int main()
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     ImGui::FileBrowser fileDialog;
-    Lobo::LoboMesh objmesh("./models/cube.obj");
+    Lobo::LoboMesh objmesh("./models/cornell_box.obj");
     objmesh.initialGL();
 
     //init shader
