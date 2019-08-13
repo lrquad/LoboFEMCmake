@@ -1,34 +1,30 @@
 #pragma once
 
-#include "ObjLoader/tiny_obj_loader.h"
-#include <map>
 #include <glm/glm.hpp>
+#include <map>
+#include "ObjLoader/tiny_obj_loader.h"
 
-namespace Lobo
-{
+namespace Lobo {
 
-struct ShapeBuffer
-{
-    unsigned int VBO; //vertex array buffer
+struct ShapeBuffer {
+    unsigned int VBO;  // vertex array buffer
 
-	std::vector<float> vb;
-	int size_per_vertex;
-	int material_id;
+    std::vector<float> vb;
+    int size_per_vertex;
+    int material_id;
 };
 
-struct MaterialBuffer
-{
-    unsigned int diffuse_texid; //vertex array buffer
+struct MaterialBuffer {
+    unsigned int diffuse_texid;  // vertex array buffer
     std::string diffuse_texname;
-    //std::map<std::string,unsigned int> disffues_tex;
+    // std::map<std::string,unsigned int> disffues_tex;
     bool diffuse_texture;
 };
 
 class LoboShader;
 
-class LoboMesh
-{
-public:
+class LoboMesh {
+   public:
     LoboMesh();
     LoboMesh(const char *filename);
     ~LoboMesh();
@@ -38,10 +34,10 @@ public:
     virtual void drawImGui(bool *p_open = NULL);
 
     virtual void initialGL();
-    virtual void paintGL(LoboShader* shader);
+    virtual void paintGL(LoboShader *shader);
     virtual void deleteGL();
 
-protected:
+   protected:
     std::string obj_file_name;
 
     tinyobj::attrib_t attrib;
@@ -49,17 +45,21 @@ protected:
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
 
-    //GL
+    // GL
     std::vector<ShapeBuffer> shape_buffer;
     std::vector<MaterialBuffer> material_buffer;
-    unsigned int VAO; //vertex array buffer
+    unsigned int VAO;  // vertex array buffer
 
+    //imgui
     bool wireframe_mode;
+    int start_show_material;
+
 
     bool glinitialized;
 
+    
     virtual void updateShapeArrayBuffer(int shape_id);
     virtual void defaultValue();
 };
 
-} // namespace Lobo
+}  // namespace Lobo

@@ -12,6 +12,8 @@
 //These headers are for test
 //will be refactored in the future
 #include "LoboMesh/LoboMesh.h"
+
+#include "Shaders/LoboLighting.h"
 #include "Shaders/LoboShader.h"
 #include "OpenGLutils/LoboCamera.h"
 
@@ -104,9 +106,14 @@ int main()
     Lobo::LoboMesh objmesh("./models/cornell_box.obj");
     objmesh.initialGL();
 
+    Lobo::LoboLighting cubelight;
+
     //init shader
     Lobo::LoboShader default_shader;
+    Lobo::LoboShader lighting_shader;
+
     default_shader.loadShaderFile("./shaders/simplevertex.glsl", "./shaders/simplefrag.glsl");
+    lighting_shader.loadShaderFile("./shaders/lightvertex.glsl", "./shaders/lightfrag.glsl");
 
     //init camera
     Lobo::Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -129,7 +136,7 @@ int main()
         Lobo::ShowMainWindow(&fileDialog);
 
         objmesh.drawImGui();
-        default_shader.drawImGui();
+        cubelight.drawImGui();
         camera.drawImGui();
 
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
@@ -149,17 +156,29 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         //more opengl stuff
-        default_shader.useProgram();
         // create transformations
         glm::mat4 model = glm::mat4(1.0f);
 
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)display_w / (float)display_h, 0.001f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
 
+        default_shader.useProgram();
         default_shader.setMat4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
         default_shader.setMat4("view", view);
         default_shader.setMat4("model", model);
+        
+        default_shader.setVec3("lightPos",cubelight.lightPos);
+        default_shader.setVec3("lightColor",cubelight.lightColor);
+        default_shader.setVec3("viewPos",camera.Position);
+
+
         objmesh.paintGL(&default_shader);
+
+        lighting_shader.useProgram();
+        lighting_shader.setMat4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
+        lighting_shader.setMat4("view", view);
+        lighting_shader.setMat4("model", model);
+        cubelight.paintGL(&lighting_shader);
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
