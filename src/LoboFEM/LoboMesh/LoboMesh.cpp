@@ -39,18 +39,20 @@ void Lobo::LoboMesh::drawImGui(bool *p_open) {
     ImGui::Text("File name: %s ", obj_file_name.c_str());
 
     if (ImGui::CollapsingHeader("Info", ImGuiWindowFlags_NoCollapse)) {
-        ImGui::Text("num vertices: %d ", attrib.vertices.size() / 3);
-        ImGui::Text("num normals: %d ", attrib.normals.size() / 3);
+        ImGui::Text("num vertices: %d num normals: %d",
+                    attrib.vertices.size() / 3, attrib.normals.size() / 3);
         ImGui::Text("num texcoords: %d ", attrib.texcoords.size() / 2);
-        ImGui::Text("num shapes: %d ", shapes.size());
-        ImGui::Text("num Materials: %d ", materials.size());
+        ImGui::Text("num shapes: %d num materials: %d", shapes.size(),
+                    materials.size());
 
         if (ImGui::CollapsingHeader("Materials", ImGuiWindowFlags_NoCollapse)) {
             ImGui::InputInt("Material start at", &start_show_material, 1, 5);
             if (start_show_material < 0) {
                 start_show_material = 0;
             }
-            start_show_material %= materials.size() - 3;
+
+            if (materials.size() > 3)
+                start_show_material %= materials.size() - 3;
 
             for (size_t i = start_show_material; i < start_show_material + 3;
                  i++) {
@@ -58,12 +60,17 @@ void Lobo::LoboMesh::drawImGui(bool *p_open) {
                     break;
                 }
                 ImGui::PushID(i);
+                ImGui::Checkbox("use texture",
+                                &material_buffer[i].use_diffuse_tex);
                 ImGui::Text("material[%d].diffuse_texname: %s", int(i),
                             materials[i].diffuse_texname.c_str());
+
                 ImGui::ColorEdit3("ambient color", &(materials[i].ambient)[0]);
                 ImGui::ColorEdit3("diffuse color", &(materials[i].diffuse)[0]);
-                ImGui::ColorEdit3("specular color",&(materials[i].specular)[0]);
-                ImGui::DragFloat("shininess", &materials[i].shininess, 0.05f,0.0,100.0);
+                ImGui::ColorEdit3("specular color",
+                                  &(materials[i].specular)[0]);
+                ImGui::DragFloat("shininess", &materials[i].shininess, 0.05f,
+                                 0.0, 100.0);
 
                 ImGui::PopID();
             }
@@ -153,13 +160,24 @@ void Lobo::LoboMesh::initialGL() {
     material_buffer.resize(materials.size());
     for (size_t m = 0; m < materials.size(); m++) {
         tinyobj::material_t *mp = &materials[m];
+        material_buffer[m].has_diffuse_tex = false;
+        material_buffer[m].use_diffuse_tex = false;
         if (mp->diffuse_texname.length() > 0) {
-            material_buffer[m].diffuse_texture = true;
+            material_buffer[m].has_diffuse_tex = true;
+            material_buffer[m].use_diffuse_tex = true;
             // diffuse texture
-            glGenTextures(1, &material_buffer[m].diffuse_texid);
-            bindTextureBuffer(mp->diffuse_texname.c_str(),
-                              material_buffer[m].diffuse_texid);
+            //glGenTextures(1, &material_buffer[m].diffuse_texid);
+            int channels = bindTextureBuffer(mp->diffuse_texname.c_str(),
+                                             material_buffer[m].diffuse_texid);
             material_buffer[m].diffuse_texname = mp->diffuse_texname;
+        }
+        if (mp->emissive_texname.length() > 0) {
+            material_buffer[m].has_emissive_tex = true;
+            material_buffer[m].use_diffuse_tex = true;
+            //glGenTextures(1, &material_buffer[m].emissive_texid);
+            int channels = bindTextureBuffer(mp->emissive_texname.c_str(),
+                                             material_buffer[m].emissive_texid);
+            material_buffer[m].emissive_texname=mp->emissive_texname;
         }
     }
 
@@ -252,30 +270,39 @@ void Lobo::LoboMesh::paintGL(LoboShader *shader) {
     glBindVertexArray(VAO);
     for (int i = 0; i < shape_buffer.size(); i++) {
         int materia_id = shape_buffer[i].material_id;
-        if (material_buffer[i].diffuse_texture == true) {
-            unsigned int texture_id = material_buffer[materia_id].diffuse_texid;
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, texture_id);
-        } else {
-            glm::vec3 diffuse_color =
-                glm::vec3(materials[materia_id].diffuse[0],
-                          materials[materia_id].diffuse[1],
-                          materials[materia_id].diffuse[2]);
-            glm::vec3 ambient_color =
-                glm::vec3(materials[materia_id].ambient[0],
-                          materials[materia_id].ambient[1],
-                          materials[materia_id].ambient[2]);
-            glm::vec3 specular_color =
-                glm::vec3(materials[materia_id].specular[0],
-                          materials[materia_id].specular[1],
-                          materials[materia_id].specular[2]);
 
-            // shader->setVec3("diffuse_color", color);
-            shader->setVec3("material.ambient", ambient_color);
-            shader->setVec3("material.diffuse", diffuse_color);
-            shader->setVec3("material.specular", specular_color);
-            shader->setFloat("material.shininess", 32.0f);
+        if (material_buffer[i].has_diffuse_tex == true &&
+            material_buffer[i].use_diffuse_tex == true) {
+            shader->setInt("material.diffuse_tex", 0);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, material_buffer[materia_id].diffuse_texid);
+            if(material_buffer[i].has_emissive_tex == true)
+            {
+                shader->setInt("material.emissive_tex", 1);
+                glActiveTexture(GL_TEXTURE1);
+                glBindTexture(GL_TEXTURE_2D, material_buffer[materia_id].emissive_texid);
+            }
         }
+
+        glm::vec3 diffuse_color = glm::vec3(materials[materia_id].diffuse[0],
+                                            materials[materia_id].diffuse[1],
+                                            materials[materia_id].diffuse[2]);
+        glm::vec3 ambient_color = glm::vec3(materials[materia_id].ambient[0],
+                                            materials[materia_id].ambient[1],
+                                            materials[materia_id].ambient[2]);
+        glm::vec3 specular_color = glm::vec3(materials[materia_id].specular[0],
+                                             materials[materia_id].specular[1],
+                                             materials[materia_id].specular[2]);
+
+        // shader->setVec3("diffuse_color", color);
+        shader->setBool("useDiffuseTex",
+                        material_buffer[i].use_diffuse_tex &&
+                            material_buffer[i].has_diffuse_tex);
+        shader->setVec3("material.ambient", ambient_color);
+        shader->setVec3("material.diffuse", diffuse_color);
+        shader->setVec3("material.specular", specular_color);
+        shader->setFloat("material.shininess", 32.0f);
+
         glBindBuffer(GL_ARRAY_BUFFER, shape_buffer[i].VBO);
         setPositionAttribute(0, 3, 11, 0);
         setPositionAttribute(1, 3, 11, 3);

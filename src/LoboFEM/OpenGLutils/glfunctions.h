@@ -8,7 +8,7 @@ void bindShapeBuffer(unsigned int &VBO, unsigned int &EBO, std::vector<float> &b
 
 void setPositionAttribute(int location, int size, int stride, int offset);
 
-void bindTextureBuffer(const char *filename, unsigned int &texture_id);
+int bindTextureBuffer(const char *filename, unsigned int &texture_id);
 
 inline void bindShapeBuffer(unsigned int &VBO, unsigned int &EBO, std::vector<float> &buffer, std::vector<unsigned int> &indices)
 {
@@ -27,8 +27,9 @@ inline void setPositionAttribute(int location, int size, int stride, int offset)
     glVertexAttribPointer(location, size, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void *)(offset * sizeof(float)));
 }
 
-inline void bindTextureBuffer(const char *filename, unsigned int &texture_id)
+inline int bindTextureBuffer(const char *filename, unsigned int &texture_id)
 {
+    glGenTextures(1, &texture_id);
     stbi_set_flip_vertically_on_load(true);
     glBindTexture(GL_TEXTURE_2D, texture_id);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -45,13 +46,18 @@ inline void bindTextureBuffer(const char *filename, unsigned int &texture_id)
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     }
-    else
+    else if (data && nrChannels == 1)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, width, height, 0, GL_ALPHA, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }else
     {
         std::cout << width << " " << height << " " << nrChannels << std::endl;
         std::cout << filename << std::endl;
         std::cout << "Failed to load texture" << std::endl;
     }
     stbi_image_free(data);
+    return nrChannels;
 }
 
 } // namespace Lobo

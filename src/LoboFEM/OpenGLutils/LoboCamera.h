@@ -17,7 +17,7 @@ enum Camera_Movement { FORWARD, BACKWARD, LEFT, RIGHT, UPWARD, DOWNWARD };
 const float YAW = -90.0f;
 const float PITCH = 0.0f;
 const float SPEED = 2.5f;
-const float SENSITIVITY = 0.1f;
+const float SENSITIVITY = 0.5f;
 const float ZOOM = 45.0f;
 const bool FLYMODE = false;
 
@@ -49,6 +49,9 @@ struct InitCamera{
     float MovementSpeed;
     float MouseSensitivity;
     float Zoom;
+
+    glm::vec3 angular_v;
+    glm::vec3 angular_a;
 
     bool flymode;
 
@@ -153,6 +156,7 @@ struct InitCamera{
         ImGui::End();
 
         flythroughMoveMode();
+
     }
 
     void flythroughMoveMode() {
@@ -253,8 +257,8 @@ struct InitCamera{
     }
 
     void ProcessMiddleMouseMovement(float xoffset, float yoffset) {
-        xoffset *= MouseSensitivity * 0.1;
-        yoffset *= MouseSensitivity * 0.1;
+        xoffset *= MouseSensitivity * 0.01;
+        yoffset *= MouseSensitivity * 0.01;
 
         // Yaw += xoffset;
         // Pitch -= yoffset;
@@ -269,7 +273,7 @@ struct InitCamera{
     // Processes input received from a mouse scroll-wheel event. Only requires
     // input on the vertical wheel-axis
     void ProcessMouseScroll(float yoffset) {
-        yoffset *= MouseSensitivity*2.0;
+        yoffset *= MouseSensitivity;
         Position += Front * yoffset;
         // CenterP += Front * yoffset;
     }

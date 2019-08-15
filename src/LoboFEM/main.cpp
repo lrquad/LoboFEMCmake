@@ -54,7 +54,7 @@ int main()
     const char *glsl_version = "#version 130";
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-    glfwWindowHint(GLFW_SAMPLES, 4);
+    glfwWindowHint(GLFW_SAMPLES, 16);
 
     // Create window with graphics context
     GLFWwindow *window = glfwCreateWindow(1280, 720, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL);
@@ -101,9 +101,10 @@ int main()
 
     bool show_demo_window = true;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+    clear_color = ImVec4(0.0f, 0.0f, 0.0f, 1.00f);
 
     ImGui::FileBrowser fileDialog;
-    Lobo::LoboMesh objmesh("./models/cornell_box.obj");
+    Lobo::LoboMesh objmesh("./models/earth/earth.obj");
     objmesh.initialGL();
 
     Lobo::LoboLighting cubelight;
@@ -117,7 +118,6 @@ int main()
 
     //init camera
     Lobo::Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
-
     // Main loop
     while (!glfwWindowShouldClose(window))
     {
@@ -135,8 +135,11 @@ int main()
 
         Lobo::ShowMainWindow(&fileDialog);
 
+
         objmesh.drawImGui();
+
         cubelight.drawImGui();
+
         camera.drawImGui();
 
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
@@ -162,6 +165,7 @@ int main()
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)display_w / (float)display_h, 0.001f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
 
+
         default_shader.useProgram();
         default_shader.setMat4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
         default_shader.setMat4("view", view);
@@ -174,6 +178,7 @@ int main()
 
         objmesh.paintGL(&default_shader);
 
+
         lighting_shader.useProgram();
         lighting_shader.setMat4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
         lighting_shader.setMat4("view", view);
@@ -185,6 +190,7 @@ int main()
         glfwSwapInterval(1); // Enable vsync
 
         glfwSwapBuffers(window);
+
     }
 
     objmesh.deleteGL();

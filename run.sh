@@ -13,4 +13,4 @@ fi
 
 make
 cd ..
-./bin/LoboFEM
+catchsegv ./bin/LoboFEM -o hai

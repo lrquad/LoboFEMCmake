@@ -16,9 +16,14 @@ struct ShapeBuffer {
 
 struct MaterialBuffer {
     unsigned int diffuse_texid;  // vertex array buffer
+    unsigned int emissive_texid;  // vertex array buffer
+
     std::string diffuse_texname;
+    std::string emissive_texname;
     // std::map<std::string,unsigned int> disffues_tex;
-    bool diffuse_texture;
+    bool has_diffuse_tex;
+    bool has_emissive_tex;
+    bool use_diffuse_tex;
 };
 
 class LoboShader;
