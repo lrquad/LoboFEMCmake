@@ -4,7 +4,7 @@
 template<typename T>
 void deleteStdvectorPointer(std::vector<T> &pointer_list)
 {
-	for (std::vector<T>::iterator it = pointer_list.begin(); it != pointer_list.end(); ++it)
+	for (typename std::vector<T>::iterator it = pointer_list.begin(); it != pointer_list.end(); ++it)
 	{
 		delete (*it);
 		(*it) = NULL;
@@ -15,7 +15,7 @@ void deleteStdvectorPointer(std::vector<T> &pointer_list)
 template<typename T>
 void deleteStdvectorPointer(std::vector<T> *pointer_list)
 {
-	for (std::vector<T>::iterator it = pointer_list->begin(); it != pointer_list->end(); ++it)
+	for (typename std::vector<T>::iterator it = pointer_list->begin(); it != pointer_list->end(); ++it)
 	{
 		delete (*it);
 		(*it) = NULL;

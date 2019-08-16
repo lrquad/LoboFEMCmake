@@ -145,6 +145,10 @@ void Lobo::LoboMesh::initialGL() {
         updateShapeArrayBuffer(i);
 
         shape_buffer[i].material_id = (shapes)[i].mesh.material_ids[0];
+        if(shape_buffer[i].material_id==-1)
+        {
+            shape_buffer[i].material_id = materials.size()-1;
+        }
 
         glGenBuffers(1, &shape_buffer[i].VBO);
         glBindBuffer(GL_ARRAY_BUFFER, shape_buffer[i].VBO);

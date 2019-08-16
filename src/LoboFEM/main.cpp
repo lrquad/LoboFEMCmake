@@ -52,12 +52,19 @@ int main()
         return 1;
 
     const char *glsl_version = "#version 130";
+    const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
     glfwWindowHint(GLFW_SAMPLES, 16);
 
+    glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+    glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+    glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+    glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+
     // Create window with graphics context
-    GLFWwindow *window = glfwCreateWindow(1280, 720, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(mode->width, mode->height, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL);
     if (window == NULL)
         return 1;
     glfwMakeContextCurrent(window);
@@ -90,6 +97,7 @@ int main()
     ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
     (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
@@ -99,7 +107,7 @@ int main()
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
-    bool show_demo_window = true;
+    bool show_demo_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     clear_color = ImVec4(0.0f, 0.0f, 0.0f, 1.00f);
 
@@ -107,7 +115,7 @@ int main()
     Lobo::LoboMesh objmesh("./models/earth/earth.obj");
     objmesh.initialGL();
 
-    Lobo::LoboLighting cubelight;
+    Lobo::LoboLightManager light_manager;
 
     //init shader
     Lobo::LoboShader default_shader;
@@ -138,7 +146,8 @@ int main()
 
         objmesh.drawImGui();
 
-        cubelight.drawImGui();
+        //cubelight.drawImGui();
+        light_manager.drawImGui();
 
         camera.drawImGui();
 
@@ -171,9 +180,10 @@ int main()
         default_shader.setMat4("view", view);
         default_shader.setMat4("model", model);
         
-        default_shader.setVec3("lightPos",cubelight.lightPos);
-        default_shader.setVec3("lightColor",cubelight.lightColor);
+        //default_shader.setVec3("lightPos",cubelight.lightPos);
+        //default_shader.setVec3("lightColor",cubelight.lightColor);
         default_shader.setVec3("viewPos",camera.Position);
+        light_manager.setLight(&default_shader);
 
 
         objmesh.paintGL(&default_shader);
@@ -183,7 +193,7 @@ int main()
         lighting_shader.setMat4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
         lighting_shader.setMat4("view", view);
         lighting_shader.setMat4("model", model);
-        cubelight.paintGL(&lighting_shader);
+        light_manager.paintGL(&lighting_shader);
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 

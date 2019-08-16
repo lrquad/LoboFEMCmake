@@ -8,6 +8,19 @@ struct Material {
     sampler2D emissive_tex;
     float shininess;
 }; 
+
+struct Lights {
+    vec3 position;
+    vec3 direction;
+    
+    float constant;
+    float linear;
+    float quadratic;
+	
+    vec3 lightColor;
+    bool trigger;
+    int light_type; //0 point 1 directional
+};
   
 uniform Material material;
 
@@ -18,39 +31,88 @@ in vec2 TexCoords;
 in vec3 ourNormal;
 in vec3 FragPos;
 
-uniform vec3 lightPos; 
-uniform vec3 lightColor;
+//uniform vec3 lightPos; 
+//uniform vec3 lightColor;
 uniform vec3 viewPos;  
 
 uniform bool useDiffuseTex = false;
 
+
+#define NR_POINT_LIGHTS 6
+uniform Lights lights[NR_POINT_LIGHTS];
+
+vec3 CalcDirLight(Lights light, vec3 normal, vec3 viewDir);
+vec3 CalcPointLight(Lights light, vec3 normal, vec3 fragPos, vec3 viewDir);
+
 void main()
 {
-    // ambient
-    vec3 ambient = lightColor * material.ambient;
-
+    // properties
     vec3 norm = normalize(ourNormal);
-    vec3 lightDir = normalize(lightPos - FragPos);
-    float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = lightColor * (diff * material.diffuse);
+    vec3 viewDir = normalize(viewPos - FragPos);
+
+    vec3 result = vec3(0.0);
+    for(int i = 0; i < NR_POINT_LIGHTS; i++)
+    {
+        if(lights[i].trigger==true)
+        {
+            if (lights[i].light_type==0)
+                result += CalcPointLight(lights[i], norm, FragPos, viewDir);  
+            if (lights[i].light_type==1)
+                result += CalcDirLight(lights[i], norm, FragPos);  
+        }
+    }  
+
+    FragColor = vec4(result, 1.0);
+}
+
+vec3 CalcDirLight(Lights light, vec3 normal, vec3 viewDir)
+{
+    vec3 lightDir = normalize(-light.direction);
+    // diffuse shading
+    float diff = max(dot(normal, lightDir), 0.0);
+    // specular shading
+    vec3 reflectDir = reflect(-lightDir, normal);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    // combine results
+    vec3 ambient = light.lightColor * material.ambient;
+    vec3 diffuse = light.lightColor * diff * material.diffuse;
+    vec3 specular = light.lightColor * spec * material.specular;
 
     if (useDiffuseTex == true)
     {
-        diffuse = lightColor * diff * vec3(texture(material.diffuse_tex, TexCoords)); 
+        diffuse = light.lightColor * diff * vec3(texture(material.diffuse_tex, TexCoords)); 
+        vec3 emission = texture(material.emissive_tex, TexCoords).rgb;
+        diffuse+=emission;
+    }
+    return (ambient + diffuse + specular);
+}
+
+vec3 CalcPointLight(Lights light, vec3 normal, vec3 fragPos, vec3 viewDir)
+{
+    vec3 lightDir = normalize(light.position - fragPos);
+    // diffuse shading
+    float diff = max(dot(normal, lightDir), 0.0);
+    // specular shading
+    vec3 reflectDir = reflect(-lightDir, normal);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    // attenuation
+    float distance = length(light.position - fragPos);
+    float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));    
+    // combine results
+    vec3 ambient = light.lightColor * material.ambient;
+    vec3 diffuse = light.lightColor * diff * material.diffuse;
+    vec3 specular = light.lightColor * spec * material.specular;
+
+    if (useDiffuseTex == true)
+    {
+        diffuse = light.lightColor * diff * vec3(texture(material.diffuse_tex, TexCoords)); 
         vec3 emission = texture(material.emissive_tex, TexCoords).rgb;
         diffuse+=emission;
     }
 
-    // specular
-    vec3 viewDir = normalize(viewPos - FragPos);
-    vec3 reflectDir = reflect(-lightDir, norm);  
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    vec3 specular = (spec * material.specular) * lightColor; 
-
-
-
-    vec3 result = ambient+diffuse+specular;
-    FragColor = vec4(result, 1.0);
-    //FragColor = texture(ourTexture, TexCoord);
-    //FragColor = vec4(diffuse_color,1);
+    ambient *= attenuation;
+    diffuse *= attenuation;
+    specular *= attenuation;
+    //return material.ambient;
+    return (ambient + diffuse + specular);
 }
