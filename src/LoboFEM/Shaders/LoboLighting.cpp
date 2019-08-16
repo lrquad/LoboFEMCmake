@@ -41,6 +41,11 @@ void Lobo::LoboLightManager::setLight(LoboShader* render_shader) {
     }
 }
 
+void Lobo::LoboLightManager::setLightShadow(LoboShader* depth_shader) {
+
+    lighting_list[0]->setLightShadow(depth_shader);
+}
+
 Lobo::LoboLighting::LoboLighting() {
     lightPos = glm::vec3(0.0f, 1.0f, 1.0f);
     lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -82,7 +87,6 @@ void Lobo::LoboLighting::drawImGui() {
         ImGui::ColorEdit3("light color", &lightColor.r);
         if (light_type == 0) drawPointLightImGui();
         if (light_type == 1) drawDirectionalLightImGui();
-
     }
 }
 
@@ -129,6 +133,20 @@ void Lobo::LoboLighting::setLight(LoboShader* render_shader, int lightid) {
 
     render_shader->setInt(lightname + ".light_type", light_type);
     render_shader->setBool(lightname + ".trigger", trigger);
+
+
+    glm::mat4 lightProjection, lightView;
+    glm::mat4 lightSpaceMatrix;
+    float near_plane = 0.01f, far_plane = 7.5f;
+    lightProjection =
+        glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+    lightView =
+        glm::lookAt(lightPos, glm::vec3(0.0), glm::vec3(0.0, 1.0, 0.0));
+    lightSpaceMatrix = lightProjection * lightView;
+    // render scene from light's point of view
+    render_shader->useProgram();
+    render_shader->setMat4("lightSpaceMatrix", lightSpaceMatrix);
+
 }
 
 void Lobo::LoboLighting::setPointLight(LoboShader* render_shader,
@@ -139,7 +157,21 @@ void Lobo::LoboLighting::setPointLight(LoboShader* render_shader,
     render_shader->setFloat(lightname + ".linear", linear);
 }
 
-void Lobo::LoboLighting::setDirectionalLight(LoboShader* render_shader,std::string lightname)
-{
+void Lobo::LoboLighting::setDirectionalLight(LoboShader* render_shader,
+                                             std::string lightname) {
     render_shader->setVec3(lightname + ".direction", direction);
+}
+
+void Lobo::LoboLighting::setLightShadow(LoboShader* depth_shader) {
+    glm::mat4 lightProjection, lightView;
+    glm::mat4 lightSpaceMatrix;
+    float near_plane = 0.01f, far_plane = 7.5f;
+    lightProjection =
+        glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+    lightView =
+        glm::lookAt(lightPos, glm::vec3(0.0), glm::vec3(0.0, 1.0, 0.0));
+    lightSpaceMatrix = lightProjection * lightView;
+    // render scene from light's point of view
+    depth_shader->useProgram();
+    depth_shader->setMat4("lightSpaceMatrix", lightSpaceMatrix);
 }

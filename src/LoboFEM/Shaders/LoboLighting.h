@@ -30,6 +30,7 @@ class LoboLightManager{
     virtual void drawImGui(bool * p_open = NULL);
     virtual void paintGL(LoboShader* shader);
     virtual void setLight(LoboShader* render_shader);
+    virtual void setLightShadow(LoboShader* depth_shader);
 
     std::vector<LoboLighting*> lighting_list;
 
@@ -48,6 +49,8 @@ class LoboLighting {
     virtual void setLight(LoboShader* render_shader,int lightid);
     virtual void setPointLight(LoboShader* render_shader,std::string lightname);
     virtual void setDirectionalLight(LoboShader* render_shader,std::string lightname);
+
+    virtual void setLightShadow(LoboShader* depth_shader);
 
     glm::vec3 lightPos;
     glm::vec3 lightColor;

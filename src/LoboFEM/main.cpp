@@ -112,7 +112,7 @@ int main()
     clear_color = ImVec4(0.0f, 0.0f, 0.0f, 1.00f);
 
     ImGui::FileBrowser fileDialog;
-    Lobo::LoboMesh objmesh("./models/earth/earth.obj");
+    Lobo::LoboMesh objmesh("./models/plane.obj");
     objmesh.initialGL();
 
     Lobo::LoboLightManager light_manager;
@@ -120,9 +120,34 @@ int main()
     //init shader
     Lobo::LoboShader default_shader;
     Lobo::LoboShader lighting_shader;
+    Lobo::LoboShader simpleDepthShader;
 
     default_shader.loadShaderFile("./shaders/simplevertex.glsl", "./shaders/simplefrag.glsl");
     lighting_shader.loadShaderFile("./shaders/lightvertex.glsl", "./shaders/lightfrag.glsl");
+    simpleDepthShader.loadShaderFile("./shaders/depthvertex.glsl", "./shaders/depthfrag.glsl");
+
+
+    //test code 
+    const unsigned int SHADOW_WIDTH = 4096, SHADOW_HEIGHT = 4096;
+    unsigned int depthMapFBO;
+    glGenFramebuffers(1, &depthMapFBO);
+    // create depth texture
+    unsigned int depthMap;
+    glGenTextures(1, &depthMap);
+    glBindTexture(GL_TEXTURE_2D, depthMap);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+    // attach depth texture as FBO's depth buffer
+    glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     //init camera
     Lobo::Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -157,6 +182,23 @@ int main()
 
         // Rendering
         ImGui::Render();
+
+        //shadow
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        
+
+        simpleDepthShader.useProgram();
+        light_manager.setLightShadow(&simpleDepthShader);
+        glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+        glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+            glClear(GL_DEPTH_BUFFER_BIT);
+            glm::mat4 shadowmodel = glm::mat4(1.0f);
+            simpleDepthShader.setMat4("model", shadowmodel);
+            objmesh.paintGL(&simpleDepthShader);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
         int display_w, display_h;
         //glfwMakeContextCurrent(window);
         glfwGetFramebufferSize(window, &display_w, &display_h);
@@ -176,6 +218,7 @@ int main()
 
 
         default_shader.useProgram();
+        default_shader.setInt("shadowMap", 2);
         default_shader.setMat4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
         default_shader.setMat4("view", view);
         default_shader.setMat4("model", model);
@@ -184,7 +227,8 @@ int main()
         //default_shader.setVec3("lightColor",cubelight.lightColor);
         default_shader.setVec3("viewPos",camera.Position);
         light_manager.setLight(&default_shader);
-
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, depthMap);
 
         objmesh.paintGL(&default_shader);
 
@@ -193,6 +237,7 @@ int main()
         lighting_shader.setMat4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
         lighting_shader.setMat4("view", view);
         lighting_shader.setMat4("model", model);
+        
         light_manager.paintGL(&lighting_shader);
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
