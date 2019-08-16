@@ -39,6 +39,7 @@ void Lobo::LoboLightManager::setLight(LoboShader* render_shader) {
     for (int i = 0; i < lighting_list.size(); i++) {
         lighting_list[i]->setLight(render_shader, i);
     }
+    lighting_list[0]->setLightShadow(render_shader);
 }
 
 void Lobo::LoboLightManager::setLightShadow(LoboShader* depth_shader) {
@@ -134,19 +135,6 @@ void Lobo::LoboLighting::setLight(LoboShader* render_shader, int lightid) {
     render_shader->setInt(lightname + ".light_type", light_type);
     render_shader->setBool(lightname + ".trigger", trigger);
 
-
-    glm::mat4 lightProjection, lightView;
-    glm::mat4 lightSpaceMatrix;
-    float near_plane = 0.01f, far_plane = 7.5f;
-    lightProjection =
-        glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
-    lightView =
-        glm::lookAt(lightPos, glm::vec3(0.0), glm::vec3(0.0, 1.0, 0.0));
-    lightSpaceMatrix = lightProjection * lightView;
-    // render scene from light's point of view
-    render_shader->useProgram();
-    render_shader->setMat4("lightSpaceMatrix", lightSpaceMatrix);
-
 }
 
 void Lobo::LoboLighting::setPointLight(LoboShader* render_shader,
@@ -159,15 +147,16 @@ void Lobo::LoboLighting::setPointLight(LoboShader* render_shader,
 
 void Lobo::LoboLighting::setDirectionalLight(LoboShader* render_shader,
                                              std::string lightname) {
+    direction = -lightPos;
     render_shader->setVec3(lightname + ".direction", direction);
 }
 
 void Lobo::LoboLighting::setLightShadow(LoboShader* depth_shader) {
     glm::mat4 lightProjection, lightView;
     glm::mat4 lightSpaceMatrix;
-    float near_plane = 0.01f, far_plane = 7.5f;
+    float near_plane = 0.01f, far_plane = 10.0f;
     lightProjection =
-        glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+        glm::ortho(-2.0f, 2.0f, -2.0f, 2.0f, near_plane, far_plane);
     lightView =
         glm::lookAt(lightPos, glm::vec3(0.0), glm::vec3(0.0, 1.0, 0.0));
     lightSpaceMatrix = lightProjection * lightView;

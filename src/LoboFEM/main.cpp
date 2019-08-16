@@ -128,7 +128,7 @@ int main()
 
 
     //test code 
-    const unsigned int SHADOW_WIDTH = 4096, SHADOW_HEIGHT = 4096;
+    const unsigned int SHADOW_WIDTH = 8192, SHADOW_HEIGHT = 8192;
     unsigned int depthMapFBO;
     glGenFramebuffers(1, &depthMapFBO);
     // create depth texture
@@ -195,7 +195,12 @@ int main()
             glClear(GL_DEPTH_BUFFER_BIT);
             glm::mat4 shadowmodel = glm::mat4(1.0f);
             simpleDepthShader.setMat4("model", shadowmodel);
+            glEnable(GL_CULL_FACE);
+            glCullFace(GL_FRONT);
             objmesh.paintGL(&simpleDepthShader);
+            glCullFace(GL_BACK);
+            glDisable(GL_CULL_FACE);
+
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 
