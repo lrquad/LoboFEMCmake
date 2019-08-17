@@ -65,6 +65,8 @@ class LoboMesh {
     bool bufferNeedUpdate;
     
     virtual void updateShapeArrayBuffer(int shape_id);
+    virtual void updateShapeArrayBufferVertices(int shape_id);
+
     
     //mesh rigid configure;
     glm::vec3 position;

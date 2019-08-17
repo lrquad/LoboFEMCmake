@@ -49,7 +49,10 @@ void Lobo::LoboMesh::drawImGui(bool *p_open) {
         ImGui::Text("num texcoords: %d ", attrib.texcoords.size() / 2);
         ImGui::Text("num shapes: %d num materials: %d", shapes.size(),
                     materials.size());
-        
+
+        if (ImGui::DragFloat("meshPos.x", &position.x, 0.05f)) {
+            this->updateRigidTransformation(position, eular_angle);
+        }
         bool p_changed = ImGui::InputFloat3("position float3", &position.r);
         bool r_changed = ImGui::InputFloat3("eular_angle float3", &eular_angle.r);
         if(p_changed||r_changed)
@@ -211,6 +214,20 @@ void Lobo::LoboMesh::initialGL() {
     glinitialized = true;
 }
 
+void Lobo::LoboMesh::updateShapeArrayBufferVertices(int shape_id)
+{
+    int size_per_vertex = shape_buffer[shape_id].size_per_vertex;
+    for (int j = 0; j < shapes[shape_id].mesh.indices.size(); j++) {
+        int vid = shapes[shape_id].mesh.indices[j].vertex_index;
+        shape_buffer[shape_id].vb[j * size_per_vertex + 0] =
+            attrib.vertices[vid * 3 + 0];
+        shape_buffer[shape_id].vb[j * size_per_vertex + 1] =
+            attrib.vertices[vid * 3 + 1];
+        shape_buffer[shape_id].vb[j * size_per_vertex + 2] =
+            attrib.vertices[vid * 3 + 2];
+    }
+}
+
 void Lobo::LoboMesh::updateShapeArrayBuffer(int shape_id) {
     int size_per_vertex = shape_buffer[shape_id].size_per_vertex;
     for (int j = 0; j < shapes[shape_id].mesh.indices.size(); j++) {
@@ -262,15 +279,15 @@ void Lobo::LoboMesh::updateGLbuffer() {
         int num_shapes = shapes.size();
         for (int i = 0; i < num_shapes; i++) {
             // convert buffer
-            updateShapeArrayBuffer(i);
+            updateShapeArrayBufferVertices(i);
             glBindBuffer(GL_ARRAY_BUFFER, shape_buffer[i].VBO);
             glBufferSubData(GL_ARRAY_BUFFER, 0,
                             shape_buffer[i].vb.size() * sizeof(float),
                             &(shape_buffer[i].vb)[0]);
-            setPositionAttribute(0, 3, 11, 0);
-            setPositionAttribute(1, 3, 11, 3);
-            setPositionAttribute(2, 2, 11, 6);
-            setPositionAttribute(3, 3, 11, 8);
+            // setPositionAttribute(0, 3, 11, 0);
+            // setPositionAttribute(1, 3, 11, 3);
+            // setPositionAttribute(2, 2, 11, 6);
+            // setPositionAttribute(3, 3, 11, 8);
             // load texture
         }
     }
@@ -349,6 +366,7 @@ void Lobo::LoboMesh::deleteGL() {
 
 void Lobo::LoboMesh::updateRigidTransformation(glm::vec3 position,
                                                glm::vec3 eular_angle) {
+
     glm::mat4 rotation = glm::eulerAngleXYZ(glm::radians(eular_angle[0]),
                                             glm::radians(eular_angle[1]),
                                             glm::radians(eular_angle[2]));
@@ -362,6 +380,7 @@ void Lobo::LoboMesh::updateRigidTransformation(glm::vec3 position,
         attrib.vertices[i * 3 + 1] = cur_p[1] + position[1];
         attrib.vertices[i * 3 + 2] = cur_p[2] + position[2];
     }
+
     bufferNeedUpdate = true;
 }
 

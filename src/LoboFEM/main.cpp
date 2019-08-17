@@ -117,7 +117,7 @@ int main() {
     // clear_color = ImVec4(0.0f, 0.0f, 0.0f, 1.00f);
 
     ImGui::FileBrowser fileDialog;
-    Lobo::LoboMesh objmesh("./models/plane.obj");
+    Lobo::LoboMesh objmesh("./models/bunny.obj");
     objmesh.initialGL();
 
     Lobo::LoboLightManager light_manager;
