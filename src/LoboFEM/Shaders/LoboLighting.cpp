@@ -11,6 +11,7 @@ Lobo::LoboLightManager::LoboLightManager() {
     lighting_list.resize(6);
     for (int i = 0; i < lighting_list.size(); i++) {
         lighting_list[i] = new LoboLighting();
+        lighting_list[i]->initShadowMap();
     }
     lighting_list[0]->trigger = true;
 }
@@ -38,14 +39,23 @@ void Lobo::LoboLightManager::paintGL(LoboShader* shader) {
 void Lobo::LoboLightManager::setLight(LoboShader* render_shader) {
     for (int i = 0; i < lighting_list.size(); i++) {
         lighting_list[i]->setLight(render_shader, i);
+        lighting_list[i]->setLightShadow(render_shader, i);
     }
-    lighting_list[0]->setLightShadow(render_shader);
 }
 
-void Lobo::LoboLightManager::setLightShadow(LoboShader* depth_shader) {
-
-    lighting_list[0]->setLightShadow(depth_shader);
+void Lobo::LoboLightManager::setLightShadow(LoboShader* depth_shader,
+                                            int lightid) {
+    lighting_list[lightid]->setLightDepthShadow(depth_shader, lightid);
 }
+
+unsigned int Lobo::LoboLightManager::getDepthFBO(int lightid) {
+    return lighting_list[lightid]->depthMapFBO;
+}
+unsigned int Lobo::LoboLightManager::getDepthMap(int lightid) {
+    return lighting_list[lightid]->depthMap;
+}
+
+int Lobo::LoboLightManager::getLightNum() { return lighting_list.size(); }
 
 Lobo::LoboLighting::LoboLighting() {
     lightPos = glm::vec3(0.0f, 1.0f, 1.0f);
@@ -55,6 +65,8 @@ Lobo::LoboLighting::LoboLighting() {
     linear = 0.09;
     quadratic = 0.032;
     light_type = 0;
+    SHADOW_WIDTH = 8192;
+    SHADOW_HEIGHT = 8192;
     trigger = false;
 
     glGenVertexArrays(1, &lightVAO);
@@ -134,7 +146,6 @@ void Lobo::LoboLighting::setLight(LoboShader* render_shader, int lightid) {
 
     render_shader->setInt(lightname + ".light_type", light_type);
     render_shader->setBool(lightname + ".trigger", trigger);
-
 }
 
 void Lobo::LoboLighting::setPointLight(LoboShader* render_shader,
@@ -149,18 +160,66 @@ void Lobo::LoboLighting::setDirectionalLight(LoboShader* render_shader,
                                              std::string lightname) {
     direction = -lightPos;
     render_shader->setVec3(lightname + ".direction", direction);
+    render_shader->setVec3(lightname + ".lightColor", lightColor);
+    render_shader->setVec3(lightname + ".position", lightPos);
 }
 
-void Lobo::LoboLighting::setLightShadow(LoboShader* depth_shader) {
+void Lobo::LoboLighting::setLightShadow(LoboShader* depth_shader, int lightid) {
+    std::ostringstream stringStream;
+    stringStream << "lightSpaceMatrix[" << lightid << "]";
+    std::string lightname = stringStream.str();
+    std::ostringstream stringStream2;
+    stringStream2 << "shadowMap[" << lightid << "]";
+    std::string shadowMapname = stringStream2.str();
+
     glm::mat4 lightProjection, lightView;
     glm::mat4 lightSpaceMatrix;
     float near_plane = 0.01f, far_plane = 10.0f;
     lightProjection =
         glm::ortho(-2.0f, 2.0f, -2.0f, 2.0f, near_plane, far_plane);
-    lightView =
-        glm::lookAt(lightPos, glm::vec3(0.0), glm::vec3(0.0, 1.0, 0.0));
+    lightView = glm::lookAt(lightPos, glm::vec3(0.0), glm::vec3(0.0, 1.0, 0.0));
+    lightSpaceMatrix = lightProjection * lightView;
+    // render scene from light's point of view
+    depth_shader->useProgram();
+    depth_shader->setMat4(lightname, lightSpaceMatrix);
+    depth_shader->setInt(shadowMapname, 2 + lightid);
+
+    glActiveTexture(GL_TEXTURE2 + lightid);
+    glBindTexture(GL_TEXTURE_2D, depthMap);
+}
+
+void Lobo::LoboLighting::setLightDepthShadow(LoboShader* depth_shader,
+                                             int lightid) {
+    glm::mat4 lightProjection, lightView;
+    glm::mat4 lightSpaceMatrix;
+    float near_plane = 0.01f, far_plane = 10.0f;
+    lightProjection =
+        glm::ortho(-2.0f, 2.0f, -2.0f, 2.0f, near_plane, far_plane);
+    lightView = glm::lookAt(lightPos, glm::vec3(0.0), glm::vec3(0.0, 1.0, 0.0));
     lightSpaceMatrix = lightProjection * lightView;
     // render scene from light's point of view
     depth_shader->useProgram();
     depth_shader->setMat4("lightSpaceMatrix", lightSpaceMatrix);
+}
+
+void Lobo::LoboLighting::initShadowMap() {
+    glGenFramebuffers(1, &depthMapFBO);
+    // create depth texture
+    glGenTextures(1, &depthMap);
+    glBindTexture(GL_TEXTURE_2D, depthMap);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH,
+                 SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    float borderColor[] = {1.0, 1.0, 1.0, 1.0};
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+    // attach depth texture as FBO's depth buffer
+    glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
+                           depthMap, 0);
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

@@ -1,4 +1,5 @@
 #version 330 core
+#define NR_POINT_LIGHTS 6
 
 struct Material {
     vec3 ambient;
@@ -20,6 +21,7 @@ struct Lights {
     vec3 lightColor;
     bool trigger;
     int light_type; //0 point 1 directional
+
 };
   
 uniform Material material;
@@ -30,7 +32,9 @@ in vec3 ourColor;
 in vec2 TexCoords;
 in vec3 ourNormal;
 in vec3 FragPos;
-in vec4 FragPosLightSpace;
+in vec4 FragPosLightSpace[NR_POINT_LIGHTS];
+uniform sampler2D shadowMap[NR_POINT_LIGHTS];
+
 
 //uniform vec3 lightPos; 
 //uniform vec3 lightColor;
@@ -38,14 +42,11 @@ uniform vec3 viewPos;
 
 uniform bool useDiffuseTex = false;
 
-uniform sampler2D shadowMap;
-
-#define NR_POINT_LIGHTS 6
 uniform Lights lights[NR_POINT_LIGHTS];
 
 vec3 CalcDirLight(Lights light, vec3 normal, vec3 viewDir,float shadow);
 vec3 CalcPointLight(Lights light, vec3 normal, vec3 fragPos, vec3 viewDir,float shadow);
-float ShadowCalculation(Lights light,vec4 fragPosLightSpace);
+float ShadowCalculation(Lights light,vec4 fragPosLightSpace,sampler2D shadowMap);
 
 void main()
 {
@@ -54,11 +55,11 @@ void main()
     vec3 viewDir = normalize(viewPos - FragPos);
 
     vec3 result = vec3(0.0);
-    float shadow = ShadowCalculation(lights[0],FragPosLightSpace);  
     for(int i = 0; i < NR_POINT_LIGHTS; i++)
     {
         if(lights[i].trigger==true)
         {
+            float shadow = ShadowCalculation(lights[i],FragPosLightSpace[i],shadowMap[i]);  
             if (lights[i].light_type==0)
                 result += CalcPointLight(lights[i], norm, FragPos, viewDir,shadow);  
             if (lights[i].light_type==1)
@@ -123,7 +124,7 @@ vec3 CalcPointLight(Lights light, vec3 normal, vec3 fragPos, vec3 viewDir,float 
     return lighting;
 }
 
-float ShadowCalculation(Lights light,vec4 fragPosLightSpace)
+float ShadowCalculation(Lights light,vec4 fragPosLightSpace,sampler2D shadowMap)
 {
     // perform perspective divide
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
@@ -152,6 +153,7 @@ float ShadowCalculation(Lights light,vec4 fragPosLightSpace)
             shadow += contri_shadow;        
         }    
     }
+
     shadow /= 25.0;
     shadow*=0.5;
     // keep the shadow at 0.0 when outside the far_plane region of the light's frustum.

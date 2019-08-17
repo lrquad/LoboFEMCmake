@@ -2,9 +2,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "imgui.h"
-#include <vector>
 #include <string>
+#include <vector>
+#include "imgui.h"
 
 namespace Lobo {
 static float vertices[] = {
@@ -22,20 +22,23 @@ static float vertices[] = {
 class LoboShader;
 class LoboLighting;
 
-class LoboLightManager{
-    public:
+class LoboLightManager {
+   public:
     LoboLightManager();
     ~LoboLightManager();
 
-    virtual void drawImGui(bool * p_open = NULL);
+    virtual void drawImGui(bool* p_open = NULL);
     virtual void paintGL(LoboShader* shader);
     virtual void setLight(LoboShader* render_shader);
-    virtual void setLightShadow(LoboShader* depth_shader);
+    virtual void setLightShadow(LoboShader* depth_shader, int lightid = 0);
 
+    unsigned int getDepthFBO(int lightid);
+    unsigned int getDepthMap(int lightid);
+    int getLightNum();
+
+    protected: 
     std::vector<LoboLighting*> lighting_list;
-
 };
-
 
 class LoboLighting {
    public:
@@ -46,11 +49,16 @@ class LoboLighting {
     virtual void drawPointLightImGui();
     virtual void drawDirectionalLightImGui();
     virtual void paintGL(LoboShader* shader);
-    virtual void setLight(LoboShader* render_shader,int lightid);
-    virtual void setPointLight(LoboShader* render_shader,std::string lightname);
-    virtual void setDirectionalLight(LoboShader* render_shader,std::string lightname);
+    virtual void setLight(LoboShader* render_shader, int lightid);
+    virtual void setPointLight(LoboShader* render_shader,
+                               std::string lightname);
+    virtual void setDirectionalLight(LoboShader* render_shader,
+                                     std::string lightname);
 
-    virtual void setLightShadow(LoboShader* depth_shader);
+    virtual void setLightShadow(LoboShader* depth_shader,int lightid);
+    virtual void setLightDepthShadow(LoboShader* depth_shader,int lightid);
+
+    virtual void initShadowMap();
 
     glm::vec3 lightPos;
     glm::vec3 lightColor;
@@ -62,9 +70,11 @@ class LoboLighting {
     bool trigger;
     int light_type;
 
-   protected:
     unsigned int lightVAO;
+    unsigned int depthMapFBO;
+    unsigned int depthMap;
+     unsigned int SHADOW_WIDTH ;
+     unsigned int SHADOW_HEIGHT ;
 };
-
 
 }  // namespace Lobo
