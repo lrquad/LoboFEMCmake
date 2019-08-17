@@ -257,8 +257,8 @@ struct InitCamera{
     }
 
     void ProcessMiddleMouseMovement(float xoffset, float yoffset) {
-        xoffset *= MouseSensitivity * 0.01;
-        yoffset *= MouseSensitivity * 0.01;
+        xoffset *= MouseSensitivity * 0.005;
+        yoffset *= MouseSensitivity * 0.005;
 
         // Yaw += xoffset;
         // Pitch -= yoffset;

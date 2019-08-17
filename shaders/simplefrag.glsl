@@ -41,6 +41,8 @@ uniform sampler2D shadowMap[NR_POINT_LIGHTS];
 uniform vec3 viewPos;  
 
 uniform bool useDiffuseTex = false;
+uniform bool useFlatNormal = true;
+
 
 uniform Lights lights[NR_POINT_LIGHTS];
 
@@ -52,6 +54,10 @@ void main()
 {
     // properties
     vec3 norm = normalize(ourNormal);
+    
+    if(useFlatNormal)
+    norm = normalize(cross(dFdx(FragPos), dFdy(FragPos)));
+
     vec3 viewDir = normalize(viewPos - FragPos);
 
     vec3 result = vec3(0.0);

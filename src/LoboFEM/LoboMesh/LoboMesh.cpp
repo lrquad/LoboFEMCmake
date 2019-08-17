@@ -8,6 +8,8 @@
 #include "Shaders/LoboShader.h"
 #include "imgui.h"
 #include "stb_image.h"
+#define GLM_ENABLE_EXPERIMENTAL
+#include "glm/gtx/euler_angles.hpp"
 
 namespace fs = std::experimental::filesystem;
 
@@ -23,6 +25,9 @@ Lobo::LoboMesh::~LoboMesh() { this->deleteGL(); }
 void Lobo::LoboMesh::defaultValue() {
     wireframe_mode = false;
     glinitialized = false;
+    bufferNeedUpdate = false;
+    position = glm::vec3(0.0);
+    eular_angle = glm::vec3(0.0);
     start_show_material = 0;
 }
 
@@ -44,7 +49,16 @@ void Lobo::LoboMesh::drawImGui(bool *p_open) {
         ImGui::Text("num texcoords: %d ", attrib.texcoords.size() / 2);
         ImGui::Text("num shapes: %d num materials: %d", shapes.size(),
                     materials.size());
+        
+        bool p_changed = ImGui::InputFloat3("position float3", &position.r);
+        bool r_changed = ImGui::InputFloat3("eular_angle float3", &eular_angle.r);
+        if(p_changed||r_changed)
+        this->updateRigidTransformation(position, eular_angle);
 
+
+        if (ImGui::Button("Reset position")) {
+            this->resetVertice();
+        };
         if (ImGui::CollapsingHeader("Materials", ImGuiWindowFlags_NoCollapse)) {
             ImGui::InputInt("Material start at", &start_show_material, 1, 5);
             if (start_show_material < 0) {
@@ -95,6 +109,7 @@ void Lobo::LoboMesh::loadObj(const char *filename, bool verbose) {
 
     // initial vertex color
     vertex_color.resize(attrib.vertices.size());
+    ori_vertices.resize(attrib.vertices.size());
     std::fill(vertex_color.begin(), vertex_color.end(), 0.0);
 
     // Append `default` material
@@ -116,6 +131,9 @@ void Lobo::LoboMesh::loadObj(const char *filename, bool verbose) {
         std::cout << filename << std::endl;
     }
     uniformMesh();
+
+    memcpy(ori_vertices.data(), attrib.vertices.data(),
+           sizeof(float) * attrib.vertices.size());
 }
 
 void Lobo::LoboMesh::uniformMesh() {
@@ -145,15 +163,14 @@ void Lobo::LoboMesh::initialGL() {
         updateShapeArrayBuffer(i);
 
         shape_buffer[i].material_id = (shapes)[i].mesh.material_ids[0];
-        if(shape_buffer[i].material_id==-1)
-        {
-            shape_buffer[i].material_id = materials.size()-1;
+        if (shape_buffer[i].material_id == -1) {
+            shape_buffer[i].material_id = materials.size() - 1;
         }
 
         glGenBuffers(1, &shape_buffer[i].VBO);
         glBindBuffer(GL_ARRAY_BUFFER, shape_buffer[i].VBO);
         glBufferData(GL_ARRAY_BUFFER, shape_buffer[i].vb.size() * sizeof(float),
-                     &(shape_buffer[i].vb)[0], GL_STATIC_DRAW);
+                     &(shape_buffer[i].vb)[0], GL_DYNAMIC_DRAW);
         setPositionAttribute(0, 3, 11, 0);
         setPositionAttribute(1, 3, 11, 3);
         setPositionAttribute(2, 2, 11, 6);
@@ -164,13 +181,18 @@ void Lobo::LoboMesh::initialGL() {
     material_buffer.resize(materials.size());
     for (size_t m = 0; m < materials.size(); m++) {
         tinyobj::material_t *mp = &materials[m];
+        // apply default ambient
+        mp->ambient[0] = 0.0;
+        mp->ambient[1] = 0.0;
+        mp->ambient[2] = 0.0;
+
         material_buffer[m].has_diffuse_tex = false;
         material_buffer[m].use_diffuse_tex = false;
         if (mp->diffuse_texname.length() > 0) {
             material_buffer[m].has_diffuse_tex = true;
             material_buffer[m].use_diffuse_tex = true;
             // diffuse texture
-            //glGenTextures(1, &material_buffer[m].diffuse_texid);
+            // glGenTextures(1, &material_buffer[m].diffuse_texid);
             int channels = bindTextureBuffer(mp->diffuse_texname.c_str(),
                                              material_buffer[m].diffuse_texid);
             material_buffer[m].diffuse_texname = mp->diffuse_texname;
@@ -178,45 +200,14 @@ void Lobo::LoboMesh::initialGL() {
         if (mp->emissive_texname.length() > 0) {
             material_buffer[m].has_emissive_tex = true;
             material_buffer[m].use_diffuse_tex = true;
-            //glGenTextures(1, &material_buffer[m].emissive_texid);
+            // glGenTextures(1, &material_buffer[m].emissive_texid);
             int channels = bindTextureBuffer(mp->emissive_texname.c_str(),
                                              material_buffer[m].emissive_texid);
-            material_buffer[m].emissive_texname=mp->emissive_texname;
+            material_buffer[m].emissive_texname = mp->emissive_texname;
         }
     }
 
     glBindVertexArray(0);
-
-    // Lobo::bindShapeBuffer(VBO,EBO,buffer,indices_b);
-
-    // glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    // glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices,
-    // GL_STATIC_DRAW);
-
-    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
-    // GL_STATIC_DRAW);
-
-    // position attribute
-    // setPositionAttribute(0,3,8,0);
-    // setPositionAttribute(1,3,8,3);
-    // setPositionAttribute(2,2,8,6);
-
-    // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void
-    // *)0); glEnableVertexAttribArray(0);
-    // // color attribute
-    // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void
-    // *)(3 * sizeof(float))); glEnableVertexAttribArray(1);
-
-    // glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void
-    // *)(6 * sizeof(float))); glEnableVertexAttribArray(2);
-
-    // glBindBuffer(GL_ARRAY_BUFFER, 0);
-    // glBindVertexArray(0);
-
-    // texture
-    // glGenTextures(1, &texture);
-    // bindTextureBuffer("./models/earth/4096_night_lights.jpg",texture);
     glinitialized = true;
 }
 
@@ -264,7 +255,32 @@ void Lobo::LoboMesh::updateShapeArrayBuffer(int shape_id) {
     }
 }
 
+void Lobo::LoboMesh::updateGLbuffer() {
+    // check if the buffer is already updated
+    if (bufferNeedUpdate) {
+        glBindVertexArray(VAO);
+        int num_shapes = shapes.size();
+        for (int i = 0; i < num_shapes; i++) {
+            // convert buffer
+            updateShapeArrayBuffer(i);
+            glBindBuffer(GL_ARRAY_BUFFER, shape_buffer[i].VBO);
+            glBufferSubData(GL_ARRAY_BUFFER, 0,
+                            shape_buffer[i].vb.size() * sizeof(float),
+                            &(shape_buffer[i].vb)[0]);
+            setPositionAttribute(0, 3, 11, 0);
+            setPositionAttribute(1, 3, 11, 3);
+            setPositionAttribute(2, 2, 11, 6);
+            setPositionAttribute(3, 3, 11, 8);
+            // load texture
+        }
+    }
+    bufferNeedUpdate = false;
+}
+
 void Lobo::LoboMesh::paintGL(LoboShader *shader) {
+    // update vertex buffer before painting
+    updateGLbuffer();
+
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     if (wireframe_mode == true) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -279,12 +295,13 @@ void Lobo::LoboMesh::paintGL(LoboShader *shader) {
             material_buffer[i].use_diffuse_tex == true) {
             shader->setInt("material.diffuse_tex", 0);
             glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, material_buffer[materia_id].diffuse_texid);
-            if(material_buffer[i].has_emissive_tex == true)
-            {
+            glBindTexture(GL_TEXTURE_2D,
+                          material_buffer[materia_id].diffuse_texid);
+            if (material_buffer[i].has_emissive_tex == true) {
                 shader->setInt("material.emissive_tex", 1);
                 glActiveTexture(GL_TEXTURE1);
-                glBindTexture(GL_TEXTURE_2D, material_buffer[materia_id].emissive_texid);
+                glBindTexture(GL_TEXTURE_2D,
+                              material_buffer[materia_id].emissive_texid);
             }
         }
 
@@ -328,4 +345,52 @@ void Lobo::LoboMesh::deleteGL() {
 
         glinitialized = false;
     }
+}
+
+void Lobo::LoboMesh::updateRigidTransformation(glm::vec3 position,
+                                               glm::vec3 eular_angle) {
+    glm::mat4 rotation = glm::eulerAngleXYZ(glm::radians(eular_angle[0]),
+                                            glm::radians(eular_angle[1]),
+                                            glm::radians(eular_angle[2]));
+
+    for (int i = 0; i < ori_vertices.size() / 3; i++) {
+        glm::vec4 ori_p =
+            glm::vec4(ori_vertices[i * 3 + 0], ori_vertices[i * 3 + 1],
+                      ori_vertices[i * 3 + 2], 1.0);
+        glm::vec4 cur_p = rotation * ori_p;
+        attrib.vertices[i * 3 + 0] = cur_p[0] + position[0];
+        attrib.vertices[i * 3 + 1] = cur_p[1] + position[1];
+        attrib.vertices[i * 3 + 2] = cur_p[2] + position[2];
+    }
+    bufferNeedUpdate = true;
+}
+
+void Lobo::LoboMesh::updateVertices(float *newPosition) {
+    memcpy(attrib.vertices.data(), newPosition,
+           sizeof(float) * attrib.vertices.size());
+    bufferNeedUpdate = true;
+}
+
+void Lobo::LoboMesh::updateVertices(double *newPosition) {
+    for (int i = 0; i < attrib.vertices.size(); i++) {
+        attrib.vertices[i] = newPosition[i];
+    }
+    bufferNeedUpdate = true;
+}
+
+void Lobo::LoboMesh::getCurVertices(float *outPosition) {
+    memcpy(outPosition, attrib.vertices.data(),
+           sizeof(float) * attrib.vertices.size());
+}
+
+void Lobo::LoboMesh::getCurVertices(double *outPosition) {
+    for (int i = 0; i < attrib.vertices.size(); i++) {
+        outPosition[i] = attrib.vertices[i];
+    }
+}
+
+void Lobo::LoboMesh::resetVertice() {
+    memcpy(attrib.vertices.data(), ori_vertices.data(),
+           sizeof(float) * attrib.vertices.size());
+     bufferNeedUpdate = true;
 }

@@ -34,7 +34,9 @@ class LoboLightManager {
 
     unsigned int getDepthFBO(int lightid);
     unsigned int getDepthMap(int lightid);
+    bool getLightTrigger(int lightid);
     int getLightNum();
+    void getTextureSize(unsigned int &w,unsigned int &h,int lightid);
 
     protected: 
     std::vector<LoboLighting*> lighting_list;

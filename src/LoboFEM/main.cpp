@@ -46,7 +46,6 @@
 static void glfw_error_callback(int error, const char *description) {
     fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
-void renderQuad();
 
 int main() {
     // Setup window
@@ -64,10 +63,13 @@ int main() {
     glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
     glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
     glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
-
+    int window_w = mode->width;
+    int window_h = mode->height;
+    window_w = 1280;
+    window_h = 720;
     // Create window with graphics context
     GLFWwindow *window =
-        glfwCreateWindow(mode->width, mode->height,
+        glfwCreateWindow(window_w, window_h,
                          "Dear ImGui GLFW+OpenGL3 example", NULL, NULL);
     if (window == NULL) return 1;
     glfwMakeContextCurrent(window);
@@ -132,11 +134,9 @@ int main() {
                                    "./shaders/lightfrag.glsl");
     simpleDepthShader.loadShaderFile("./shaders/depthvertex.glsl",
                                      "./shaders/depthfrag.glsl");
-    debugDepthQuad.loadShaderFile("./shaders/debugdepth.vs",
-                                  "./shaders/debugdepth.fs");
 
     // test code
-    const unsigned int SHADOW_WIDTH = 8192, SHADOW_HEIGHT = 8192;
+    unsigned int SHADOW_WIDTH = 8192, SHADOW_HEIGHT = 8192;
 
     // init camera
     Lobo::Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -181,9 +181,13 @@ int main() {
         // light_manager.setLightShadow(&simpleDepthShader);
         int numlights = light_manager.getLightNum();
         for (int i = 0; i < numlights; i++) {
-            
+            if(!light_manager.getLightTrigger(i))
+            {
+                continue;
+            }
             glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            light_manager.getTextureSize(SHADOW_WIDTH,SHADOW_HEIGHT,i);
             glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
             glBindFramebuffer(GL_FRAMEBUFFER, light_manager.getDepthFBO(i));
             glClear(GL_DEPTH_BUFFER_BIT);
@@ -248,13 +252,7 @@ int main() {
 
         light_manager.paintGL(&lighting_shader);
 
-        debugDepthQuad.useProgram();
-        debugDepthQuad.setInt("depthMap", 0);
-        debugDepthQuad.setFloat("near_plane", 0.01);
-        debugDepthQuad.setFloat("far_plane", 10.0);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, light_manager.getDepthMap(0));
-        //renderQuad();
+        
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -275,31 +273,3 @@ int main() {
     return 0;
 }
 
-unsigned int quadVAO = 0;
-unsigned int quadVBO;
-void renderQuad()
-{
-    if (quadVAO == 0)
-    {
-        float quadVertices[] = {
-            // positions        // texture Coords
-            -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
-            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-             1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
-             1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-        };
-        // setup plane VAO
-        glGenVertexArrays(1, &quadVAO);
-        glGenBuffers(1, &quadVBO);
-        glBindVertexArray(quadVAO);
-        glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    }
-    glBindVertexArray(quadVAO);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    glBindVertexArray(0);
-}

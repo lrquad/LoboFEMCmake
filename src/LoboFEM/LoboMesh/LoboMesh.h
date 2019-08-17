@@ -39,6 +39,7 @@ class LoboMesh {
     virtual void drawImGui(bool *p_open = NULL);
 
     virtual void initialGL();
+    virtual void updateGLbuffer();
     virtual void paintGL(LoboShader *shader);
     virtual void deleteGL();
 
@@ -61,10 +62,29 @@ class LoboMesh {
 
 
     bool glinitialized;
-
+    bool bufferNeedUpdate;
     
     virtual void updateShapeArrayBuffer(int shape_id);
+    
+    //mesh rigid configure;
+    glm::vec3 position;
+    glm::vec3 eular_angle; //"xyz"
+
+    //dynamic interface
+    std::vector<float> ori_vertices; //3n
+
+    virtual void updateRigidTransformation(glm::vec3 position,glm::vec3 eular_angle);
+
+    virtual void updateVertices(float* newPosition);
+    virtual void updateVertices(double* newPosition);
+
+    virtual void getCurVertices(float* outPosition);
+    virtual void getCurVertices(double* outPosition);
+
+    virtual void resetVertice();
     virtual void defaultValue();
+
+
 };
 
 }  // namespace Lobo

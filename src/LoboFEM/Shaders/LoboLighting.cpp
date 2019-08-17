@@ -13,7 +13,14 @@ Lobo::LoboLightManager::LoboLightManager() {
         lighting_list[i] = new LoboLighting();
         lighting_list[i]->initShadowMap();
     }
+
+    //initial setting
     lighting_list[0]->trigger = true;
+    lighting_list[1]->trigger = true;
+    lighting_list[2]->trigger = true;
+    lighting_list[0]->lightPos = glm::vec3(1.0,1.0,1.0);
+    lighting_list[1]->lightPos = glm::vec3(-1.65,1.0,1.0);
+    lighting_list[2]->lightPos = glm::vec3(-1.0,1.0,-1.0);
 }
 
 Lobo::LoboLightManager::~LoboLightManager() {
@@ -39,9 +46,13 @@ void Lobo::LoboLightManager::paintGL(LoboShader* shader) {
 void Lobo::LoboLightManager::setLight(LoboShader* render_shader) {
     for (int i = 0; i < lighting_list.size(); i++) {
         lighting_list[i]->setLight(render_shader, i);
-        lighting_list[i]->setLightShadow(render_shader, i);
+        if (lighting_list[i]->trigger) {
+            lighting_list[i]->setLightShadow(render_shader, i);
+        }
     }
 }
+
+
 
 void Lobo::LoboLightManager::setLightShadow(LoboShader* depth_shader,
                                             int lightid) {
@@ -55,18 +66,28 @@ unsigned int Lobo::LoboLightManager::getDepthMap(int lightid) {
     return lighting_list[lightid]->depthMap;
 }
 
+bool Lobo::LoboLightManager::getLightTrigger(int lightid) {
+    return lighting_list[lightid]->trigger;
+}
+
 int Lobo::LoboLightManager::getLightNum() { return lighting_list.size(); }
+
+void Lobo::LoboLightManager::getTextureSize(unsigned int &w,unsigned int &h,int lightid)
+{
+    h = lighting_list[lightid]->SHADOW_HEIGHT;
+    w = lighting_list[lightid]->SHADOW_WIDTH;
+}
 
 Lobo::LoboLighting::LoboLighting() {
     lightPos = glm::vec3(0.0f, 1.0f, 1.0f);
-    lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
+    lightColor = glm::vec3(0.7f, 0.7f, 0.7f);
     direction = glm::vec3(0.0f, -1.0f, -1.0f);
     constant = 1.0;
     linear = 0.09;
     quadratic = 0.032;
-    light_type = 0;
-    SHADOW_WIDTH = 8192;
-    SHADOW_HEIGHT = 8192;
+    light_type = 1;
+    SHADOW_WIDTH = 4096;
+    SHADOW_HEIGHT = 4096;
     trigger = false;
 
     glGenVertexArrays(1, &lightVAO);
