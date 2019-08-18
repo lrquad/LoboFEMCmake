@@ -14,13 +14,13 @@ Lobo::LoboLightManager::LoboLightManager() {
         lighting_list[i]->initShadowMap();
     }
 
-    //initial setting
+    // initial setting
     lighting_list[0]->trigger = true;
     lighting_list[1]->trigger = true;
     lighting_list[2]->trigger = true;
-    lighting_list[0]->lightPos = glm::vec3(3.0,3.0,3.0);
-    lighting_list[1]->lightPos = glm::vec3(-3,3.0,3.0);
-    lighting_list[2]->lightPos = glm::vec3(-3.0,3.0,-3.0);
+    lighting_list[0]->lightPos = glm::vec3(3.0, 3.0, 3.0);
+    lighting_list[1]->lightPos = glm::vec3(-3, 3.0, 3.0);
+    lighting_list[2]->lightPos = glm::vec3(-3.0, 3.0, -3.0);
 }
 
 Lobo::LoboLightManager::~LoboLightManager() {
@@ -70,8 +70,8 @@ bool Lobo::LoboLightManager::getLightTrigger(int lightid) {
 
 int Lobo::LoboLightManager::getLightNum() { return lighting_list.size(); }
 
-void Lobo::LoboLightManager::getTextureSize(unsigned int &w,unsigned int &h,int lightid)
-{
+void Lobo::LoboLightManager::getTextureSize(unsigned int& w, unsigned int& h,
+                                            int lightid) {
     h = lighting_list[lightid]->SHADOW_HEIGHT;
     w = lighting_list[lightid]->SHADOW_WIDTH;
 }
@@ -136,18 +136,22 @@ void Lobo::LoboLighting::paintGL(LoboShader* shader) {
 }
 
 void Lobo::LoboLighting::drawPointLightImGui() {
-    if (ImGui::CollapsingHeader("PointLight")) {
+    if (ImGui::TreeNode("PointLight##2")) {
         ImGui::DragFloat("constant", &constant, 0.1f);
         ImGui::DragFloat("linear", &linear, 0.01f);
         ImGui::DragFloat("quadratic", &quadratic, 0.001f);
+        ImGui::TreePop();
+        ImGui::Separator();
     }
 }
 
 void Lobo::LoboLighting::drawDirectionalLightImGui() {
-    if (ImGui::CollapsingHeader("DirectionalLight")) {
+    if (ImGui::TreeNode("DirectionalLight##2")) {
         ImGui::DragFloat("direction.x", &direction.x, 0.05f);
         ImGui::DragFloat("direction.y", &direction.y, 0.05f);
         ImGui::DragFloat("direction.z", &direction.z, 0.05f);
+        ImGui::TreePop();
+        ImGui::Separator();
     }
 }
 

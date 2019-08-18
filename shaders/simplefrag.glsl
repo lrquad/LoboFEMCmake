@@ -43,7 +43,6 @@ uniform vec3 viewPos;
 uniform bool useDiffuseTex = false;
 uniform bool useFlatNormal = true;
 
-
 uniform Lights lights[NR_POINT_LIGHTS];
 
 vec3 CalcDirLight(Lights light, vec3 normal, vec3 viewDir,float shadow);
@@ -84,6 +83,10 @@ vec3 CalcDirLight(Lights light, vec3 normal, vec3 viewDir,float shadow)
     // specular shading
     vec3 reflectDir = reflect(-lightDir, normal);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    
+    //blinn
+    //vec3 halfwayDir = normalize(lightDir + viewDir);  
+    //spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
     // combine results
     vec3 ambient = light.lightColor * material.ambient;
     vec3 diffuse = light.lightColor * diff * material.diffuse;
@@ -95,6 +98,7 @@ vec3 CalcDirLight(Lights light, vec3 normal, vec3 viewDir,float shadow)
         vec3 emission = texture(material.emissive_tex, TexCoords).rgb;
         diffuse+=emission;
     }
+
     vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular));    
     return lighting;
 }

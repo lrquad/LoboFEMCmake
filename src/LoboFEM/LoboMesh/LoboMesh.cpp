@@ -26,7 +26,7 @@ Lobo::LoboMesh::~LoboMesh() { this->deleteGL(); }
 void Lobo::LoboMesh::defaultValue() {
     wireframe_mode = false;
     glinitialized = false;
-    bufferNeedUpdate = true;
+    bufferNeedUpdate = false;
     position = glm::vec3(0.0);
     eular_angle = glm::vec3(0.0);
     start_show_material = 0;
