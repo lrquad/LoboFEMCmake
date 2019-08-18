@@ -9,6 +9,7 @@
 #include "imgui.h"
 #include "stb_image.h"
 #define GLM_ENABLE_EXPERIMENTAL
+#include <omp.h>
 #include "glm/gtx/euler_angles.hpp"
 
 namespace fs = std::experimental::filesystem;
@@ -25,10 +26,12 @@ Lobo::LoboMesh::~LoboMesh() { this->deleteGL(); }
 void Lobo::LoboMesh::defaultValue() {
     wireframe_mode = false;
     glinitialized = false;
-    bufferNeedUpdate = false;
+    bufferNeedUpdate = true;
     position = glm::vec3(0.0);
     eular_angle = glm::vec3(0.0);
     start_show_material = 0;
+    omp_set_dynamic(0);     // Explicitly disable dynamic teams
+	omp_set_num_threads(12); // Use 4 threads for all consecutive parallel regions
 }
 
 void Lobo::LoboMesh::drawImGui(bool *p_open) {
@@ -54,10 +57,10 @@ void Lobo::LoboMesh::drawImGui(bool *p_open) {
             this->updateRigidTransformation(position, eular_angle);
         }
         bool p_changed = ImGui::InputFloat3("position float3", &position.r);
-        bool r_changed = ImGui::InputFloat3("eular_angle float3", &eular_angle.r);
-        if(p_changed||r_changed)
-        this->updateRigidTransformation(position, eular_angle);
-
+        bool r_changed =
+            ImGui::InputFloat3("eular_angle float3", &eular_angle.r);
+        if (p_changed || r_changed)
+            this->updateRigidTransformation(position, eular_angle);
 
         if (ImGui::Button("Reset position")) {
             this->resetVertice();
@@ -214,9 +217,10 @@ void Lobo::LoboMesh::initialGL() {
     glinitialized = true;
 }
 
-void Lobo::LoboMesh::updateShapeArrayBufferVertices(int shape_id)
-{
+void Lobo::LoboMesh::updateShapeArrayBufferVertices(int shape_id) {
     int size_per_vertex = shape_buffer[shape_id].size_per_vertex;
+
+#pragma omp parallel for
     for (int j = 0; j < shapes[shape_id].mesh.indices.size(); j++) {
         int vid = shapes[shape_id].mesh.indices[j].vertex_index;
         shape_buffer[shape_id].vb[j * size_per_vertex + 0] =
@@ -228,8 +232,11 @@ void Lobo::LoboMesh::updateShapeArrayBufferVertices(int shape_id)
     }
 }
 
+void Lobo::LoboMesh::updateShapeArrayBufferIndices(int shape_id) {}
+
 void Lobo::LoboMesh::updateShapeArrayBuffer(int shape_id) {
     int size_per_vertex = shape_buffer[shape_id].size_per_vertex;
+
     for (int j = 0; j < shapes[shape_id].mesh.indices.size(); j++) {
         int vid = shapes[shape_id].mesh.indices[j].vertex_index;
         shape_buffer[shape_id].vb[j * size_per_vertex + 0] =
@@ -346,6 +353,7 @@ void Lobo::LoboMesh::paintGL(LoboShader *shader) {
         setPositionAttribute(1, 3, 11, 3);
         setPositionAttribute(2, 2, 11, 6);
         setPositionAttribute(3, 3, 11, 8);
+
         glDrawArrays(
             GL_TRIANGLES, 0,
             shape_buffer[i].vb.size() / shape_buffer[i].size_per_vertex);
@@ -366,7 +374,6 @@ void Lobo::LoboMesh::deleteGL() {
 
 void Lobo::LoboMesh::updateRigidTransformation(glm::vec3 position,
                                                glm::vec3 eular_angle) {
-
     glm::mat4 rotation = glm::eulerAngleXYZ(glm::radians(eular_angle[0]),
                                             glm::radians(eular_angle[1]),
                                             glm::radians(eular_angle[2]));
@@ -411,5 +418,5 @@ void Lobo::LoboMesh::getCurVertices(double *outPosition) {
 void Lobo::LoboMesh::resetVertice() {
     memcpy(attrib.vertices.data(), ori_vertices.data(),
            sizeof(float) * attrib.vertices.size());
-     bufferNeedUpdate = true;
+    bufferNeedUpdate = true;
 }

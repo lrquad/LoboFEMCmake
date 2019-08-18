@@ -25,6 +25,11 @@ Imgui OpenGL libigl c++14 for imfilebrowser.h
 This helps to remove tearing on my laptop. However, it locks FPS to 60fps.
 My laptop: Razer Blade RTX 2070
 
+Update vertices buffer
+6.1 FPS
+Only call glBufferSubData
+20 FPS
+
 
 
 

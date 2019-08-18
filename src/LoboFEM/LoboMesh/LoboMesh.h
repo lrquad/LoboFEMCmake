@@ -56,6 +56,7 @@ class LoboMesh {
     std::vector<MaterialBuffer> material_buffer;
     unsigned int VAO;  // vertex array buffer
 
+
     //imgui
     bool wireframe_mode;
     int start_show_material;
@@ -65,6 +66,8 @@ class LoboMesh {
     bool bufferNeedUpdate;
     
     virtual void updateShapeArrayBuffer(int shape_id);
+    virtual void updateShapeArrayBufferIndices(int shape_id);
+
     virtual void updateShapeArrayBufferVertices(int shape_id);
 
     

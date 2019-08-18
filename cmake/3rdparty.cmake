@@ -9,6 +9,8 @@ if (CMAKE_SYSTEM_NAME STREQUAL Linux)
   endif ()
 endif ()
 
+find_package(OpenMP REQUIRED)
+
 include(cmake/glad.cmake)
 include(cmake/glfw.cmake)
 include(cmake/imgui.cmake)
