@@ -160,8 +160,12 @@ float ShadowCalculation(Lights light,vec4 fragPosLightSpace,sampler2D shadowMap)
         }    
     }
 
+    //float pcfDepth = texture(shadowMap, projCoords.xy).r; 
+    //float contri_shadow = currentDepth - bias > pcfDepth  ? 1.0 : 0.0;
+
     shadow /= 25.0;
     shadow*=0.5;
+    //shadow = contri_shadow;
     // keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
     if(projCoords.z > 1.0)
         shadow = 0.0;

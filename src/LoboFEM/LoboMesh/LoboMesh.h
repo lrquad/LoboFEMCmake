@@ -31,10 +31,10 @@ class LoboShader;
 class LoboMesh {
    public:
     LoboMesh();
-    LoboMesh(const char *filename);
+    LoboMesh(const char *filename,bool uniform=true);
     ~LoboMesh();
 
-    virtual void loadObj(const char *filename, bool verbose = false);
+    virtual void loadObj(const char *filename,bool uniform, bool verbose = false);
     virtual void uniformMesh();
     virtual void drawImGui(bool *p_open = NULL);
 

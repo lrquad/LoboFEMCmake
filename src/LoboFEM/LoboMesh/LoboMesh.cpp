@@ -16,8 +16,8 @@ namespace fs = std::experimental::filesystem;
 
 Lobo::LoboMesh::LoboMesh() { defaultValue(); }
 
-Lobo::LoboMesh::LoboMesh(const char *filename) {
-    loadObj(filename);
+Lobo::LoboMesh::LoboMesh(const char *filename, bool uniform) {
+    loadObj(filename, uniform);
     defaultValue();
 }
 
@@ -30,32 +30,19 @@ void Lobo::LoboMesh::defaultValue() {
     position = glm::vec3(0.0);
     eular_angle = glm::vec3(0.0);
     start_show_material = 0;
-    omp_set_dynamic(0);     // Explicitly disable dynamic teams
-	omp_set_num_threads(12); // Use 4 threads for all consecutive parallel regions
+    omp_set_dynamic(0);  // Explicitly disable dynamic teams
+    omp_set_num_threads(
+        12);  // Use 4 threads for all consecutive parallel regions
 }
 
 void Lobo::LoboMesh::drawImGui(bool *p_open) {
-    static float f = 0.0f;
-    static int counter = 0;
-    ImGui::Begin(
-        "Obj mesh",
-        p_open);  // Create a window called "Hello, world!" and append into it.
-
-    // ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver);
-    // ImGui::SetNextWindowSize(ImVec2(550, 680), ImGuiCond_FirstUseEver);
-
-    ImGui::Text("File name: %s ", obj_file_name.c_str());
-
-    if (ImGui::CollapsingHeader("Info", ImGuiWindowFlags_NoCollapse)) {
+    if (ImGui::CollapsingHeader("Mesh Info")) {
+        ImGui::Text("File name: %s ", obj_file_name.c_str());
         ImGui::Text("num vertices: %d num normals: %d",
                     attrib.vertices.size() / 3, attrib.normals.size() / 3);
         ImGui::Text("num texcoords: %d ", attrib.texcoords.size() / 2);
         ImGui::Text("num shapes: %d num materials: %d", shapes.size(),
                     materials.size());
-
-        if (ImGui::DragFloat("meshPos.x", &position.x, 0.05f)) {
-            this->updateRigidTransformation(position, eular_angle);
-        }
         bool p_changed = ImGui::InputFloat3("position float3", &position.r);
         bool r_changed =
             ImGui::InputFloat3("eular_angle float3", &eular_angle.r);
@@ -65,7 +52,8 @@ void Lobo::LoboMesh::drawImGui(bool *p_open) {
         if (ImGui::Button("Reset position")) {
             this->resetVertice();
         };
-        if (ImGui::CollapsingHeader("Materials", ImGuiWindowFlags_NoCollapse)) {
+
+        if (ImGui::TreeNode("Materials##2")) {
             ImGui::InputInt("Material start at", &start_show_material, 1, 5);
             if (start_show_material < 0) {
                 start_show_material = 0;
@@ -94,17 +82,18 @@ void Lobo::LoboMesh::drawImGui(bool *p_open) {
 
                 ImGui::PopID();
             }
+            ImGui::TreePop();
+            ImGui::Separator();
+        }
+        if (ImGui::TreeNode("Configuration##2")) {
+            ImGui::Checkbox("wireframe_mode", &wireframe_mode);
+            ImGui::TreePop();
+            ImGui::Separator();
         }
     }
-
-    if (ImGui::CollapsingHeader("Configuration", ImGuiWindowFlags_NoCollapse)) {
-        ImGui::Checkbox("wireframe_mode", &wireframe_mode);
-    }
-
-    ImGui::End();
 }
 
-void Lobo::LoboMesh::loadObj(const char *filename, bool verbose) {
+void Lobo::LoboMesh::loadObj(const char *filename, bool uniform, bool verbose) {
     std::string warn;
     std::string err;
     fs::path p = filename;
@@ -136,7 +125,7 @@ void Lobo::LoboMesh::loadObj(const char *filename, bool verbose) {
         std::cout << "failed to load obj file..." << ret << std::endl;
         std::cout << filename << std::endl;
     }
-    uniformMesh();
+    if (uniform) uniformMesh();
 
     memcpy(ori_vertices.data(), attrib.vertices.data(),
            sizeof(float) * attrib.vertices.size());

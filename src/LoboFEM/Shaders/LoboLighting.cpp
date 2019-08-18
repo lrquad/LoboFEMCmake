@@ -18,9 +18,9 @@ Lobo::LoboLightManager::LoboLightManager() {
     lighting_list[0]->trigger = true;
     lighting_list[1]->trigger = true;
     lighting_list[2]->trigger = true;
-    lighting_list[0]->lightPos = glm::vec3(1.0,1.0,1.0);
-    lighting_list[1]->lightPos = glm::vec3(-1.65,1.0,1.0);
-    lighting_list[2]->lightPos = glm::vec3(-1.0,1.0,-1.0);
+    lighting_list[0]->lightPos = glm::vec3(3.0,3.0,3.0);
+    lighting_list[1]->lightPos = glm::vec3(-3,3.0,3.0);
+    lighting_list[2]->lightPos = glm::vec3(-3.0,3.0,-3.0);
 }
 
 Lobo::LoboLightManager::~LoboLightManager() {
@@ -51,8 +51,6 @@ void Lobo::LoboLightManager::setLight(LoboShader* render_shader) {
         }
     }
 }
-
-
 
 void Lobo::LoboLightManager::setLightShadow(LoboShader* depth_shader,
                                             int lightid) {
@@ -85,7 +83,7 @@ Lobo::LoboLighting::LoboLighting() {
     constant = 1.0;
     linear = 0.09;
     quadratic = 0.032;
-    light_type = 1;
+    light_type = 0;
     SHADOW_WIDTH = 4096;
     SHADOW_HEIGHT = 4096;
     trigger = false;
@@ -146,7 +144,7 @@ void Lobo::LoboLighting::drawPointLightImGui() {
 }
 
 void Lobo::LoboLighting::drawDirectionalLightImGui() {
-    if (ImGui::CollapsingHeader("PointLight")) {
+    if (ImGui::CollapsingHeader("DirectionalLight")) {
         ImGui::DragFloat("direction.x", &direction.x, 0.05f);
         ImGui::DragFloat("direction.y", &direction.y, 0.05f);
         ImGui::DragFloat("direction.z", &direction.z, 0.05f);
@@ -195,9 +193,9 @@ void Lobo::LoboLighting::setLightShadow(LoboShader* depth_shader, int lightid) {
 
     glm::mat4 lightProjection, lightView;
     glm::mat4 lightSpaceMatrix;
-    float near_plane = 0.01f, far_plane = 10.0f;
+    float near_plane = 0.01f, far_plane = 20.0f;
     lightProjection =
-        glm::ortho(-2.0f, 2.0f, -2.0f, 2.0f, near_plane, far_plane);
+        glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
     lightView = glm::lookAt(lightPos, glm::vec3(0.0), glm::vec3(0.0, 1.0, 0.0));
     lightSpaceMatrix = lightProjection * lightView;
     // render scene from light's point of view
@@ -213,9 +211,9 @@ void Lobo::LoboLighting::setLightDepthShadow(LoboShader* depth_shader,
                                              int lightid) {
     glm::mat4 lightProjection, lightView;
     glm::mat4 lightSpaceMatrix;
-    float near_plane = 0.01f, far_plane = 10.0f;
+    float near_plane = 0.01f, far_plane = 20.0f;
     lightProjection =
-        glm::ortho(-2.0f, 2.0f, -2.0f, 2.0f, near_plane, far_plane);
+        glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
     lightView = glm::lookAt(lightPos, glm::vec3(0.0), glm::vec3(0.0, 1.0, 0.0));
     lightSpaceMatrix = lightProjection * lightView;
     // render scene from light's point of view
