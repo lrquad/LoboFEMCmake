@@ -29,6 +29,8 @@ Update vertices buffer
 6.1 FPS
 Only call glBufferSubData
 20 FPS
+OpenMP 12 threads
+19 FPS
 
 
 
