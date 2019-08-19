@@ -18,8 +18,6 @@ Imgui OpenGL libigl c++14 for imfilebrowser.h
     make
     ../bin/LoboFEM
 
-
-
 ## Structure
 - /LoboScene store surface mesh and volumetricmesh
 - /LoboMesh surface mesh load from obj
