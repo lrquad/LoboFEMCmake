@@ -8,7 +8,7 @@ fi
 cd build
 
 if [ "$cmake_if" = "r" ] || [ "$cmake_if" = "c" ]; then
-    cmake ..
+    cmake -DCMAKE_BUILD_TYPE=Release ..
 fi
 
 make
