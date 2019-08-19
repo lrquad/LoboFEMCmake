@@ -15,6 +15,7 @@
 // will be refactored in the future
 #include "LoboMesh/LoboMesh.h"
 #include "OpenGLutils/LoboScene.h"
+#include "LoboVolumtricMesh/LoboTetMesh.h"
 
 #include "OpenGLutils/LoboCamera.h"
 #include "Shaders/LoboLighting.h"
@@ -145,7 +146,8 @@ int main() {
     unsigned int SHADOW_WIDTH = 8192, SHADOW_HEIGHT = 8192;
 
     // init camera
-    Lobo::Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+    Lobo::Camera camera(glm::vec3(0.0f, 4.0f, 8.0f),glm::vec3(0.0,1.0,0.0),-90,-30);
+    
     // Main loop
     while (!glfwWindowShouldClose(window)) {
         // Poll and handle events (inputs, window resize, etc.)

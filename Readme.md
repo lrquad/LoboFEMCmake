@@ -2,6 +2,8 @@
 ## Introduction
 Imgui OpenGL libigl c++14 for imfilebrowser.h
 ## Install
+    
+    sudo apt-get install libomp-dev
 
     cd external
     git clone https://github.com/eigenteam/eigen-git-mirror.git
@@ -13,6 +15,9 @@ Imgui OpenGL libigl c++14 for imfilebrowser.h
     cmake ..
     make
     ../bin/LoboFEM
+
+
+
 ## Structure
 - /LoboScene store surface mesh and volumetricmesh
 - /LoboMesh surface mesh load from obj

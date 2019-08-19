@@ -15,7 +15,7 @@ struct ShapeBuffer {
 };
 
 struct MaterialBuffer {
-    unsigned int diffuse_texid;  // vertex array buffer
+    unsigned int diffuse_texid;   // vertex array buffer
     unsigned int emissive_texid;  // vertex array buffer
 
     std::string diffuse_texname;
@@ -31,54 +31,41 @@ class LoboShader;
 class LoboMesh {
    public:
     LoboMesh();
-    LoboMesh(const char *filename,bool uniform=true);
+    LoboMesh(const char* filename, bool uniform = true);
     ~LoboMesh();
 
-    virtual void loadObj(const char *filename,bool uniform, bool verbose = false);
+    virtual void loadObj(const char* filename, bool uniform,
+                         bool verbose = false);
     virtual void uniformMesh();
-    virtual void drawImGui(bool *p_open = NULL);
+    virtual void drawImGui(bool* p_open = NULL);
 
     virtual void initialGL();
     virtual void updateGLbuffer();
-    virtual void paintGL(LoboShader *shader);
+    virtual void paintGL(LoboShader* shader);
     virtual void deleteGL();
 
-   protected:
     std::string obj_file_name;
 
     tinyobj::attrib_t attrib;
     std::vector<float> vertex_color;
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
+    int num_faces;
 
     // GL
     std::vector<ShapeBuffer> shape_buffer;
     std::vector<MaterialBuffer> material_buffer;
-    unsigned int VAO;  // vertex array buffer
 
-
-    //imgui
-    bool wireframe_mode;
-    int start_show_material;
-
-
-    bool glinitialized;
-    bool bufferNeedUpdate;
-    
     virtual void updateShapeArrayBuffer(int shape_id);
     virtual void updateShapeArrayBufferIndices(int shape_id);
 
     virtual void updateShapeArrayBufferVertices(int shape_id);
 
-    
-    //mesh rigid configure;
-    glm::vec3 position;
-    glm::vec3 eular_angle; //"xyz"
+    // dynamic interface
+    std::vector<float> ori_vertices;  // 3n
 
-    //dynamic interface
-    std::vector<float> ori_vertices; //3n
-
-    virtual void updateRigidTransformation(glm::vec3 position,glm::vec3 eular_angle);
+    virtual void updateRigidTransformation(glm::vec3 position,
+                                           glm::vec3 eular_angle);
 
     virtual void updateVertices(float* newPosition);
     virtual void updateVertices(double* newPosition);
@@ -87,9 +74,22 @@ class LoboMesh {
     virtual void getCurVertices(double* outPosition);
 
     virtual void resetVertice();
+
+   protected:
+    // imgui
+    unsigned int VAO;  // vertex array buffer
+
+    bool wireframe_mode;
+    bool flat_mode;
+    int start_show_material;
+
+    bool glinitialized;
+    bool bufferNeedUpdate;
+    // mesh rigid configure;
+    glm::vec3 position;
+    glm::vec3 eular_angle;  //"xyz"
+
     virtual void defaultValue();
-
-
 };
 
 }  // namespace Lobo

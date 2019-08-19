@@ -15,6 +15,11 @@ public:
         mesh_list.push_back(mesh);
     }
 
+    virtual LoboMesh* getMesh(int meshid)
+    {
+        return mesh_list[meshid];
+    }
+
     virtual void drawImGui(bool* p_open = NULL) {
         ImGui::Begin("Scene",
                      p_open);  // Create a window called "Hello, world!" and

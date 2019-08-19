@@ -5,9 +5,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
-#include "imgui.h"
 #include "Utils/simpleini/SimpleIni.h"
 #include "Utils/simpleini/SimpleiniWarp.h"
+#include "imgui.h"
 
 // Defines several possible options for camera movement. Used as abstraction to
 // stay away from window-system specific input methods
@@ -24,16 +24,16 @@ const bool FLYMODE = false;
 namespace Lobo {
 // An abstract camera class that processes input and calculates the
 // corresponding Euler Angles, Vectors and Matrices for use in OpenGL
-struct InitCamera{
+struct InitCamera {
     glm::vec3 Position;
     glm::vec3 CenterP;
     glm::vec3 Front;
     // Euler Angles
     float Yaw;
     float Pitch;
-} ;
+};
 
-    class Camera {
+class Camera {
    public:
     // Camera Attributes
     glm::vec3 Position;
@@ -59,7 +59,7 @@ struct InitCamera{
 
     InitCamera init_camera_value;
 
-    //CSimpleIniA camera_ini_io;
+    // CSimpleIniA camera_ini_io;
 
     // Constructor with vectors
     Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
@@ -132,31 +132,35 @@ struct InitCamera{
         };
         if (ImGui::Button("Save Camera")) {
             CSimpleIniA ini;
-            char buffer [50];
+            char buffer[50];
             ini.SetUnicode();
-            Lobo::setValueVec3(&ini,"Camera","Position",Position);
-            Lobo::setValueVec3(&ini,"Camera","CenterP",CenterP);
-            Lobo::setValuef(&ini,"Camera","Yaw",Yaw);
-            Lobo::setValuef(&ini,"Camera","Pitch",Pitch);
+            Lobo::setValueVec3(&ini, "Camera", "Position", Position);
+            Lobo::setValueVec3(&ini, "Camera", "CenterP", CenterP);
+            Lobo::setValuef(&ini, "Camera", "Yaw", Yaw);
+            Lobo::setValuef(&ini, "Camera", "Pitch", Pitch);
             ini.SaveFile("./config/camera.ini");
         };
         ImGui::SameLine();
         if (ImGui::Button("Load Camera")) {
-            CSimpleIniA ini;
-            ini.SetUnicode();
-            ini.LoadFile("./config/camera.ini");
-            Lobo::getValueVec3(&ini,"Camera","Position",&Position);
-            Lobo::getValueVec3(&ini,"Camera","CenterP",&CenterP);
-            Lobo::getValuef(&ini,"Camera","Yaw",&Yaw);
-            Lobo::getValuef(&ini,"Camera","Pitch",&Pitch);
-            updateCameraVectors();
+            loadCamera();
         };
 
         // ImGui::ColorEdit3("clear color", (float*)&clear_color);
         ImGui::End();
 
         flythroughMoveMode();
+    }
 
+    
+    void loadCamera() {
+        CSimpleIniA ini;
+        ini.SetUnicode();
+        ini.LoadFile("./config/camera.ini");
+        Lobo::getValueVec3(&ini, "Camera", "Position", &Position);
+        Lobo::getValueVec3(&ini, "Camera", "CenterP", &CenterP);
+        Lobo::getValuef(&ini, "Camera", "Yaw", &Yaw);
+        Lobo::getValuef(&ini, "Camera", "Pitch", &Pitch);
+        updateCameraVectors();
     }
 
     void flythroughMoveMode() {

@@ -14,3 +14,5 @@ find_package(OpenMP REQUIRED)
 include(cmake/glad.cmake)
 include(cmake/glfw.cmake)
 include(cmake/imgui.cmake)
+include(cmake/tetgen.cmake)
+

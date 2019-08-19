@@ -10,6 +10,7 @@ include_directories(
     ${GLAD_INCLUDE_DIR}
     ${IMGUI_INCLUDE_DIR}
     ${EIGEN3_INCLUDE_DIR}
+    ${TETGEN_INCLUDE_DIR}
     )
 message(${GLFW_INCLUDE_DIR})
 
@@ -19,5 +20,6 @@ target_link_libraries(${PROJECT}
     ${GLAD_LIBRARIES}
     ${IMGUI_LIBRARIES}
     ${OpenMP_CXX_LIBRARIES}
+    ${TETGEN_LIBRARIES}
     "stdc++fs"
     )

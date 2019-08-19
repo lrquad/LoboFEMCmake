@@ -17,19 +17,21 @@ namespace fs = std::experimental::filesystem;
 Lobo::LoboMesh::LoboMesh() { defaultValue(); }
 
 Lobo::LoboMesh::LoboMesh(const char *filename, bool uniform) {
-    loadObj(filename, uniform);
     defaultValue();
+    loadObj(filename, uniform);
 }
 
 Lobo::LoboMesh::~LoboMesh() { this->deleteGL(); }
 
 void Lobo::LoboMesh::defaultValue() {
     wireframe_mode = false;
+    flat_mode = true;
     glinitialized = false;
     bufferNeedUpdate = false;
     position = glm::vec3(0.0);
     eular_angle = glm::vec3(0.0);
     start_show_material = 0;
+    num_faces = 0;
     omp_set_dynamic(0);  // Explicitly disable dynamic teams
     omp_set_num_threads(
         12);  // Use 4 threads for all consecutive parallel regions
@@ -38,8 +40,8 @@ void Lobo::LoboMesh::defaultValue() {
 void Lobo::LoboMesh::drawImGui(bool *p_open) {
     if (ImGui::CollapsingHeader("Mesh Info")) {
         ImGui::Text("File name: %s ", obj_file_name.c_str());
-        ImGui::Text("num vertices: %d num normals: %d",
-                    attrib.vertices.size() / 3, attrib.normals.size() / 3);
+        ImGui::Text("num vertices: %d; num faces: %d; num normals: %d",
+                    attrib.vertices.size() / 3, num_faces,attrib.normals.size() / 3);
         ImGui::Text("num texcoords: %d ", attrib.texcoords.size() / 2);
         ImGui::Text("num shapes: %d num materials: %d", shapes.size(),
                     materials.size());
@@ -87,6 +89,7 @@ void Lobo::LoboMesh::drawImGui(bool *p_open) {
         }
         if (ImGui::TreeNode("Configuration##2")) {
             ImGui::Checkbox("wireframe_mode", &wireframe_mode);
+            ImGui::Checkbox("flat_mode",&flat_mode);
             ImGui::TreePop();
             ImGui::Separator();
         }
@@ -112,6 +115,12 @@ void Lobo::LoboMesh::loadObj(const char *filename, bool uniform, bool verbose) {
     materials.back().diffuse[0] = 1.0;
     materials.back().diffuse[1] = 0.3;
     materials.back().diffuse[2] = 0.3;
+
+    num_faces = 0;
+    for(int i=0;i<shapes.size();i++)
+    {
+        num_faces+=shapes[i].mesh.indices.size()/3;
+    }
 
     if (!warn.empty()) {
         std::cout << warn << std::endl;
@@ -336,6 +345,7 @@ void Lobo::LoboMesh::paintGL(LoboShader *shader) {
         shader->setVec3("material.diffuse", diffuse_color);
         shader->setVec3("material.specular", specular_color);
         shader->setFloat("material.shininess", 32.0f);
+        shader->setBool("useFlatNormal",flat_mode);
 
         glBindBuffer(GL_ARRAY_BUFFER, shape_buffer[i].VBO);
         setPositionAttribute(0, 3, 11, 0);
