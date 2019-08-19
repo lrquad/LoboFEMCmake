@@ -4,6 +4,8 @@ Imgui OpenGL libigl c++14 for imfilebrowser.h
 ## Install
     
     sudo apt-get install libomp-dev
+    sudo apt-get install cmake libx11-dev xorg-dev libglu1-mesa-dev libglm-dev
+
 
     cd external
     git clone https://github.com/eigenteam/eigen-git-mirror.git
