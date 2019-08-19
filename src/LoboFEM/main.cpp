@@ -119,7 +119,7 @@ int main() {
 
     ImGui::FileBrowser fileDialog;
     Lobo::LoboScene scene;
-    //scene.addMesh("./models/floor.obj", false);
+    scene.addMesh("./models/floor.obj", false);
     scene.addMesh("./models/bunny.obj",false);
 
     scene.initialGL();
