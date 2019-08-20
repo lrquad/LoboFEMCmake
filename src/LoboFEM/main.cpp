@@ -15,6 +15,7 @@
 // will be refactored in the future
 #include "LoboMesh/LoboMesh.h"
 #include "OpenGLutils/LoboScene.h"
+#include "LoboDynamic/LoboDynamicScene.h"
 #include "LoboVolumtricMesh/LoboTetMesh.h"
 
 #include "OpenGLutils/LoboCamera.h"
@@ -120,10 +121,14 @@ int main() {
 
     ImGui::FileBrowser fileDialog;
     Lobo::LoboScene scene;
+
+    //scripts
     scene.addMesh("./models/floor.obj", false);
     scene.addMesh("./models/bunny.obj",false);
 
     scene.initialGL();
+
+    Lobo::LoboDynamicScene dynamic_scene(&scene);
 
     Lobo::LoboLightManager light_manager;
 

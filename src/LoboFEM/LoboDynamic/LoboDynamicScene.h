@@ -6,11 +6,11 @@ namespace Lobo
     class LoboScene;
     class LoboTetMesh;
 
-    class LoboDynamciScene
+    class LoboDynamicScene
     {
         public:
-        LoboDynamciScene(LoboScene* scene_);
-        ~LoboDynamciScene();
+        LoboDynamicScene(LoboScene* scene_);
+        ~LoboDynamicScene();
 
         virtual void drawImGui(bool* p_open = NULL);
         virtual void update(); //forward one timestep
