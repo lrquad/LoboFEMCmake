@@ -129,6 +129,9 @@ int main() {
     scene.initialGL();
 
     Lobo::LoboDynamicScene dynamic_scene(&scene);
+    dynamic_scene.bindTetMesh(1,"bunny",false,true);
+    dynamic_scene.initialGL();
+
 
     Lobo::LoboLightManager light_manager;
 
@@ -174,6 +177,7 @@ int main() {
         Lobo::ShowMainWindow(&fileDialog);
 
         scene.drawImGui();
+        dynamic_scene.drawImGui();
 
         // cubelight.drawImGui();
         light_manager.drawImGui();
@@ -208,7 +212,10 @@ int main() {
             glEnable(GL_CULL_FACE);
             glCullFace(GL_FRONT);
             light_manager.setLightShadow(&simpleDepthShader, i);
+            
             scene.paintGL(&simpleDepthShader);
+            dynamic_scene.paintGL(&default_shader,true);
+
             glCullFace(GL_BACK);
             glDisable(GL_CULL_FACE);
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -250,6 +257,7 @@ int main() {
         light_manager.setLight(&default_shader);
 
         scene.paintGL(&default_shader);
+        dynamic_scene.paintGL(&default_shader);
 
         lighting_shader.useProgram();
         lighting_shader.setMat4(

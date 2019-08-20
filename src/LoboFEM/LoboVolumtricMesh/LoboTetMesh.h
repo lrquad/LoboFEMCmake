@@ -13,6 +13,7 @@ class LoboTetMesh {
     virtual void drawImGui(bool* p_open = NULL);
     virtual void paintGL(LoboShader *shader);
     virtual void initialGL();
+    virtual void updateGL();
 
     virtual void setInputPolygon(
         LoboMesh* lobomesh);  // assume the input mesh only has one shape
@@ -27,7 +28,9 @@ class LoboTetMesh {
     virtual void exportTetMeshBinary(const char* filename);
     virtual void exportTetMeshAscii(const char* filebase);
 
+    //generate tetgen
     std::string filebase;
+    std::string tetgen_command;
     bool usebinary;
     bool initializedGL;
 

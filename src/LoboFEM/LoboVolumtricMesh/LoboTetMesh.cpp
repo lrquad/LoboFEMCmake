@@ -2,31 +2,62 @@
 #include <igl/copyleft/tetgen/tetrahedralize.h>
 #include "Functions/EigenMatrixIO.h"
 #include "LoboMesh/LoboMesh.h"
+#include "imgui.h"
 
-Lobo::LoboTetMesh::LoboTetMesh() { initializedGL = false; }
+Lobo::LoboTetMesh::LoboTetMesh() { initializedGL = false; 
+tetgen_command = "pq1.414";
+}
 
 Lobo::LoboTetMesh::~LoboTetMesh() {}
 
-void Lobo::LoboTetMesh::drawImGui(bool* p_open) {
-    shader_config.drawImGui();
+void Lobo::LoboTetMesh::drawImGui(bool *p_open)
+{
+    if (ImGui::CollapsingHeader(filebase.c_str()))
+    {
+        //static char str0[128] = tetgen_command;
+        //ImGui::InputText("Tet file base", str0, IM_ARRAYSIZE(str0));
+        //ImGui::InputText("Tet gen command", tetgen_command.data(), IM_ARRAYSIZE(str0));
+
+        if (ImGui::Button("Generate Tet")) {
+
+        };
+
+        if (ImGui::TreeNode("TetMeshConfig##1"))
+        {
+
+            ImGui::Checkbox("usebinary", &usebinary);
+            ImGui::TreePop();
+            ImGui::Separator();
+        }
+        shader_config.drawImGui();
+
+    }
 }
 
-void Lobo::LoboTetMesh::paintGL(LoboShader *shader) {
-    if (initializedGL == false) {
+void Lobo::LoboTetMesh::paintGL(LoboShader *shader)
+{
+    if (initializedGL == false)
+    {
         return;
     }
     shader_config.setShader(shader);
 }
 
-void Lobo::LoboTetMesh::initialGL() { 
-    
-    initializedGL = true; 
-    
+void Lobo::LoboTetMesh::initialGL()
+{
+
+    initializedGL = true;
 }
 
-void Lobo::LoboTetMesh::generateTet(const char* tetgen_command) {
+void Lobo::LoboTetMesh::updateGL()
+{
+}
+
+void Lobo::LoboTetMesh::generateTet(const char *tetgen_command)
+{
     std::string command_ = "pq1.414Y";
-    if (tetgen_command != NULL) {
+    if (tetgen_command != NULL)
+    {
         command_ = tetgen_command;
     }
 
@@ -35,12 +66,14 @@ void Lobo::LoboTetMesh::generateTet(const char* tetgen_command) {
                                           tet_indices, tet_faces);
 }
 
-void Lobo::LoboTetMesh::setInputPolygon(LoboMesh* lobomesh) {
+void Lobo::LoboTetMesh::setInputPolygon(LoboMesh *lobomesh)
+{
     // set vertices
     int num_tri_vertices = lobomesh->attrib.vertices.size() / 3;
     tri_vertices.resize(num_tri_vertices, 3);
 
-    for (int i = 0; i < num_tri_vertices; i++) {
+    for (int i = 0; i < num_tri_vertices; i++)
+    {
         tri_vertices.data()[i] = lobomesh->attrib.vertices[i * 3 + 0];
         tri_vertices.data()[i + num_tri_vertices] =
             lobomesh->attrib.vertices[i * 3 + 1];
@@ -50,8 +83,10 @@ void Lobo::LoboTetMesh::setInputPolygon(LoboMesh* lobomesh) {
     int num_tri_faces = lobomesh->num_faces;
     tri_faces.resize(num_tri_faces, 3);
     int face_index_slid = 0;
-    for (int i = 0; i < lobomesh->shapes.size(); i++) {
-        for (int j = 0; j < lobomesh->shapes[i].mesh.indices.size() / 3; j++) {
+    for (int i = 0; i < lobomesh->shapes.size(); i++)
+    {
+        for (int j = 0; j < lobomesh->shapes[i].mesh.indices.size() / 3; j++)
+        {
             tri_faces.data()[face_index_slid] =
                 lobomesh->shapes[i].mesh.indices[j * 3].vertex_index;
             tri_faces.data()[face_index_slid + num_tri_faces] =
@@ -63,8 +98,9 @@ void Lobo::LoboTetMesh::setInputPolygon(LoboMesh* lobomesh) {
     }
 }
 
-void Lobo::LoboTetMesh::setInputPolygon(Eigen::MatrixXd* vertices,
-                                        Eigen::MatrixXi* faces) {
+void Lobo::LoboTetMesh::setInputPolygon(Eigen::MatrixXd *vertices,
+                                        Eigen::MatrixXi *faces)
+{
     tri_vertices.resize(vertices->rows(), vertices->cols());
     memcpy(tri_vertices.data(), vertices->data(),
            sizeof(double) * vertices->rows() * vertices->cols());
@@ -73,9 +109,11 @@ void Lobo::LoboTetMesh::setInputPolygon(Eigen::MatrixXd* vertices,
            sizeof(int) * faces->rows() * faces->cols());
 }
 
-void Lobo::LoboTetMesh::loadTetMeshBinary(const char* filename) {
+void Lobo::LoboTetMesh::loadTetMeshBinary(const char *filename)
+{
     std::ifstream in(filename, std::ios::in | std::ios::binary);
-    if (!in.good()) {
+    if (!in.good())
+    {
         std::cout << filename << "file not open" << std::endl;
         return;
     }
@@ -85,7 +123,8 @@ void Lobo::LoboTetMesh::loadTetMeshBinary(const char* filename) {
     in.close();
 }
 
-void Lobo::LoboTetMesh::exportTetMeshBinary(const char* filename) {
+void Lobo::LoboTetMesh::exportTetMeshBinary(const char *filename)
+{
     std::ofstream out(filename,
                       std::ios::out | std::ios::binary | std::ios::trunc);
     EigenMatrixIO::write_binary(out, tet_vertice);
@@ -94,7 +133,8 @@ void Lobo::LoboTetMesh::exportTetMeshBinary(const char* filename) {
     out.close();
 }
 
-void Lobo::LoboTetMesh::loadTetMeshAscii(const char* filebase) {
+void Lobo::LoboTetMesh::loadTetMeshAscii(const char *filebase)
+{
     std::ostringstream stringStream;
     stringStream << filebase << ".ele";
     std::string elementfile = stringStream.str();
@@ -112,9 +152,11 @@ void Lobo::LoboTetMesh::loadTetMeshAscii(const char* filebase) {
     std::ifstream inputstream(elementfile);
     inputstream >> numele >> tmp >> tmp;
     tet_indices.resize(numele, 3);
-    for (int i = 0; i < numele; i++) {
+    for (int i = 0; i < numele; i++)
+    {
         inputstream >> tmp;
-        for (int j = 0; j < 4; j++) {
+        for (int j = 0; j < 4; j++)
+        {
             inputstream >> tet_indices.data()[j * numele + i];
         }
     }
@@ -123,9 +165,11 @@ void Lobo::LoboTetMesh::loadTetMeshAscii(const char* filebase) {
     inputstream.open(nodefile);
     inputstream >> numvet >> tmp >> tmp >> tmp;
     tet_vertice.resize(numvet, 3);
-    for (int i = 0; i < numvet; i++) {
+    for (int i = 0; i < numvet; i++)
+    {
         inputstream >> tmp;
-        for (int j = 0; j < 3; j++) {
+        for (int j = 0; j < 3; j++)
+        {
             inputstream >> tet_vertice.data()[j * numvet + i];
         }
     }
@@ -134,15 +178,18 @@ void Lobo::LoboTetMesh::loadTetMeshAscii(const char* filebase) {
     inputstream.open(facefile);
     inputstream >> numface;
     tet_faces.resize(numface, 3);
-    for (int i = 0; i < numface; i++) {
+    for (int i = 0; i < numface; i++)
+    {
         inputstream >> tmp;
-        for (int j = 0; j < 3; j++) {
+        for (int j = 0; j < 3; j++)
+        {
             inputstream >> tet_faces.data()[j * numface + i];
         }
     }
     inputstream.close();
 }
-void Lobo::LoboTetMesh::exportTetMeshAscii(const char* filebase) {
+void Lobo::LoboTetMesh::exportTetMeshAscii(const char *filebase)
+{
     std::ostringstream stringStream;
     stringStream << filebase << ".ele";
     std::string elementfile = stringStream.str();
@@ -157,9 +204,11 @@ void Lobo::LoboTetMesh::exportTetMeshAscii(const char* filebase) {
 
     std::ofstream outstream(elementfile);
     outstream << tet_indices.rows() << " 4 0 " << std::endl;
-    for (int i = 0; i < tet_indices.rows(); i++) {
+    for (int i = 0; i < tet_indices.rows(); i++)
+    {
         outstream << i << " ";
-        for (int j = 0; j < 4; j++) {
+        for (int j = 0; j < 4; j++)
+        {
             outstream << tet_indices.data()[j * tet_indices.rows() + i] << " ";
         }
         outstream << std::endl;
@@ -168,9 +217,11 @@ void Lobo::LoboTetMesh::exportTetMeshAscii(const char* filebase) {
 
     outstream.open(nodefile);
     outstream << tet_vertice.rows() << " 3 0 0 " << std::endl;
-    for (int i = 0; i < tet_vertice.rows(); i++) {
+    for (int i = 0; i < tet_vertice.rows(); i++)
+    {
         outstream << i << " ";
-        for (int j = 0; j < 3; j++) {
+        for (int j = 0; j < 3; j++)
+        {
             outstream << tet_vertice.data()[j * tet_vertice.rows() + i] << " ";
         }
         outstream << std::endl;
@@ -178,9 +229,11 @@ void Lobo::LoboTetMesh::exportTetMeshAscii(const char* filebase) {
     outstream.close();
     outstream.open(facefile);
     outstream << tet_faces.rows() << std::endl;
-    for (int i = 0; i < tet_faces.rows(); i++) {
+    for (int i = 0; i < tet_faces.rows(); i++)
+    {
         outstream << i << " ";
-        for (int j = 0; j < 3; j++) {
+        for (int j = 0; j < 3; j++)
+        {
             outstream << tet_faces.data()[j * tet_faces.rows() + i] << " ";
         }
         outstream << std::endl;

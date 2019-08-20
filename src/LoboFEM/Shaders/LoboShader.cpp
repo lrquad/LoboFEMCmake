@@ -15,7 +15,7 @@ Lobo::LoboShaderConfig::~LoboShaderConfig()
 }
 
 void Lobo::LoboShaderConfig::drawImGui(bool *p_open) {
-    if (ImGui::TreeNode("Configuration##2")) {
+    if (ImGui::TreeNode("Shader Configuration##2")) {
         ImGui::Checkbox("wireframe_mode", &wireframe_mode);
         ImGui::Checkbox("flat_mode", &flat_mode);
         ImGui::TreePop();

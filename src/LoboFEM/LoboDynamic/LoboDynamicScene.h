@@ -5,6 +5,7 @@ namespace Lobo
 {
     class LoboScene;
     class LoboTetMesh;
+    class LoboShader;
 
     class LoboDynamicScene
     {
@@ -14,8 +15,9 @@ namespace Lobo
 
         virtual void drawImGui(bool* p_open = NULL);
         virtual void update(); //forward one timestep
-        virtual void paintGL();
+        virtual void paintGL(LoboShader* shader, bool depth_render=false);
         virtual void initialGL();
+        virtual void updateGL();//update vertex buffer
 
         virtual void bindTetMesh(int trimesh_id,const char* filebase,bool loadfile,bool binary=true);
         
