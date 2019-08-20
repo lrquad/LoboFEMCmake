@@ -2,6 +2,8 @@
 #include "LoboMesh/LoboMesh.h"
 #include "Shaders/LoboShader.h"
 #include "Functions/deleteSTDvector.h"
+#include <imgui.h>
+
 namespace Lobo {
 class LoboScene {
 public:

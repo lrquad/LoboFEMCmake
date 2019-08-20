@@ -7,6 +7,8 @@
 namespace Lobo
 {
 
+
+
 class LoboShader
 {
 public:
@@ -78,6 +80,21 @@ protected:
     int vertex_shader;
     int fragment_shader;
     int shader_program;
+};
+
+
+static bool wireframe_b = false;
+static bool flat_b = true;
+
+class LoboShaderConfig
+{
+    public:
+    LoboShaderConfig();
+    ~LoboShaderConfig();
+    virtual void drawImGui(bool *p_open = NULL);
+    virtual void setShader(LoboShader* shader);
+    bool wireframe_mode;
+    bool flat_mode;
 };
 
 } // namespace Lobo

@@ -3,9 +3,26 @@
 #include "Functions/EigenMatrixIO.h"
 #include "LoboMesh/LoboMesh.h"
 
-Lobo::LoboTetMesh::LoboTetMesh() {}
+Lobo::LoboTetMesh::LoboTetMesh() { initializedGL = false; }
 
 Lobo::LoboTetMesh::~LoboTetMesh() {}
+
+void Lobo::LoboTetMesh::drawImGui(bool* p_open) {
+    shader_config.drawImGui();
+}
+
+void Lobo::LoboTetMesh::paintGL(LoboShader *shader) {
+    if (initializedGL == false) {
+        return;
+    }
+    shader_config.setShader(shader);
+}
+
+void Lobo::LoboTetMesh::initialGL() { 
+    
+    initializedGL = true; 
+    
+}
 
 void Lobo::LoboTetMesh::generateTet(const char* tetgen_command) {
     std::string command_ = "pq1.414Y";

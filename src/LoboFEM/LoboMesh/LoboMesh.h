@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Shaders/LoboShader.h"
 #include <glm/glm.hpp>
 #include <map>
 #include "ObjLoader/tiny_obj_loader.h"
@@ -25,8 +25,6 @@ struct MaterialBuffer {
     bool has_emissive_tex;
     bool use_diffuse_tex;
 };
-
-class LoboShader;
 
 class LoboMesh {
    public:
@@ -81,6 +79,8 @@ class LoboMesh {
 
     bool wireframe_mode;
     bool flat_mode;
+    Lobo::LoboShaderConfig shader_config;
+
     int start_show_material;
 
     bool glinitialized;
