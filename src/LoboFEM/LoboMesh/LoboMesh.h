@@ -95,14 +95,11 @@ class LoboMesh {
     virtual void getCurVertices(double* outPosition);
 
     virtual void resetVertice();
+    Lobo::LoboShaderConfig shader_config;
 
    protected:
     // imgui
     unsigned int VAO;  // vertex array buffer
-
-    bool wireframe_mode;
-    bool flat_mode;
-    Lobo::LoboShaderConfig shader_config;
 
     int start_show_material;
 

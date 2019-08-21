@@ -23,8 +23,6 @@ Lobo::LoboMesh::LoboMesh(const char *filename, bool uniform) {
 Lobo::LoboMesh::~LoboMesh() { this->deleteGL(); }
 
 void Lobo::LoboMesh::defaultValue() {
-    wireframe_mode = false;
-    flat_mode = true;
     glinitialized = false;
     bufferNeedUpdate = false;
     position = glm::vec3(0.0);

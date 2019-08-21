@@ -94,6 +94,7 @@ class LoboShaderConfig
     bool wireframe_mode;
     bool flat_mode;
     bool visiable;
+    bool cast_shadow;
 };
 
 } // namespace Lobo

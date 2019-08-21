@@ -9,6 +9,7 @@ Lobo::LoboShaderConfig::LoboShaderConfig()
     flat_mode = true;
     visiable = true;
     vertex_color_mode=false;
+    cast_shadow = true;
 }
 
 Lobo::LoboShaderConfig::~LoboShaderConfig()
@@ -22,6 +23,7 @@ void Lobo::LoboShaderConfig::drawImGui(bool *p_open) {
         ImGui::Checkbox("flat_mode", &flat_mode);
         ImGui::Checkbox("visiable",&visiable);
         ImGui::Checkbox("vertex_color_mode",&vertex_color_mode);
+        ImGui::Checkbox("cast_shadow",&cast_shadow);
         ImGui::TreePop();
         ImGui::Separator();
     }

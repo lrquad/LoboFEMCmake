@@ -19,13 +19,13 @@ Lobo::LoboTetMesh::LoboTetMesh()
     default_material.diffuse[1] = 0.3;
     default_material.diffuse[2] = 0.3;
     shader_config.wireframe_mode = true;
+    lobomesh_binding = NULL;
 }
 
 Lobo::LoboTetMesh::~LoboTetMesh() {}
 
 void Lobo::LoboTetMesh::drawImGui(bool *p_open)
 {
-
     if (ImGui::CollapsingHeader(filebase.c_str(),
                                 ImGuiWindowFlags_NoCollapse))
     {
@@ -36,7 +36,7 @@ void Lobo::LoboTetMesh::drawImGui(bool *p_open)
         ImGui::Text("InitialGl %s", status_flags & TetMeshStatusFlags_initialGL
                                         ? "true"
                                         : "false");
-        ImGui::Text("UpdateGl %s", status_flags & TetMeshStatusFlags_updateGL
+        ImGui::Text("datasize changed %s", status_flags & TetMeshStatusFlags_datasizeUpdated
                                        ? "true"
                                        : "false");
         ImGui::Text("Tetgened %s", status_flags & TetMeshStatusFlags_tetgened
@@ -66,7 +66,7 @@ void Lobo::LoboTetMesh::drawImGui(bool *p_open)
             }
         };
         ImGui::SameLine();
-        if (ImGui::Button("laod Tet"))
+        if (ImGui::Button("load Tet"))
         {
             if (usebinary)
             {
@@ -85,6 +85,14 @@ void Lobo::LoboTetMesh::drawImGui(bool *p_open)
                         tet_indices.rows() / 4);
         }
 
+        if (ImGui::Button("hide trimesh"))
+        {
+            if(lobomesh_binding!=NULL)
+            {
+                lobomesh_binding->shader_config.visiable=!lobomesh_binding->shader_config.visiable;
+            }
+        }
+
         if (ImGui::TreeNodeEx("TetMeshConfig##1",
                               ImGuiWindowFlags_NoCollapse))
         {
@@ -94,6 +102,7 @@ void Lobo::LoboTetMesh::drawImGui(bool *p_open)
         }
 
         shader_config.drawImGui();
+       
     }
 
     //mouse click
@@ -122,7 +131,6 @@ void Lobo::LoboTetMesh::mouseSelection()
         if (igl::unproject_onto_mesh(Eigen::Vector2f(x, y), view_m,
                                      project_m, view_port, tet_vertice_col, tet_faces_col, fid, bc))
         {
-            std::cout << fid << std::endl;
             for (int i = 0; i < 3; i++)
             {
                 int vid = tet_faces.data()[fid * 3 + i];
@@ -138,11 +146,10 @@ void Lobo::LoboTetMesh::paintGL(LoboShader *shader)
     {
         return;
     }
-    if (status_flags & TetMeshStatusFlags_updateGL)
+    if (status_flags & TetMeshStatusFlags_datasizeUpdated)
     {
         // need update
         updateGL();
-        return;
     }
 
     shader_config.setShader(shader);
@@ -169,6 +176,9 @@ void Lobo::LoboTetMesh::paintGL(LoboShader *shader)
 
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferSubData(GL_ARRAY_BUFFER, 0,
+                    sizeof(float) * tet_vertice_attri.size(),
+                    tet_vertice_attri.data());
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
     setPositionAttribute(0, 3, 11, 0);
@@ -195,29 +205,24 @@ void Lobo::LoboTetMesh::initialGL()
 
 void Lobo::LoboTetMesh::updateGL()
 {
-    if (!(status_flags & TetMeshStatusFlags_updateGL))
+    if (!(status_flags & TetMeshStatusFlags_datasizeUpdated))
     {
         // no need updateGL
         return;
     }
-    //
-    if (status_flags & TetMeshStatusFlags_datasizeUpdated)
-    {
-        tet_vertice_col = Lobo::eigen_vec_2_mat(tet_vertice, tet_vertice.size() / 3, 3);
-        tet_vertice_attri.resize(tet_vertice.size() / 3 * 11);
-        tet_vertice_attri.setZero();
-        setTetAttriColor(0.5, 0.5, 0.5);
-        tet_faces_glint.resize(tet_faces.size());
-        for (int i = 0; i < tet_faces.size(); i++)
-        {
-            tet_faces_glint[i] = tet_faces[i];
-        }
-    }
 
-    if (status_flags & TetMeshStatusFlags_vertexUpdated)
+    tet_vertice_col = Lobo::eigen_vec_2_mat(tet_vertice, tet_vertice.size() / 3, 3);
+    tet_faces_col = Lobo::eigen_vec_2_mat(tet_faces,tet_faces.size() / 3, 3);
+
+    tet_vertice_attri.resize(tet_vertice.size() / 3 * 11);
+    tet_vertice_attri.setZero();
+    setTetAttriColor(0.8, 0.8, 0.8);
+    tet_faces_glint.resize(tet_faces.size());
+    for (int i = 0; i < tet_faces.size(); i++)
     {
-        updateTetAttri(tet_vertice, 0, 3, 11);
+        tet_faces_glint[i] = tet_faces[i];
     }
+    updateTetAttri(tet_vertice, 0, 3, 11);
 
     glBindVertexArray(VAO);
 
@@ -235,7 +240,7 @@ void Lobo::LoboTetMesh::updateGL()
     setPositionAttribute(2, 2, 11, 6);
     setPositionAttribute(3, 3, 11, 8);
 
-    status_flags &= ~TetMeshStatusFlags_updateGL;
+    status_flags &= ~TetMeshStatusFlags_datasizeUpdated;
 }
 
 void Lobo::LoboTetMesh::generateTet(const char *tetgen_command)
@@ -288,7 +293,7 @@ void Lobo::LoboTetMesh::generateTet(const char *tetgen_command)
             }
         }
 
-        status_flags |= TetMeshStatusFlags_updateGL;
+        status_flags |= TetMeshStatusFlags_datasizeUpdated;
         status_flags |= TetMeshStatusFlags_tetgened;
     }
     else
@@ -296,6 +301,11 @@ void Lobo::LoboTetMesh::generateTet(const char *tetgen_command)
         std::cout << "tetgen failed" << command_ << filebase << std::endl;
     }
 }
+
+ void Lobo::LoboTetMesh::setBindingTriMesh(LoboMesh* lobomesh)
+ {
+     this->lobomesh_binding = lobomesh;
+ }
 
 void Lobo::LoboTetMesh::setInputPolygon(LoboMesh *lobomesh)
 {
@@ -358,7 +368,7 @@ void Lobo::LoboTetMesh::loadTetMeshBinary(const char *filename)
     EigenMatrixIO::read_binary(in, tet_faces);
     in.close();
     status_flags |= TetMeshStatusFlags_loadtet;
-    status_flags |= TetMeshStatusFlags_updateGL;
+    status_flags |= TetMeshStatusFlags_datasizeUpdated;
 }
 
 void Lobo::LoboTetMesh::exportTetMeshBinary(const char *filename)
@@ -435,7 +445,7 @@ void Lobo::LoboTetMesh::loadTetMeshAscii(const char *filebase)
         }
     }
     inputstream.close();
-    status_flags |= TetMeshStatusFlags_updateGL;
+    status_flags |= TetMeshStatusFlags_datasizeUpdated;
     status_flags |= TetMeshStatusFlags_loadtet;
 }
 void Lobo::LoboTetMesh::exportTetMeshAscii(const char *filebase)

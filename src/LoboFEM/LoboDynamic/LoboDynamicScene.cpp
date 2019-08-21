@@ -40,7 +40,8 @@ void Lobo::LoboDynamicScene::paintGL(LoboShader *shader, bool depth_render)
 {
     for (int i = 0; i < tetmesh_in_scene.size(); i++)
     {
-        if (!depth_render)
+        
+        if ((!depth_render)||(tetmesh_in_scene[i]->shader_config.cast_shadow))
         {
             tetmesh_in_scene[i]->paintGL(shader);
         }
@@ -67,6 +68,8 @@ void Lobo::LoboDynamicScene::bindTetMesh(int trimesh_id, const char *filebase, b
 {
     Lobo::LoboTetMesh *tetmesh = new Lobo::LoboTetMesh();
     tetmesh->setInputPolygon(scene->getMesh(trimesh_id));
+    tetmesh->setBindingTriMesh(scene->getMesh(trimesh_id));
+    
     tetmesh->usebinary = binary;
     tetmesh->filebase = filebase;
     tetmesh_in_scene.push_back(tetmesh);

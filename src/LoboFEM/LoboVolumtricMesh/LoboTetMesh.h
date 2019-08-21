@@ -10,11 +10,7 @@ enum TetMeshStatusFlags_ {
     TetMeshStatusFlags_tetgened = 1 << 0,  // generted mesh by tetgen
     TetMeshStatusFlags_loadtet = 1 <<1,
     TetMeshStatusFlags_initialGL = 1 << 2,
-    TetMeshStatusFlags_updateGL = 1 <<3,
-
-    TetMeshStatusFlags_vertexUpdated = 1 <<4,
-    TetMeshStatusFlags_datasizeUpdated = 1 <<5,
-    TetMeshStatusFlags_colorUpdated = 1 <<6
+    TetMeshStatusFlags_datasizeUpdated = 1 <<3
 };
 
 namespace Lobo {
@@ -30,6 +26,8 @@ namespace Lobo {
         virtual void paintGL(LoboShader* shader);
         virtual void initialGL();
         virtual void updateGL();
+
+        virtual void setBindingTriMesh(LoboMesh* lobomesh);
 
         virtual void setInputPolygon(
             LoboMesh* lobomesh);  // assume the input mesh only has one shape
@@ -80,6 +78,7 @@ namespace Lobo {
 
 
         tinyobj::material_t default_material;
+        LoboMesh* lobomesh_binding;
 
     };
 }  // namespace Lobo
