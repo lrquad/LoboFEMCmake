@@ -23,7 +23,9 @@ class LoboDynamicScene {
     ~LoboDynamicScene();
 
     virtual void drawImGui(bool* p_open = NULL);
+    
     virtual void update();  // forward one timestep
+
     virtual void paintGL(LoboShader* shader, bool depth_render = false);
     virtual void initialGL();
     virtual void updateGL();  // update vertex buffer
@@ -35,4 +37,5 @@ class LoboDynamicScene {
     std::vector<int> tetmesh_triId;
     LoboScene* scene;
 };
+
 }  // namespace Lobo

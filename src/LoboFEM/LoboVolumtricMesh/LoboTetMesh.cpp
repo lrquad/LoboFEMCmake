@@ -6,6 +6,7 @@
 #include "imgui.h"
 #include "LoboImGui/cpp/imgui_stdlib.h"
 #include "OpenGLutils/glfunctions.h"
+#include "OpenGLutils/LoboCamera.h"
 
 Lobo::LoboTetMesh::LoboTetMesh() {
     initializedGL = false;
@@ -20,6 +21,7 @@ Lobo::LoboTetMesh::LoboTetMesh() {
 Lobo::LoboTetMesh::~LoboTetMesh() {}
 
 void Lobo::LoboTetMesh::drawImGui(bool *p_open) {
+
     if (ImGui::CollapsingHeader(filebase.c_str(),
                                 ImGuiWindowFlags_NoCollapse)) {
         // static char str0[128] = tetgen_command;
@@ -77,6 +79,15 @@ void Lobo::LoboTetMesh::drawImGui(bool *p_open) {
 
         shader_config.drawImGui();
     }
+}
+
+void Lobo::LoboTetMesh::mouseSelection()
+{
+    ImGuiIO &io = ImGui::GetIO();
+    Lobo::Camera* current_camera = Lobo::getCurrentCamera();
+
+
+
 }
 
 void Lobo::LoboTetMesh::paintGL(LoboShader *shader) {
@@ -144,6 +155,9 @@ void Lobo::LoboTetMesh::updateGL() {
     //
     tet_vertice_attri.resize(tet_vertice.size() / 3 * 11);
     tet_vertice_attri.setZero();
+    setTetAttriColor(8,11,0.5,0.5,0.5);
+
+    //test vertex color
 
     tet_faces_glint.resize(tet_faces.size());
     for (int i = 0; i < tet_faces.size(); i++) {
@@ -401,5 +415,15 @@ void Lobo::LoboTetMesh::updateTetAttri(Eigen::VectorXd &inputattri, int offset,
         for (int j = 0; j < attrisize; j++)
             tet_vertice_attri.data()[i * totalsize + offset + j] =
                 inputattri.data()[i * attrisize + j];
+    }
+}
+
+void Lobo::LoboTetMesh::setTetAttriColor(int offset,int totalsize,double r,double g,double b)
+{
+    for(int i=0;i<tet_vertice_attri.size()/totalsize;i++)
+    {
+        tet_vertice_attri.data()[i * totalsize + offset + 0] = r;
+        tet_vertice_attri.data()[i * totalsize + offset + 1] = g;
+        tet_vertice_attri.data()[i * totalsize + offset + 2] = b;
     }
 }

@@ -37,7 +37,7 @@ void Lobo::LoboMesh::defaultValue() {
 }
 
 void Lobo::LoboMesh::drawImGui(bool *p_open) {
-    if (ImGui::CollapsingHeader("Mesh Info")) {
+    if (ImGui::CollapsingHeader(obj_file_name.c_str(),ImGuiWindowFlags_NoCollapse)) {
         ImGui::Text("File name: %s ", obj_file_name.c_str());
         ImGui::Text("num vertices: %d; num faces: %d; num normals: %d",
                     attrib.vertices.size() / 3, num_faces,

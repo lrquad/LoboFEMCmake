@@ -42,6 +42,7 @@ uniform vec3 viewPos;
 
 uniform bool useDiffuseTex = false;
 uniform bool useFlatNormal = true;
+uniform bool vertex_color_mode = false;
 
 uniform Lights lights[NR_POINT_LIGHTS];
 
@@ -99,6 +100,11 @@ vec3 CalcDirLight(Lights light, vec3 normal, vec3 viewDir,float shadow)
         diffuse+=emission;
     }
 
+    if(vertex_color_mode==true)
+    {
+        diffuse = light.lightColor * diff *ourColor;
+    }
+
     vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular));    
     return lighting;
 }
@@ -124,6 +130,11 @@ vec3 CalcPointLight(Lights light, vec3 normal, vec3 fragPos, vec3 viewDir,float 
         diffuse = light.lightColor * diff * vec3(texture(material.diffuse_tex, TexCoords)); 
         vec3 emission = texture(material.emissive_tex, TexCoords).rgb;
         diffuse+=emission;
+    }
+
+    if(vertex_color_mode==true)
+    {
+        diffuse = light.lightColor * diff *ourColor;
     }
 
     ambient *= attenuation;

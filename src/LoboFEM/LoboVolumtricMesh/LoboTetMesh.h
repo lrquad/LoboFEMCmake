@@ -21,6 +21,8 @@ namespace Lobo {
         ~LoboTetMesh();
 
         virtual void drawImGui(bool* p_open = NULL);
+        virtual void mouseSelection();
+
         virtual void paintGL(LoboShader* shader);
         virtual void initialGL();
         virtual void updateGL();
@@ -66,6 +68,8 @@ namespace Lobo {
         
     protected:
         virtual void updateTetAttri(Eigen::VectorXd &inputattri,int offset,int attrisize,int totalsize);
+        virtual void setTetAttriColor(int offset,int totalsize,double r,double g,double b);
+
         tinyobj::material_t default_material;
 
     };

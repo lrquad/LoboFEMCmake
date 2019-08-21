@@ -82,10 +82,6 @@ protected:
     int shader_program;
 };
 
-
-static bool wireframe_b = false;
-static bool flat_b = true;
-
 class LoboShaderConfig
 {
     public:
@@ -93,6 +89,8 @@ class LoboShaderConfig
     ~LoboShaderConfig();
     virtual void drawImGui(bool *p_open = NULL);
     virtual void setShader(LoboShader* shader);
+
+    bool vertex_color_mode;
     bool wireframe_mode;
     bool flat_mode;
     bool visiable;

@@ -5,9 +5,10 @@
 
 Lobo::LoboShaderConfig::LoboShaderConfig()
 {
-    wireframe_mode = wireframe_b;
-    flat_mode = flat_b;
+    wireframe_mode = false;
+    flat_mode = true;
     visiable = true;
+    vertex_color_mode=false;
 }
 
 Lobo::LoboShaderConfig::~LoboShaderConfig()
@@ -20,6 +21,7 @@ void Lobo::LoboShaderConfig::drawImGui(bool *p_open) {
         ImGui::Checkbox("wireframe_mode", &wireframe_mode);
         ImGui::Checkbox("flat_mode", &flat_mode);
         ImGui::Checkbox("visiable",&visiable);
+        ImGui::Checkbox("vertex_color_mode",&vertex_color_mode);
         ImGui::TreePop();
         ImGui::Separator();
     }
@@ -30,6 +32,7 @@ void Lobo::LoboShaderConfig::setShader(LoboShader* shader)
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     if (wireframe_mode == true) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     shader->setBool("useFlatNormal",flat_mode);
+    shader->setBool("vertex_color_mode",vertex_color_mode);
 }
 
 std::string Lobo::LoboShader::readFile(const char *filename) {

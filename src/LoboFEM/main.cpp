@@ -156,6 +156,9 @@ int main() {
     // init camera
     Lobo::Camera camera(glm::vec3(0.0f, 4.0f, 8.0f),glm::vec3(0.0,1.0,0.0),-90,-30);
     
+    //important
+    Lobo::setCurrentCamera(&camera);
+
     // Main loop
     while (!glfwWindowShouldClose(window)) {
         // Poll and handle events (inputs, window resize, etc.)
@@ -241,6 +244,8 @@ int main() {
             glm::radians(camera.Zoom), (float)display_w / (float)display_h,
             0.001f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
+        camera.view_matrix = view;
+        camera.projection_matrix = projection;
 
         default_shader.useProgram();
         default_shader.setMat4(
