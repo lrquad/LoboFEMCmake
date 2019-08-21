@@ -10,7 +10,11 @@ enum TetMeshStatusFlags_ {
     TetMeshStatusFlags_tetgened = 1 << 0,  // generted mesh by tetgen
     TetMeshStatusFlags_loadtet = 1 <<1,
     TetMeshStatusFlags_initialGL = 1 << 2,
-    TetMeshStatusFlags_updateGL = 1 <<3
+    TetMeshStatusFlags_updateGL = 1 <<3,
+
+    TetMeshStatusFlags_vertexUpdated = 1 <<4,
+    TetMeshStatusFlags_datasizeUpdated = 1 <<5,
+    TetMeshStatusFlags_colorUpdated = 1 <<6
 };
 
 namespace Lobo {
@@ -57,6 +61,9 @@ namespace Lobo {
         Eigen::VectorXf tet_vertice_attri;  //#numVertices*3
         Eigen::VectorXi tet_indices;  //#numTet*4
         Eigen::VectorXi tet_faces;    //#numface*3 // for rendering
+
+        Eigen::MatrixXd tet_vertice_col;
+        Eigen::MatrixXi tet_faces_col;
         //for test
         std::vector<unsigned int> tet_faces_glint;
 
@@ -68,7 +75,9 @@ namespace Lobo {
         
     protected:
         virtual void updateTetAttri(Eigen::VectorXd &inputattri,int offset,int attrisize,int totalsize);
-        virtual void setTetAttriColor(int offset,int totalsize,double r,double g,double b);
+        virtual void setTetAttriColor(double r,double g,double b,int offset = 8,int totalsize =11);
+        virtual void setTetVetAttriColor(int vid,double r,double g,double b,int offset=8,int totalsize=11);
+
 
         tinyobj::material_t default_material;
 

@@ -244,8 +244,14 @@ int main() {
             glm::radians(camera.Zoom), (float)display_w / (float)display_h,
             0.001f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
+
+        //set global context;
         camera.view_matrix = view;
         camera.projection_matrix = projection;
+        camera.view_port[0] = 0.0;
+        camera.view_port[1] = 0.0;
+        camera.view_port[2] = display_w;
+        camera.view_port[3] = display_h;
 
         default_shader.useProgram();
         default_shader.setMat4(

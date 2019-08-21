@@ -113,6 +113,7 @@ public:
 
     glm::mat4 view_matrix;
     glm::mat4 projection_matrix;
+    glm::vec4 view_port;
 
 private:
     // Calculates the front vector from the Camera's (updated) Euler Angles
