@@ -1,6 +1,9 @@
 # LoboFEM
 ## Introduction
-Imgui OpenGL libigl c++14 for imfilebrowser.h
+- Imgui
+- OpenGL 
+- libigl 
+- c++14 (for imfilebrowser)
 
 ![bunny](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/bunny.png)
 
