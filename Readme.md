@@ -1,6 +1,9 @@
 # LoboFEM
 ## Introduction
 Imgui OpenGL libigl c++14 for imfilebrowser.h
+
+![bunny](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/bunny.png)
+
 ## Install
     
     sudo apt-get install libomp-dev
