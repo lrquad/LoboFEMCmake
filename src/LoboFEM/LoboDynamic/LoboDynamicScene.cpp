@@ -2,9 +2,11 @@
 #include "LoboVolumtricMesh/LoboTetMesh.h"
 #include "OpenGLutils/LoboScene.h"
 #include "Shaders/LoboShader.h"
+#include "LoboImGui/cpp/imgui_stdlib.h"
 
 Lobo::LoboDynamicScene::LoboDynamicScene(Lobo::LoboScene *scene_) : scene(scene_)
 {
+    
 }
 
 Lobo::LoboDynamicScene::~LoboDynamicScene()
@@ -16,6 +18,9 @@ void Lobo::LoboDynamicScene::drawImGui(bool *p_open)
     ImGui::Begin("Dynamic Scene",
                  p_open); // Create a window called "Hello, world!" and
                           // append into it.
+
+    ImGui::InputText("Data folder ",&demo_path);
+
     for (int i = 0; i < tetmesh_in_scene.size(); i++)
     {
         ImGui::PushID(i);
