@@ -108,9 +108,9 @@ void Lobo::LoboMesh::loadObj(const char *filename, bool uniform, bool verbose) {
 
     // Append `default` material
     materials.push_back(tinyobj::material_t());
-    materials.back().diffuse[0] = 1.0;
-    materials.back().diffuse[1] = 0.3;
-    materials.back().diffuse[2] = 0.3;
+    materials.back().diffuse[0] = 0.7;
+    materials.back().diffuse[1] = 0.7;
+    materials.back().diffuse[2] = 0.7;
 
     num_faces = 0;
     for (int i = 0; i < shapes.size(); i++) {
