@@ -73,7 +73,7 @@ int main() {
     window_h = 720;
     // Create window with graphics context
     GLFWwindow *window = glfwCreateWindow(
-        window_w, window_h, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL);
+        window_w, window_h, "New LoboFEM", NULL, NULL);
     if (window == NULL) return 1;
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);  // Enable vsync
@@ -117,7 +117,7 @@ int main() {
 
     bool show_demo_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-    // clear_color = ImVec4(0.0f, 0.0f, 0.0f, 1.00f);
+    //clear_color = ImVec4(1.0f, 1.0f, 1.0f, 1.00f);
 
     ImGui::FileBrowser fileDialog;
     Lobo::LoboScene scene;
@@ -176,13 +176,12 @@ int main() {
 
         Lobo::ShowMainWindow(&fileDialog);
 
+        // cubelight.drawImGui();
+        light_manager.drawImGui();
+        camera.drawImGui();
         scene.drawImGui();
         dynamic_scene.drawImGui();
 
-        // cubelight.drawImGui();
-        light_manager.drawImGui();
-
-        camera.drawImGui();
 
         // 1. Show the big demo window (Most of the sample code is in
         // ImGui::ShowDemoWindow()! You can browse its code to learn more about
@@ -214,7 +213,7 @@ int main() {
             light_manager.setLightShadow(&simpleDepthShader, i);
             
             scene.paintGL(&simpleDepthShader);
-            dynamic_scene.paintGL(&default_shader,false);
+            dynamic_scene.paintGL(&default_shader,true);
 
             glCullFace(GL_BACK);
             glDisable(GL_CULL_FACE);
