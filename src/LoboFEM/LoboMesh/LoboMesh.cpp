@@ -296,10 +296,13 @@ void Lobo::LoboMesh::updateGLbuffer() {
 
 void Lobo::LoboMesh::paintGL(LoboShader *shader) {
     // update vertex buffer before painting
-    updateGLbuffer();
 
     shader_config.setShader(shader);
+    if (shader_config.visiable == false) {
+        return;
+    }
     // glBindTexture(GL_TEXTURE_2D, texture);
+    updateGLbuffer();
 
     glBindVertexArray(VAO);
     for (int i = 0; i < shape_buffer.size(); i++) {

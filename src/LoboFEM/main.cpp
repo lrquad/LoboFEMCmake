@@ -214,7 +214,7 @@ int main() {
             light_manager.setLightShadow(&simpleDepthShader, i);
             
             scene.paintGL(&simpleDepthShader);
-            dynamic_scene.paintGL(&default_shader,true);
+            dynamic_scene.paintGL(&default_shader,false);
 
             glCullFace(GL_BACK);
             glDisable(GL_CULL_FACE);
@@ -259,7 +259,7 @@ int main() {
         light_manager.setLight(&default_shader);
 
         scene.paintGL(&default_shader);
-        dynamic_scene.paintGL(&default_shader);
+        dynamic_scene.paintGL(&default_shader,false);
 
         lighting_shader.useProgram();
         lighting_shader.setMat4(

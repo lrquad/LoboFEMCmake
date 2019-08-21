@@ -2,6 +2,8 @@
 #include <Eigen/Dense>
 #include <string>
 #include "Shaders/LoboShader.h"
+#include "ObjLoader/tiny_obj_loader.h"
+
 
 enum TetMeshStatusFlags_ {
     TetMeshStatusFlags_None = 0,
@@ -25,8 +27,9 @@ namespace Lobo {
 
         virtual void setInputPolygon(
             LoboMesh* lobomesh);  // assume the input mesh only has one shape
-        virtual void setInputPolygon(Eigen::MatrixXd* vertices,
-                                     Eigen::MatrixXi* Faces);
+        
+        virtual void setInputPolygon(Eigen::VectorXd* vertices,
+                                     Eigen::VectorXi* Faces);
 
         virtual void generateTet(const char* tetgen_command = NULL);
 
@@ -48,12 +51,22 @@ namespace Lobo {
         Eigen::MatrixXi tri_faces;
 
         // Tetrahedralized interior
-        Eigen::MatrixXd tet_vertice;  //#numVertices*3
-        Eigen::MatrixXi tet_indices;  //#numTet*4
-        Eigen::MatrixXi tet_faces;    //#numface*3 // for rendering
+        Eigen::VectorXd tet_vertice;  //#numVertices*3
+        Eigen::VectorXf tet_vertice_attri;  //#numVertices*3
+        Eigen::VectorXi tet_indices;  //#numTet*4
+        Eigen::VectorXi tet_faces;    //#numface*3 // for rendering
+        //for test
+        std::vector<unsigned int> tet_faces_glint;
 
         Lobo::LoboShaderConfig shader_config;
 
+        unsigned int VAO;  // vertex array object
+        unsigned int VBO;  // vertex buffer object
+        unsigned int EBO;  // element buffer object
         
+    protected:
+        virtual void updateTetAttri(Eigen::VectorXd &inputattri,int offset,int attrisize,int totalsize);
+        tinyobj::material_t default_material;
+
     };
 }  // namespace Lobo

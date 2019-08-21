@@ -7,6 +7,7 @@ Lobo::LoboShaderConfig::LoboShaderConfig()
 {
     wireframe_mode = wireframe_b;
     flat_mode = flat_b;
+    visiable = true;
 }
 
 Lobo::LoboShaderConfig::~LoboShaderConfig()
@@ -18,6 +19,7 @@ void Lobo::LoboShaderConfig::drawImGui(bool *p_open) {
     if (ImGui::TreeNodeEx("Shader Configuration##2",ImGuiWindowFlags_NoCollapse)) {
         ImGui::Checkbox("wireframe_mode", &wireframe_mode);
         ImGui::Checkbox("flat_mode", &flat_mode);
+        ImGui::Checkbox("visiable",&visiable);
         ImGui::TreePop();
         ImGui::Separator();
     }

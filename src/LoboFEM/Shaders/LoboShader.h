@@ -95,6 +95,7 @@ class LoboShaderConfig
     virtual void setShader(LoboShader* shader);
     bool wireframe_mode;
     bool flat_mode;
+    bool visiable;
 };
 
 } // namespace Lobo

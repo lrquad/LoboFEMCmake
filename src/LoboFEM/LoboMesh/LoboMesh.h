@@ -3,8 +3,31 @@
 #include <glm/glm.hpp>
 #include <map>
 #include "ObjLoader/tiny_obj_loader.h"
-
+#include <Eigen/Dense>
+#include <fstream>
 namespace Lobo {
+
+inline void exportSimpleObj(const char* filename, Eigen::MatrixXd& tri_vertices,
+                            Eigen::MatrixXi& tri_faces) {
+    std::ofstream output(filename);
+    for (int i = 0; i < tri_vertices.rows(); i++) {
+        output << "v ";
+        for (int j = 0; j < 3; j++) {
+            output << tri_vertices.data()[j * tri_vertices.rows() + i] << " ";
+        }
+        output << std::endl;
+    }
+
+    for (int i = 0; i < tri_faces.rows(); i++) {
+        output << "f ";
+        for (int j = 0; j < 3; j++) {
+            output << tri_faces.data()[j * tri_faces.rows() + i]+1 << " ";
+        }
+        output << std::endl;
+    }
+
+    output.close();
+}
 
 struct ShapeBuffer {
     unsigned int VBO;  // vertex array buffer
