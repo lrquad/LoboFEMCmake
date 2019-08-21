@@ -54,4 +54,5 @@ models/*
 !/models/floor.mtl
 !/models/bunny.obj
 !/models/bunny.mtl
-demo/*
+
+#demo/*

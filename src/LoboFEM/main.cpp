@@ -129,7 +129,7 @@ int main() {
     scene.initialGL();
 
     Lobo::LoboDynamicScene dynamic_scene(&scene);
-    dynamic_scene.bindTetMesh(1,"bunny",false,true);
+    dynamic_scene.bindTetMesh(1,"tetmesh/bunny",false,true);
     dynamic_scene.initialGL();
 
 
