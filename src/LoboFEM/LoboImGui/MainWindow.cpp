@@ -12,6 +12,7 @@ void Lobo::ShowMainWindow(ImGui::FileBrowser *fileDialog, bool *p_open)
     if (fileDialog->HasSelected())
     {
         std::cout << "Selected filename " << fileDialog->GetSelected().string() << std::endl;
+        
         fileDialog->ClearSelected();
     }
 }

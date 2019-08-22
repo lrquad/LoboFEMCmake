@@ -2,13 +2,12 @@
 
 Lobo::Camera *current_camera = NULL;
 
-
-void Lobo::setCurrentCamera(Camera* camera)
+void Lobo::setCurrentCamera(Camera *camera)
 {
     current_camera = camera;
 }
 
-Lobo::Camera* Lobo::getCurrentCamera()
+Lobo::Camera *Lobo::getCurrentCamera()
 {
     return current_camera;
 }
@@ -53,6 +52,24 @@ Lobo::Camera::Camera(float posX, float posY, float posZ, float upX, float upY, f
     init_camera_value.Front = Front;
     init_camera_value.Yaw = Yaw;
     init_camera_value.Pitch = Pitch;
+    updateCameraVectors();
+}
+
+void Lobo::Camera::initCamera(glm::vec3 position,
+                              glm::vec3 up, float yaw,
+                              float pitch)
+{
+    Position = position;
+    WorldUp = up;
+    Yaw = yaw;
+    Pitch = pitch;
+
+    init_camera_value.Position = Position;
+    init_camera_value.CenterP = CenterP;
+    init_camera_value.Front = Front;
+    init_camera_value.Yaw = Yaw;
+    init_camera_value.Pitch = Pitch;
+
     updateCameraVectors();
 }
 
