@@ -18,6 +18,9 @@ Lobo::LoboTetMesh::LoboTetMesh()
     initializedGL = false;
     tetgen_command = "pq1.414";
     status_flags = 0;
+    default_material.ambient[0] = 0.0;
+    default_material.ambient[1] = 0.0;
+    default_material.ambient[2] = 0.0;
     default_material.diffuse[0] = 1.0;
     default_material.diffuse[1] = 0.3;
     default_material.diffuse[2] = 0.3;
@@ -96,6 +99,18 @@ void Lobo::LoboTetMesh::drawImGui(bool *p_open)
         }
 
         shader_config.drawImGui();
+
+        if (ImGui::TreeNodeEx("Materials##3"))
+        {
+            ImGui::ColorEdit3("ambient color", &(default_material.ambient)[0]);
+            ImGui::ColorEdit3("diffuse color", &(default_material.diffuse)[0]);
+            ImGui::ColorEdit3("specular color",
+                              &(default_material.specular)[0]);
+            ImGui::DragFloat("shininess", &default_material.shininess, 0.05f,
+                             0.0, 100.0);
+            ImGui::TreePop();
+            ImGui::Separator();
+        }
     }
 
     //mouse click
@@ -413,9 +428,13 @@ void Lobo::LoboTetMesh::loadTetMesh()
     }
 }
 
-void Lobo::LoboTetMesh::loadTetMeshBinary(const char *filename)
+void Lobo::LoboTetMesh::loadTetMeshBinary(const char *filebase_)
 {
-    std::cout << "loadTetMeshBinary " << filebase << std::endl;
+    std::ostringstream stringStream;
+    stringStream << filebase_ << ".tet";
+    std::string filename = stringStream.str();
+
+    std::cout << "loadTetMeshBinary " << filename << std::endl;
 
     std::ifstream in(filename, std::ios::in | std::ios::binary);
     if (!in.good())
@@ -431,13 +450,16 @@ void Lobo::LoboTetMesh::loadTetMeshBinary(const char *filename)
     status_flags |= TetMeshStatusFlags_datasizeUpdated;
 }
 
-void Lobo::LoboTetMesh::exportTetMeshBinary(const char *filename)
+void Lobo::LoboTetMesh::exportTetMeshBinary(const char *filebase_)
 {
     if (!(status_flags &
           (TetMeshStatusFlags_tetgened | TetMeshStatusFlags_loadtet)))
     {
         return;
     }
+    std::ostringstream stringStream;
+    stringStream << filebase_ << ".tet";
+    std::string filename = stringStream.str();
 
     std::cout << "exportTetMeshBinary " << filename << std::endl;
 
@@ -449,20 +471,20 @@ void Lobo::LoboTetMesh::exportTetMeshBinary(const char *filename)
     out.close();
 }
 
-void Lobo::LoboTetMesh::loadTetMeshAscii(const char *filebase)
+void Lobo::LoboTetMesh::loadTetMeshAscii(const char *filebase_)
 {
-    std::cout << "loadTetMeshAscii " << filebase << std::endl;
+    std::cout << "loadTetMeshAscii " << filebase_ << std::endl;
 
     std::ostringstream stringStream;
-    stringStream << filebase << ".ele";
+    stringStream << filebase_ << ".ele";
     std::string elementfile = stringStream.str();
     stringStream.str("");
     stringStream.clear();
-    stringStream << filebase << ".node";
+    stringStream << filebase_ << ".node";
     std::string nodefile = stringStream.str();
     stringStream.str("");
     stringStream.clear();
-    stringStream << filebase << ".face";
+    stringStream << filebase_ << ".face";
     std::string facefile = stringStream.str();
 
     int tmp;
@@ -508,24 +530,24 @@ void Lobo::LoboTetMesh::loadTetMeshAscii(const char *filebase)
     status_flags |= TetMeshStatusFlags_datasizeUpdated;
     status_flags |= TetMeshStatusFlags_loadtet;
 }
-void Lobo::LoboTetMesh::exportTetMeshAscii(const char *filebase)
+void Lobo::LoboTetMesh::exportTetMeshAscii(const char *filebase_)
 {
     if (!(status_flags &
           (TetMeshStatusFlags_tetgened | TetMeshStatusFlags_loadtet)))
     {
         return;
     }
-    std::cout << "exportTetMeshAscii " << filebase << std::endl;
+    std::cout << "exportTetMeshAscii " << filebase_ << std::endl;
     std::ostringstream stringStream;
-    stringStream << filebase << ".ele";
+    stringStream << filebase_ << ".ele";
     std::string elementfile = stringStream.str();
     stringStream.str("");
     stringStream.clear();
-    stringStream << filebase << ".node";
+    stringStream << filebase_ << ".node";
     std::string nodefile = stringStream.str();
     stringStream.str("");
     stringStream.clear();
-    stringStream << filebase << ".face";
+    stringStream << filebase_ << ".face";
     std::string facefile = stringStream.str();
 
     std::ofstream outstream(elementfile);

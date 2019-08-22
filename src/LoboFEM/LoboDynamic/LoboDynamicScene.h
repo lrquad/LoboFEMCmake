@@ -7,18 +7,11 @@
 
 namespace Lobo {
 
-static std::string demo_path = "./demo/default/";
-
 class LoboScene;
 class LoboTetMesh;
 class LoboShader;
 
-inline std::string getPath(const char* filename) {
-    std::ostringstream oss;
-    oss << demo_path << filename;
-    std::string s = oss.str();
-    return s;
-}
+std::string getPath(const char* filename);
 
 class LoboDynamicScene {
    public:
@@ -43,6 +36,10 @@ class LoboDynamicScene {
     std::vector<LoboTetMesh*> tetmesh_in_scene;
     std::vector<int> tetmesh_triId;
     LoboScene* scene;
+
+protected:
+    //system command check and mkdir folder we need
+    void prepareDir();
 };
 
 }  // namespace Lobo

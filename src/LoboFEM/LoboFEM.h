@@ -27,10 +27,10 @@ public:
     virtual void deleteGL();
     virtual void makeContext();
     virtual void setCurrentContext();
+    void loadXMLfile(const char* filename);
 
 protected:
 
-    void loadXMLfile(const char* filename);
     void showMainWindow(ImGui::FileBrowser *fileDialog, bool *p_open=NULL);
 
     ImGui::FileBrowser fileDialog;

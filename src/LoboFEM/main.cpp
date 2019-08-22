@@ -102,7 +102,7 @@ int main() {
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
     ImGuiStyle& style = ImGui::GetStyle();
-    style.Colors[2].w = 0.0;
+    style.Colors[2].w = 0.8;
     // ImGui::StyleColorsClassic();
 
     // Setup Platform/Renderer bindings
@@ -116,6 +116,7 @@ int main() {
     Lobo::LoboFEM fem_main;
     fem_main.makeContext();
     fem_main.setCurrentContext();
+    fem_main.loadXMLfile("./config/FEM_firstdemo.xml");
     //fem_main.initialGL();
     
     //important

@@ -5,6 +5,17 @@
 #include "LoboImGui/cpp/imgui_stdlib.h"
 #include "Functions/deleteSTDvector.h"
 
+std::string demo_path = "./demo/default/";
+
+std::string Lobo::getPath(const char *filename)
+{
+
+    std::ostringstream oss;
+    oss << demo_path << filename;
+    std::string s = oss.str();
+    return s;
+}
+
 Lobo::LoboDynamicScene::LoboDynamicScene(Lobo::LoboScene *scene_)
     : scene(scene_) {}
 
@@ -18,8 +29,9 @@ void Lobo::LoboDynamicScene::runXMLscript(pugi::xml_node &scene_node)
     deleteStdvectorPointer(tetmesh_in_scene);
     if (scene_node.child("SceneFolder"))
     {
-       demo_path = scene_node.child("SceneFolder").text().as_string();
+        demo_path = scene_node.child("SceneFolder").text().as_string();
     }
+    prepareDir();
 
     for (pugi::xml_node tetmesh_node : scene_node.children("BindTetMesh"))
     {
@@ -28,12 +40,12 @@ void Lobo::LoboDynamicScene::runXMLscript(pugi::xml_node &scene_node)
         bool loadmesh = false;
         bool savemesh = false;
 
-        if(tetmesh_node.attribute("tetgen"))
-        tetgen  = tetmesh_node.attribute("tetgen").as_bool();
-        if(tetmesh_node.attribute("loadmesh"))
-        loadmesh  = tetmesh_node.attribute("loadmesh").as_bool();
-        if(tetmesh_node.attribute("savemesh"))
-        savemesh  = tetmesh_node.attribute("savemesh").as_bool();
+        if (tetmesh_node.attribute("tetgen"))
+            tetgen = tetmesh_node.attribute("tetgen").as_bool();
+        if (tetmesh_node.attribute("loadmesh"))
+            loadmesh = tetmesh_node.attribute("loadmesh").as_bool();
+        if (tetmesh_node.attribute("savemesh"))
+            savemesh = tetmesh_node.attribute("savemesh").as_bool();
 
         //required
         if (tetmesh_node.child("TrimeshId"))
@@ -42,25 +54,25 @@ void Lobo::LoboDynamicScene::runXMLscript(pugi::xml_node &scene_node)
             if (tetmesh_node.child("TetFileBase"))
             {
                 std::string tetbase = tetmesh_node.child("TetFileBase").text().as_string();
-                this->bindTetMesh(triid,tetbase.c_str(),use_bindary);
+                this->bindTetMesh(triid, tetbase.c_str(), use_bindary);
 
-                if(tetgen)
+                if (tetgen)
                 {
-                    const char* tetgen_command = this->tetmesh_in_scene.back()->tetgen_command.c_str();
+                    const char *tetgen_command = this->tetmesh_in_scene.back()->tetgen_command.c_str();
                     this->tetmesh_in_scene.back()->generateTet(tetgen_command);
                 }
-                if(loadmesh)
+                if (loadmesh)
                 {
                     this->tetmesh_in_scene.back()->loadTetMesh();
                 }
-                if(savemesh)
+                if (savemesh)
                 {
-                     this->tetmesh_in_scene.back()->exportTetMesh();
+                    this->tetmesh_in_scene.back()->exportTetMesh();
                 }
-                
             }
         }
     }
+
 }
 
 void Lobo::LoboDynamicScene::drawImGui(bool *p_open)
@@ -71,7 +83,11 @@ void Lobo::LoboDynamicScene::drawImGui(bool *p_open)
                           // append into it.
 
     ImGui::InputText("Data folder ", &demo_path);
-    
+    if(ImGui::Button("Prepare folder"))
+    {
+        prepareDir();
+    }
+
     static int selected = 0;
     ImGui::BeginChild("left pane", ImVec2(150, 0), true);
     for (int i = 0; i < tetmesh_in_scene.size(); i++)
@@ -158,4 +174,16 @@ void Lobo::LoboDynamicScene::bindTetMesh(int trimesh_id, const char *filebase,
     tetmesh->filebase = filebase;
     tetmesh_in_scene.push_back(tetmesh);
     tetmesh_triId.push_back(trimesh_id);
+}
+
+void Lobo::LoboDynamicScene::prepareDir()
+{
+    std::ostringstream stringStream;
+    stringStream << "mkdir -p " << demo_path << " &&";
+    stringStream << "mkdir -p " << demo_path << "tetmesh" << " &&";
+    stringStream << "mkdir -p " << demo_path << "constraints" << " &&";
+    stringStream << "mkdir -p " << demo_path << "solveroutput" << "";
+    std::string system_command_string = stringStream.str();
+    system(system_command_string.c_str());
+    std::cout<<system_command_string.c_str()<<std::endl;
 }

@@ -161,11 +161,13 @@ void Lobo::LoboFEM::showMainWindow(ImGui::FileBrowser *fileDialog, bool *p_open)
         config_file_path = fileDialog->GetSelected().string();
         fileDialog->ClearSelected();
         this->loadXMLfile(config_file_path.c_str());
+
     }
 }
 
 void Lobo::LoboFEM::paintGL(LoboShader *shader)
 {
+
 }
 
 void Lobo::LoboFEM::deleteGL()
@@ -177,14 +179,12 @@ void Lobo::LoboFEM::deleteGL()
 void Lobo::LoboFEM::makeContext()
 {
     //scripts
-
     scene = new Lobo::LoboScene();
     scene->addMesh("./models/floor.obj", false);
-    scene->addMesh("./models/bunny.obj", false);
     scene->initialGL();
 
     dynamic_scene = new Lobo::LoboDynamicScene(scene);
-    dynamic_scene->bindTetMesh(1, "tetmesh/bunny", false, true);
+    // dynamic_scene->bindTetMesh(1, "tetmesh/bunny", false, true);
     dynamic_scene->initialGL();
 
     default_shader.loadShaderFile("./shaders/simplevertex.glsl",
@@ -236,5 +236,5 @@ void Lobo::LoboFEM::loadXMLfile(const char* filename)
     dynamic_scene->initialGL();
 
     std::cout<<"Finished." <<std::endl;
-
+    setCurrentContext();
 }
