@@ -35,25 +35,35 @@ void Lobo::LoboMesh::defaultValue() {
 }
 
 void Lobo::LoboMesh::drawImGui(bool *p_open) {
-    if (ImGui::CollapsingHeader(obj_file_name.c_str(),ImGuiWindowFlags_NoCollapse)) {
-        ImGui::Text("File name: %s ", obj_file_name.c_str());
-        ImGui::Text("num vertices: %d; num faces: %d; num normals: %d",
-                    attrib.vertices.size() / 3, num_faces,
-                    attrib.normals.size() / 3);
-        ImGui::Text("num texcoords: %d ", attrib.texcoords.size() / 2);
-        ImGui::Text("num shapes: %d num materials: %d", shapes.size(),
-                    materials.size());
-        bool p_changed = ImGui::InputFloat3("position float3", &position.r);
-        bool r_changed =
-            ImGui::InputFloat3("eular_angle float3", &eular_angle.r);
-        if (p_changed || r_changed)
-            this->updateRigidTransformation(position, eular_angle);
+    if (ImGui::CollapsingHeader(obj_file_name.c_str(),
+                                ImGuiWindowFlags_NoCollapse)) {
+        if (ImGui::TreeNodeEx("Geometry##2", ImGuiWindowFlags_NoCollapse)) {
+            ImGui::Text("File name: %s ", obj_file_name.c_str());
+            ImGui::Text("num vertices: %d; num faces: %d; num normals: %d",
+                        attrib.vertices.size() / 3, num_faces,
+                        attrib.normals.size() / 3);
+            ImGui::Text("num texcoords: %d ", attrib.texcoords.size() / 2);
+            ImGui::Text("num shapes: %d num materials: %d", shapes.size(),
+                        materials.size());
 
-        if (ImGui::Button("Reset position")) {
-            this->resetVertice();
-        };
+            bool p_changed = ImGui::DragFloat3("drag position", &position.r,
+                                               0.01f, -10.0f, 10.0f);
+            bool r_changed = ImGui::DragFloat3(
+                "drag eular_angle", &eular_angle.r, 1.0f, -360.0f, 360.0f);
 
-        if (ImGui::TreeNode("Materials##2")) {
+            if (p_changed || r_changed)
+                this->updateRigidTransformation(position, eular_angle);
+
+            if (ImGui::Button("Reset position")) {
+                this->resetVertice();
+            };
+            ImGui::TreePop();
+            ImGui::Separator();
+        }
+
+        shader_config.drawImGui();
+
+        if (ImGui::TreeNodeEx("Materials##2", ImGuiWindowFlags_NoCollapse)) {
             ImGui::InputInt("Material start at", &start_show_material, 1, 5);
             if (start_show_material < 0) {
                 start_show_material = 0;
@@ -85,8 +95,6 @@ void Lobo::LoboMesh::drawImGui(bool *p_open) {
             ImGui::TreePop();
             ImGui::Separator();
         }
-
-        shader_config.drawImGui();
     }
 }
 

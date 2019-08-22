@@ -1,6 +1,8 @@
 #include "LoboTetMesh.h"
 #include <igl/copyleft/tetgen/tetrahedralize.h>
 #include <igl/unproject_onto_mesh.h>
+#include <igl/project.h>
+
 #include "Functions/EigenMatrixIO.h"
 #include "LoboDynamic/LoboDynamicScene.h"
 #include "LoboMesh/LoboMesh.h"
@@ -9,6 +11,7 @@
 #include "OpenGLutils/glfunctions.h"
 #include "OpenGLutils/LoboCamera.h"
 #include "Utils/glmEigenConverter.h"
+#include "Utils/glmMyFunctions.h"
 
 Lobo::LoboTetMesh::LoboTetMesh()
 {
@@ -18,6 +21,10 @@ Lobo::LoboTetMesh::LoboTetMesh()
     default_material.diffuse[0] = 1.0;
     default_material.diffuse[1] = 0.3;
     default_material.diffuse[2] = 0.3;
+    default_material.specular[0] = 0.8;
+    default_material.specular[1] = 0.8;
+    default_material.specular[2] = 0.8;
+
     shader_config.wireframe_mode = true;
     lobomesh_binding = NULL;
 }
@@ -26,6 +33,7 @@ Lobo::LoboTetMesh::~LoboTetMesh() {}
 
 void Lobo::LoboTetMesh::drawImGui(bool *p_open)
 {
+    ImGuiIO &io = ImGui::GetIO();
     if (ImGui::CollapsingHeader(filebase.c_str(),
                                 ImGuiWindowFlags_NoCollapse))
     {
@@ -106,17 +114,40 @@ void Lobo::LoboTetMesh::drawImGui(bool *p_open)
     }
 
     //mouse click
-    if (ImGui::IsMouseReleased(1))
+    if (ImGui::IsMouseClicked(1)&&io.KeysDownDuration[341] >= 0.0f)
     {
         mouseClicked();
     }
 
-
+    if(ImGui::IsMouseDragging(1)&&io.KeysDownDuration[340] >= 0.0f)
+    {
+        mouseRectSelect();
+    }
 }
 
 void Lobo::LoboTetMesh::mouseRectSelect()
 {
+    if (status_flags &
+        (TetMeshStatusFlags_tetgened | TetMeshStatusFlags_loadtet))
+    {
+        ImGuiIO &io = ImGui::GetIO();
+        Lobo::Camera *current_camera = Lobo::getCurrentCamera();
+        Eigen::Vector4f view_port = Lobo::GLM_2_E<float, 4>(current_camera->view_port);
+        Eigen::Matrix4f view_m = Lobo::GLM_2_E<float, 4>(current_camera->view_matrix);
+        Eigen::Matrix4f project_m = Lobo::GLM_2_E<float, 4>(current_camera->projection_matrix);
+        Eigen::MatrixXf P;
+        igl::project(tet_vertice_col,view_m,project_m,view_port,P);
+        glm::vec4 mouse_rect(io.MouseClickedPos[1].x, view_port.data()[3] - io.MouseClickedPos[1].y,io.MousePos.x, view_port.data()[3] - io.MousePos.y);
+        for(int i=0;i<P.rows();i++)
+        {
+            if(Lobo::inRect(mouse_rect,P.data()[i],P.data()[P.rows()+i]))
+            {
+                setTetVetAttriColor(i, 0.0, 0.0, 1.0);
+            }
+        }
+        
 
+    }
 }
 
 void Lobo::LoboTetMesh::mouseClicked()
@@ -252,6 +283,11 @@ void Lobo::LoboTetMesh::updateGL()
 
 void Lobo::LoboTetMesh::generateTet(const char *tetgen_command)
 {
+    if(lobomesh_binding!=NULL)
+    {
+        this->setInputPolygon(lobomesh_binding);
+    }
+
     std::string command_ = "pq1.414Y";
     if (tetgen_command != NULL)
     {

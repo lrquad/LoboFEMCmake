@@ -1,3 +1,4 @@
+#pragma once
 #include <Eigen/Dense>
 #include "glm/glm.hpp"
 #include <glm/matrix.hpp>

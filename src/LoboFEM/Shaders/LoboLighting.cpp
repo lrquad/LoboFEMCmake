@@ -28,7 +28,7 @@ Lobo::LoboLightManager::~LoboLightManager() {
 }
 
 void Lobo::LoboLightManager::drawImGui(bool* p_open) {
-    ImGui::Begin("Lighting control", NULL);
+    ImGui::Begin("Lights", NULL);
     for (int i = 0; i < lighting_list.size(); i++) {
         ImGui::PushID(i);
         lighting_list[i]->drawImGui();

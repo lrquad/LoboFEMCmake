@@ -109,6 +109,8 @@ int main() {
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.Colors[2].w = 0.0;
     // ImGui::StyleColorsClassic();
 
     // Setup Platform/Renderer bindings

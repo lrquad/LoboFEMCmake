@@ -24,7 +24,6 @@ namespace Lobo {
         virtual void mouseClicked();
         virtual void mouseRectSelect();
 
-
         virtual void paintGL(LoboShader* shader);
         virtual void initialGL();
         virtual void updateGL();

@@ -23,6 +23,7 @@ class LoboDynamicScene {
     ~LoboDynamicScene();
 
     virtual void drawImGui(bool* p_open = NULL);
+    virtual void mouseRectSelect();
     
     virtual void update();  // forward one timestep
 
