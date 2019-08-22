@@ -31,10 +31,11 @@ void Lobo::LoboFEM::windowLoop(GLFWwindow *window)
     int numlights = light_manager.getLightNum();
     for (int i = 0; i < numlights; i++)
     {
-        if (!light_manager.getLightTrigger(i))
+        if (!light_manager.getLightTrigger(i)||!light_manager.getLightCastShadow(i))
         {
             continue;
         }
+
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         light_manager.getTextureSize(SHADOW_WIDTH, SHADOW_HEIGHT, i);

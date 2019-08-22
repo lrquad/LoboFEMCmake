@@ -20,6 +20,7 @@ struct Lights {
 	
     vec3 lightColor;
     bool trigger;
+    bool cast_shadow;
     int light_type; //0 point 1 directional
 
 };
@@ -66,6 +67,10 @@ void main()
         if(lights[i].trigger==true)
         {
             float shadow = ShadowCalculation(lights[i],FragPosLightSpace[i],shadowMap[i]);  
+            if(!lights[i].cast_shadow)
+            {
+                shadow = 0.0;
+            }
             if (lights[i].light_type==0)
                 result += CalcPointLight(lights[i], norm, FragPos, viewDir,shadow);  
             if (lights[i].light_type==1)

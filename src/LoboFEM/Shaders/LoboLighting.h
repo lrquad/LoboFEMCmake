@@ -35,6 +35,8 @@ class LoboLightManager {
     unsigned int getDepthFBO(int lightid);
     unsigned int getDepthMap(int lightid);
     bool getLightTrigger(int lightid);
+    bool getLightCastShadow(int lightid);
+
     int getLightNum();
     void getTextureSize(unsigned int &w,unsigned int &h,int lightid);
 
@@ -70,6 +72,7 @@ class LoboLighting {
     float linear;
     float quadratic;
     bool trigger;
+    bool cast_shadow;
     int light_type;
 
     unsigned int lightVAO;

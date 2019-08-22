@@ -28,7 +28,8 @@ Lobo::LoboTetMesh::LoboTetMesh()
     default_material.specular[1] = 0.8;
     default_material.specular[2] = 0.8;
 
-    shader_config.wireframe_mode = true;
+    shader_config.wireframe_mode = false;
+    shader_config.vertex_color_mode = true;
     lobomesh_binding = NULL;
 }
 
