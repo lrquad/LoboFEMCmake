@@ -6,6 +6,8 @@
 - c++14 (for imfilebrowser)
 
 ![bunny](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/bunny.png)
+![bunny](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/bunny.gif)
+
 
 ## Install
     
