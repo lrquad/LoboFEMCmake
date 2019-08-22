@@ -108,11 +108,18 @@ void Lobo::LoboTetMesh::drawImGui(bool *p_open)
     //mouse click
     if (ImGui::IsMouseReleased(1))
     {
-        mouseSelection();
+        mouseClicked();
     }
+
+
 }
 
-void Lobo::LoboTetMesh::mouseSelection()
+void Lobo::LoboTetMesh::mouseRectSelect()
+{
+
+}
+
+void Lobo::LoboTetMesh::mouseClicked()
 {
     if (status_flags &
         (TetMeshStatusFlags_tetgened | TetMeshStatusFlags_loadtet))

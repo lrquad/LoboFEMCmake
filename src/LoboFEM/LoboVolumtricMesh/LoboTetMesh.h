@@ -21,7 +21,9 @@ namespace Lobo {
         ~LoboTetMesh();
 
         virtual void drawImGui(bool* p_open = NULL);
-        virtual void mouseSelection();
+        virtual void mouseClicked();
+        virtual void mouseRectSelect();
+
 
         virtual void paintGL(LoboShader* shader);
         virtual void initialGL();
