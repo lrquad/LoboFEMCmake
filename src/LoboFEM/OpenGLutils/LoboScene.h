@@ -3,6 +3,7 @@
 #include "Shaders/LoboShader.h"
 #include "Functions/deleteSTDvector.h"
 #include <imgui.h>
+#include "Utils/pugixml/pugixml.hpp"
 
 namespace Lobo {
     
@@ -13,7 +14,7 @@ public:
         deleteStdvectorPointer(mesh_list);
     };
 
-    
+    virtual void runXMLscript(pugi::xml_node &scene_node);
 
     virtual void addMesh(const char* filename, bool uniform = true);
 

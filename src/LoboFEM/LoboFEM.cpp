@@ -158,9 +158,7 @@ void Lobo::LoboFEM::showMainWindow(ImGui::FileBrowser *fileDialog, bool *p_open)
 
     if (fileDialog->HasSelected())
     {
-        std::cout << "Selected filename " << fileDialog->GetSelected().string() << std::endl;
         config_file_path = fileDialog->GetSelected().string();
-
         fileDialog->ClearSelected();
         this->loadXMLfile(config_file_path.c_str());
     }
@@ -172,6 +170,7 @@ void Lobo::LoboFEM::paintGL(LoboShader *shader)
 
 void Lobo::LoboFEM::deleteGL()
 {
+    dynamic_scene->deleteGL();
     scene->deleteGL();
 }
 
@@ -209,8 +208,33 @@ void Lobo::LoboFEM::setCurrentContext()
 
 void Lobo::LoboFEM::loadXMLfile(const char* filename)
 {
-    std::cout<<"load scene script" << filename <<std::endl;
+    deleteGL();
+    delete dynamic_scene;
+    delete scene;
+    scene = new Lobo::LoboScene();
+    dynamic_scene = new Lobo::LoboDynamicScene(scene);
 
+
+    std::cout<<"load scene script" << filename <<std::endl;
+    pugi::xml_parse_result result = xml_doc.load_file(filename);
+	if (!result)
+		std::cout << "xml load failed" << std::endl;
     
+    if (xml_doc.child("Scene").child("LoboScene"))
+	{
+        pugi::xml_node scene_node = xml_doc.child("Scene").child("LoboScene");
+        scene->runXMLscript(scene_node);
+	}
+    scene->initialGL();
+
+
+    if (xml_doc.child("Scene").child("LoboDynamicScene"))
+	{
+        pugi::xml_node scene_node = xml_doc.child("Scene").child("LoboDynamicScene");
+        dynamic_scene->runXMLscript(scene_node);
+	}
+    dynamic_scene->initialGL();
+
+    std::cout<<"Finished." <<std::endl;
 
 }

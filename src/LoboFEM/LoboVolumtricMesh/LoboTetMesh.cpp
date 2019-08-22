@@ -45,8 +45,8 @@ void Lobo::LoboTetMesh::drawImGui(bool *p_open)
                                         ? "true"
                                         : "false");
         ImGui::Text("datasize changed %s", status_flags & TetMeshStatusFlags_datasizeUpdated
-                                       ? "true"
-                                       : "false");
+                                               ? "true"
+                                               : "false");
         ImGui::Text("Tetgened %s", status_flags & TetMeshStatusFlags_tetgened
                                        ? "true"
                                        : "false");
@@ -64,26 +64,12 @@ void Lobo::LoboTetMesh::drawImGui(bool *p_open)
         ImGui::SameLine();
         if (ImGui::Button("Save Tet"))
         {
-            if (usebinary)
-            {
-                exportTetMeshBinary(Lobo::getPath(filebase.c_str()).c_str());
-            }
-            else
-            {
-                exportTetMeshAscii(Lobo::getPath(filebase.c_str()).c_str());
-            }
+            exportTetMesh();
         };
         ImGui::SameLine();
         if (ImGui::Button("load Tet"))
         {
-            if (usebinary)
-            {
-                loadTetMeshBinary(Lobo::getPath(filebase.c_str()).c_str());
-            }
-            else
-            {
-                loadTetMeshAscii(Lobo::getPath(filebase.c_str()).c_str());
-            }
+            loadTetMesh();
         };
 
         if (status_flags &
@@ -95,9 +81,9 @@ void Lobo::LoboTetMesh::drawImGui(bool *p_open)
 
         if (ImGui::Button("hide trimesh"))
         {
-            if(lobomesh_binding!=NULL)
+            if (lobomesh_binding != NULL)
             {
-                lobomesh_binding->shader_config.visiable=!lobomesh_binding->shader_config.visiable;
+                lobomesh_binding->shader_config.visiable = !lobomesh_binding->shader_config.visiable;
             }
         }
 
@@ -110,16 +96,15 @@ void Lobo::LoboTetMesh::drawImGui(bool *p_open)
         }
 
         shader_config.drawImGui();
-       
     }
 
     //mouse click
-    if (ImGui::IsMouseClicked(1)&&io.KeysDownDuration[341] >= 0.0f)
+    if (ImGui::IsMouseClicked(1) && io.KeysDownDuration[341] >= 0.0f)
     {
         mouseClicked();
     }
 
-    if(ImGui::IsMouseDragging(1)&&io.KeysDownDuration[340] >= 0.0f)
+    if (ImGui::IsMouseDragging(1) && io.KeysDownDuration[340] >= 0.0f)
     {
         mouseRectSelect();
     }
@@ -136,17 +121,15 @@ void Lobo::LoboTetMesh::mouseRectSelect()
         Eigen::Matrix4f view_m = Lobo::GLM_2_E<float, 4>(current_camera->view_matrix);
         Eigen::Matrix4f project_m = Lobo::GLM_2_E<float, 4>(current_camera->projection_matrix);
         Eigen::MatrixXf P;
-        igl::project(tet_vertice_col,view_m,project_m,view_port,P);
-        glm::vec4 mouse_rect(io.MouseClickedPos[1].x, view_port.data()[3] - io.MouseClickedPos[1].y,io.MousePos.x, view_port.data()[3] - io.MousePos.y);
-        for(int i=0;i<P.rows();i++)
+        igl::project(tet_vertice_col, view_m, project_m, view_port, P);
+        glm::vec4 mouse_rect(io.MouseClickedPos[1].x, view_port.data()[3] - io.MouseClickedPos[1].y, io.MousePos.x, view_port.data()[3] - io.MousePos.y);
+        for (int i = 0; i < P.rows(); i++)
         {
-            if(Lobo::inRect(mouse_rect,P.data()[i],P.data()[P.rows()+i]))
+            if (Lobo::inRect(mouse_rect, P.data()[i], P.data()[P.rows() + i]))
             {
                 setTetVetAttriColor(i, 0.0, 0.0, 1.0);
             }
         }
-        
-
     }
 }
 
@@ -250,7 +233,7 @@ void Lobo::LoboTetMesh::updateGL()
     }
 
     tet_vertice_col = Lobo::eigen_vec_2_mat(tet_vertice, tet_vertice.size() / 3, 3);
-    tet_faces_col = Lobo::eigen_vec_2_mat(tet_faces,tet_faces.size() / 3, 3);
+    tet_faces_col = Lobo::eigen_vec_2_mat(tet_faces, tet_faces.size() / 3, 3);
 
     tet_vertice_attri.resize(tet_vertice.size() / 3 * 11);
     tet_vertice_attri.setZero();
@@ -281,9 +264,16 @@ void Lobo::LoboTetMesh::updateGL()
     status_flags &= ~TetMeshStatusFlags_datasizeUpdated;
 }
 
+void Lobo::LoboTetMesh::deleteGL()
+{
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
+}
+
 void Lobo::LoboTetMesh::generateTet(const char *tetgen_command)
 {
-    if(lobomesh_binding!=NULL)
+    if (lobomesh_binding != NULL)
     {
         this->setInputPolygon(lobomesh_binding);
     }
@@ -295,6 +285,10 @@ void Lobo::LoboTetMesh::generateTet(const char *tetgen_command)
     }
     Eigen::MatrixXd TV;
     Eigen::MatrixXi TT;
+
+    std::cout << "tetgen check" << std::endl;
+    std::cout << "tri_vertices" << tri_vertices.rows() << " " << tri_vertices.cols() << std::endl;
+    std::cout << "tri_faces" << tri_faces.rows() << " " << tri_faces.cols() << std::endl;
 
     int result = igl::copyleft::tetgen::tetrahedralize(
         tri_vertices, tri_faces, command_.c_str(), TV, TT, tet_faces_col);
@@ -345,10 +339,10 @@ void Lobo::LoboTetMesh::generateTet(const char *tetgen_command)
     }
 }
 
- void Lobo::LoboTetMesh::setBindingTriMesh(LoboMesh* lobomesh)
- {
-     this->lobomesh_binding = lobomesh;
- }
+void Lobo::LoboTetMesh::setBindingTriMesh(LoboMesh *lobomesh)
+{
+    this->lobomesh_binding = lobomesh;
+}
 
 void Lobo::LoboTetMesh::setInputPolygon(LoboMesh *lobomesh)
 {
@@ -394,6 +388,29 @@ void Lobo::LoboTetMesh::setInputPolygon(Eigen::VectorXd *vertices,
     tri_faces.resize(faces->rows(), faces->cols());
     memcpy(tri_faces.data(), faces->data(),
            sizeof(int) * faces->rows() * faces->cols());
+}
+
+void Lobo::LoboTetMesh::exportTetMesh()
+{
+    if (usebinary)
+    {
+        exportTetMeshBinary(Lobo::getPath(filebase.c_str()).c_str());
+    }
+    else
+    {
+        exportTetMeshAscii(Lobo::getPath(filebase.c_str()).c_str());
+    }
+}
+void Lobo::LoboTetMesh::loadTetMesh()
+{
+    if (usebinary)
+    {
+        loadTetMeshBinary(Lobo::getPath(filebase.c_str()).c_str());
+    }
+    else
+    {
+        loadTetMeshAscii(Lobo::getPath(filebase.c_str()).c_str());
+    }
 }
 
 void Lobo::LoboTetMesh::loadTetMeshBinary(const char *filename)

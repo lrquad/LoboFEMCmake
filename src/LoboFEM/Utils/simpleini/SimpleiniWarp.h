@@ -19,7 +19,7 @@ inline void getValueVec3(CSimpleIniA* ini, const char* section, const char* valu
 {
     std::vector<float> load_buffer;
     std::string pszValue = ini->GetValue(section, value);
-    lobo::parseString<float>(pszValue,load_buffer);
+    Lobo::parseString<float>(pszValue,load_buffer);
     *v3 = glm::vec3(load_buffer[0],load_buffer[1],load_buffer[2]);
 }
 

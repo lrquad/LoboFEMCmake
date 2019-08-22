@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<Scene version="1.0" type = "FEMscene">
+	<LoboScene>
+		<TriMesh name="bar" uniform = "false">
+			<Path>./models/floor.obj</Path>
+			<Position>0 0 0.0</Position>
+		</TriMesh>
+		<TriMesh name="bunny" uniform = "false">
+			<Path>./models/bunny.obj</Path>
+			<Position>0 1.0 0.0</Position>
+		</TriMesh>
+	</LoboScene>
+
+	<LoboDynamicScene>
+
+		<SceneFolder>./demo/bunny/</SceneFolder>
+		<BindTetMesh UseBinary="true" tetgen="true" loadmesh="false" savemesh="true">
+			<TrimeshId>1</TrimeshId>
+			<!-- the tet files will be saved as <SceneFolder>/<TetFileBase> -->
+			<TetFileBase>tetmesh/bunny</TetFileBase>
+		</BindTetMesh>
+
+		<FEMSolver type="fullspace" name ="fullspace">
+			<!-- the output will be saved in folder <SceneDataFolder>/<DataFolder> -->
+			<SolverFolder>solveroutput/bunny_fullspace/</SolverFolder>
+			<Constraints>constraints/bunny.txt</Constraints>
+		</FEMSolver>
+
+	</LoboDynamicScene>
+
+</Scene>

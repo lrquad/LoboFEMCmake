@@ -27,6 +27,7 @@ namespace Lobo {
         virtual void paintGL(LoboShader* shader);
         virtual void initialGL();
         virtual void updateGL();
+        virtual void deleteGL();
 
         virtual void setBindingTriMesh(LoboMesh* lobomesh);
 
@@ -37,6 +38,9 @@ namespace Lobo {
                                      Eigen::VectorXi* Faces);
 
         virtual void generateTet(const char* tetgen_command = NULL);
+
+        virtual void exportTetMesh();
+        virtual void loadTetMesh();
 
         virtual void loadTetMeshBinary(const char* filename);
         virtual void loadTetMeshAscii(const char* filebase);

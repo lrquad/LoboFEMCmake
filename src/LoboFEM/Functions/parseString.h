@@ -3,7 +3,7 @@
 #include <sstream>
 #include <string>
 
-namespace lobo {
+namespace Lobo {
 
 	template<typename T>
 	void parseString(std::string input, std::vector<T> &output)

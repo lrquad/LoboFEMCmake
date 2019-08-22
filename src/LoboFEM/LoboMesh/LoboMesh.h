@@ -5,6 +5,7 @@
 #include "ObjLoader/tiny_obj_loader.h"
 #include <Eigen/Dense>
 #include <fstream>
+
 namespace Lobo {
 
 inline void exportSimpleObj(const char* filename, Eigen::MatrixXd& tri_vertices,
@@ -84,6 +85,10 @@ class LoboMesh {
 
     // dynamic interface
     std::vector<float> ori_vertices;  // 3n
+
+    virtual void setPosition(std::vector<float> position_);
+    virtual void setAngle(std::vector<float> angle_);
+
 
     virtual void updateRigidTransformation(glm::vec3 position,
                                            glm::vec3 eular_angle);

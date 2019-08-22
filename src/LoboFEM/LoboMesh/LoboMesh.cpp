@@ -371,6 +371,24 @@ void Lobo::LoboMesh::deleteGL() {
     }
 }
 
+void Lobo::LoboMesh::setPosition(std::vector<float> position_)
+{
+    position[0] = position_[0];
+    position[1] = position_[1];
+    position[2] = position_[2];
+
+    updateRigidTransformation(position,eular_angle);
+}
+
+void Lobo::LoboMesh::setAngle(std::vector<float> angle_)
+{
+    eular_angle[0] = angle_[0];
+    eular_angle[1] = angle_[1];
+    eular_angle[2] = angle_[2];
+    updateRigidTransformation(position,eular_angle);
+}
+
+
 void Lobo::LoboMesh::updateRigidTransformation(glm::vec3 position,
                                                glm::vec3 eular_angle) {
     glm::mat4 rotation = glm::eulerAngleXYZ(glm::radians(eular_angle[0]),

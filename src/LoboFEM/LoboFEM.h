@@ -6,8 +6,8 @@
 #include "OpenGLutils/LoboCamera.h"
 #include "Shaders/LoboLighting.h"
 #include "Shaders/LoboShader.h"
-
 #include "LoboImGui/imfilebrowser.h"
+#include "Utils/pugixml/pugixml.hpp"
 
 namespace Lobo
 {
@@ -46,7 +46,7 @@ protected:
     ImVec4 clear_color;
 
     std::string config_file_path;
-
+    pugi::xml_document xml_doc;
 };
 
 } // namespace Lobo
