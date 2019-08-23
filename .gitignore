@@ -47,12 +47,13 @@ external/eigen-git-mirror/
 bin/
 build/
 lib/
+
 #models/*
-!/models/cornell_box.obj
-!/models/cornell_box.mtl
-!/models/floor.obj
-!/models/floor.mtl
-!/models/bunny.obj
-!/models/bunny.mtl
+# !/models/cornell_box.obj
+# !/models/cornell_box.mtl
+# !/models/floor.obj
+# !/models/floor.mtl
+# !/models/bunny.obj
+# !/models/bunny.mtl
 
 #demo/*
