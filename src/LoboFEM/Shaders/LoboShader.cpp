@@ -10,6 +10,7 @@ Lobo::LoboShaderConfig::LoboShaderConfig()
     visiable = true;
     vertex_color_mode=false;
     cast_shadow = true;
+    use_blinn = true;
 }
 
 Lobo::LoboShaderConfig::~LoboShaderConfig()
@@ -21,6 +22,7 @@ void Lobo::LoboShaderConfig::drawImGui(bool *p_open) {
     if (ImGui::TreeNodeEx("Shader Configuration##2",ImGuiWindowFlags_NoCollapse)) {
         ImGui::Checkbox("wireframe_mode", &wireframe_mode);
         ImGui::Checkbox("flat_mode", &flat_mode);
+        ImGui::Checkbox("use_blinn",&use_blinn);
         ImGui::Checkbox("visiable",&visiable);
         ImGui::Checkbox("vertex_color_mode",&vertex_color_mode);
         ImGui::Checkbox("cast_shadow",&cast_shadow);
@@ -35,6 +37,7 @@ void Lobo::LoboShaderConfig::setShader(LoboShader* shader)
     if (wireframe_mode == true) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     shader->setBool("useFlatNormal",flat_mode);
     shader->setBool("vertex_color_mode",vertex_color_mode);
+    shader->setBool("use_blinn",use_blinn);
 }
 
 std::string Lobo::LoboShader::readFile(const char *filename) {

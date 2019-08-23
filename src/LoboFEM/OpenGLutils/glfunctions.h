@@ -60,4 +60,17 @@ inline int bindTextureBuffer(const char *filename, unsigned int &texture_id)
     return nrChannels;
 }
 
+inline void activeTexture(bool trigger,int textureindex, unsigned int &texture_id)
+{
+    if(trigger)
+    {
+        glActiveTexture(GL_TEXTURE0+textureindex);
+        glBindTexture(GL_TEXTURE_2D,texture_id);
+    }else
+    {
+        glActiveTexture(GL_TEXTURE0+textureindex);
+        glBindTexture(GL_TEXTURE_2D,0);
+    }
+}
+
 } // namespace Lobo

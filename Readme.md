@@ -7,6 +7,7 @@
 
 ![bunny](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/bunny.png)
 ![bunny](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/bunny.gif)
+![scene](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/scene.png)
 
 
 ## Install

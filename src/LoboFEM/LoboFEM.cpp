@@ -9,6 +9,7 @@
 Lobo::LoboFEM::LoboFEM()
 {
     dynamic_scene = NULL;
+    scene = NULL;
     clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 }
 
@@ -66,6 +67,8 @@ void Lobo::LoboFEM::windowLoop(GLFWwindow *window)
                  clear_color.w);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
+    glEnable(GL_FRAMEBUFFER_SRGB);
+
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -181,7 +184,8 @@ void Lobo::LoboFEM::makeContext()
 {
     //scripts
     scene = new Lobo::LoboScene();
-    scene->addMesh("./models/floor.obj", false);
+    //scene->addMesh("./models/floor.obj", false);
+    //scene->addMesh("./models/earth/earth.obj", true);
     scene->initialGL();
 
     dynamic_scene = new Lobo::LoboDynamicScene(scene);
@@ -226,6 +230,7 @@ void Lobo::LoboFEM::loadXMLfile(const char* filename)
         pugi::xml_node scene_node = xml_doc.child("Scene").child("LoboScene");
         scene->runXMLscript(scene_node);
 	}
+    
     scene->initialGL();
 
 

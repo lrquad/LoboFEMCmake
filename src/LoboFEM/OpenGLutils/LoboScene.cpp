@@ -26,9 +26,14 @@ void Lobo::LoboScene::runXMLscript(pugi::xml_node &scene_node)
             bool uniform = false;
             bool smooth = true;
 
-            if(tri_mesh_node.child("uniform"))
+            if(tri_mesh_node.attribute("uniform"))
             {
-                uniform = tri_mesh_node.child("uniform").text().as_bool();
+                uniform = tri_mesh_node.attribute("uniform").as_bool();
+            }
+
+            if(tri_mesh_node.attribute("smooth"))
+            {
+                smooth = tri_mesh_node.attribute("smooth").as_bool();
             }
 
             this->addMesh(tri_path.c_str(),uniform);

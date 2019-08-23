@@ -13,8 +13,7 @@
 #include "Utils/glmEigenConverter.h"
 #include "Utils/glmMyFunctions.h"
 
-Lobo::LoboTetMesh::LoboTetMesh()
-{
+Lobo::LoboTetMesh::LoboTetMesh() {
     initializedGL = false;
     tetgen_command = "pq1.414";
     status_flags = 0;
@@ -35,12 +34,10 @@ Lobo::LoboTetMesh::LoboTetMesh()
 
 Lobo::LoboTetMesh::~LoboTetMesh() {}
 
-void Lobo::LoboTetMesh::drawImGui(bool *p_open)
-{
+void Lobo::LoboTetMesh::drawImGui(bool *p_open) {
     ImGuiIO &io = ImGui::GetIO();
     if (ImGui::CollapsingHeader(filebase.c_str(),
-                                ImGuiWindowFlags_NoCollapse))
-    {
+                                ImGuiWindowFlags_NoCollapse)) {
         // static char str0[128] = tetgen_command;
         // ImGui::InputText("Tet file base", str0, IM_ARRAYSIZE(str0));
         // ImGui::InputText("Tet gen command", tetgen_command.data(),
@@ -48,9 +45,10 @@ void Lobo::LoboTetMesh::drawImGui(bool *p_open)
         ImGui::Text("InitialGl %s", status_flags & TetMeshStatusFlags_initialGL
                                         ? "true"
                                         : "false");
-        ImGui::Text("datasize changed %s", status_flags & TetMeshStatusFlags_datasizeUpdated
-                                               ? "true"
-                                               : "false");
+        ImGui::Text("datasize changed %s",
+                    status_flags & TetMeshStatusFlags_datasizeUpdated
+                        ? "true"
+                        : "false");
         ImGui::Text("Tetgened %s", status_flags & TetMeshStatusFlags_tetgened
                                        ? "true"
                                        : "false");
@@ -61,39 +59,33 @@ void Lobo::LoboTetMesh::drawImGui(bool *p_open)
         ImGui::InputText("Tet file base ", &filebase);
         ImGui::InputText("tetgen_command ", &tetgen_command);
 
-        if (ImGui::Button("Generate Tet"))
-        {
+        if (ImGui::Button("Generate Tet")) {
             this->generateTet(tetgen_command.c_str());
         };
         ImGui::SameLine();
-        if (ImGui::Button("Save Tet"))
-        {
+        if (ImGui::Button("Save Tet")) {
             exportTetMesh();
         };
         ImGui::SameLine();
-        if (ImGui::Button("load Tet"))
-        {
+        if (ImGui::Button("load Tet")) {
             loadTetMesh();
         };
 
         if (status_flags &
-            (TetMeshStatusFlags_tetgened | TetMeshStatusFlags_loadtet))
-        {
+            (TetMeshStatusFlags_tetgened | TetMeshStatusFlags_loadtet)) {
             ImGui::Text("tet_vertice %d tet_num_tet %d", tet_vertice.rows() / 3,
                         tet_indices.rows() / 4);
         }
 
-        if (ImGui::Button("hide trimesh"))
-        {
-            if (lobomesh_binding != NULL)
-            {
-                lobomesh_binding->shader_config.visiable = !lobomesh_binding->shader_config.visiable;
+        if (ImGui::Button("hide trimesh")) {
+            if (lobomesh_binding != NULL) {
+                lobomesh_binding->shader_config.visiable =
+                    !lobomesh_binding->shader_config.visiable;
             }
         }
 
         if (ImGui::TreeNodeEx("TetMeshConfig##1",
-                              ImGuiWindowFlags_NoCollapse))
-        {
+                              ImGuiWindowFlags_NoCollapse)) {
             ImGui::Checkbox("usebinary", &usebinary);
             ImGui::TreePop();
             ImGui::Separator();
@@ -101,8 +93,7 @@ void Lobo::LoboTetMesh::drawImGui(bool *p_open)
 
         shader_config.drawImGui();
 
-        if (ImGui::TreeNodeEx("Materials##3"))
-        {
+        if (ImGui::TreeNodeEx("Materials##3")) {
             ImGui::ColorEdit3("ambient color", &(default_material.ambient)[0]);
             ImGui::ColorEdit3("diffuse color", &(default_material.diffuse)[0]);
             ImGui::ColorEdit3("specular color",
@@ -114,62 +105,62 @@ void Lobo::LoboTetMesh::drawImGui(bool *p_open)
         }
     }
 
-    //mouse click
-    if (ImGui::IsMouseClicked(1) && io.KeysDownDuration[341] >= 0.0f)
-    {
+    // mouse click
+    if (ImGui::IsMouseClicked(1) && io.KeysDownDuration[341] >= 0.0f) {
         mouseClicked();
     }
 
-    if (ImGui::IsMouseDragging(1) && io.KeysDownDuration[340] >= 0.0f)
-    {
+    if (ImGui::IsMouseDragging(1) && io.KeysDownDuration[340] >= 0.0f) {
         mouseRectSelect();
     }
 }
 
-void Lobo::LoboTetMesh::mouseRectSelect()
-{
+void Lobo::LoboTetMesh::mouseRectSelect() {
     if (status_flags &
-        (TetMeshStatusFlags_tetgened | TetMeshStatusFlags_loadtet))
-    {
+        (TetMeshStatusFlags_tetgened | TetMeshStatusFlags_loadtet)) {
         ImGuiIO &io = ImGui::GetIO();
         Lobo::Camera *current_camera = Lobo::getCurrentCamera();
-        Eigen::Vector4f view_port = Lobo::GLM_2_E<float, 4>(current_camera->view_port);
-        Eigen::Matrix4f view_m = Lobo::GLM_2_E<float, 4>(current_camera->view_matrix);
-        Eigen::Matrix4f project_m = Lobo::GLM_2_E<float, 4>(current_camera->projection_matrix);
+        Eigen::Vector4f view_port =
+            Lobo::GLM_2_E<float, 4>(current_camera->view_port);
+        Eigen::Matrix4f view_m =
+            Lobo::GLM_2_E<float, 4>(current_camera->view_matrix);
+        Eigen::Matrix4f project_m =
+            Lobo::GLM_2_E<float, 4>(current_camera->projection_matrix);
         Eigen::MatrixXf P;
         igl::project(tet_vertice_col, view_m, project_m, view_port, P);
-        glm::vec4 mouse_rect(io.MouseClickedPos[1].x, view_port.data()[3] - io.MouseClickedPos[1].y, io.MousePos.x, view_port.data()[3] - io.MousePos.y);
-        for (int i = 0; i < P.rows(); i++)
-        {
-            if (Lobo::inRect(mouse_rect, P.data()[i], P.data()[P.rows() + i]))
-            {
+        glm::vec4 mouse_rect(io.MouseClickedPos[1].x,
+                             view_port.data()[3] - io.MouseClickedPos[1].y,
+                             io.MousePos.x,
+                             view_port.data()[3] - io.MousePos.y);
+        for (int i = 0; i < P.rows(); i++) {
+            if (Lobo::inRect(mouse_rect, P.data()[i], P.data()[P.rows() + i])) {
                 setTetVetAttriColor(i, 0.0, 0.0, 1.0);
             }
         }
     }
 }
 
-void Lobo::LoboTetMesh::mouseClicked()
-{
+void Lobo::LoboTetMesh::mouseClicked() {
     if (status_flags &
-        (TetMeshStatusFlags_tetgened | TetMeshStatusFlags_loadtet))
-    {
+        (TetMeshStatusFlags_tetgened | TetMeshStatusFlags_loadtet)) {
         ImGuiIO &io = ImGui::GetIO();
         Lobo::Camera *current_camera = Lobo::getCurrentCamera();
-        Eigen::Vector4f view_port = Lobo::GLM_2_E<float, 4>(current_camera->view_port);
-        Eigen::Matrix4f view_m = Lobo::GLM_2_E<float, 4>(current_camera->view_matrix);
-        Eigen::Matrix4f project_m = Lobo::GLM_2_E<float, 4>(current_camera->projection_matrix);
+        Eigen::Vector4f view_port =
+            Lobo::GLM_2_E<float, 4>(current_camera->view_port);
+        Eigen::Matrix4f view_m =
+            Lobo::GLM_2_E<float, 4>(current_camera->view_matrix);
+        Eigen::Matrix4f project_m =
+            Lobo::GLM_2_E<float, 4>(current_camera->projection_matrix);
 
         Eigen::Vector3f bc;
         int fid;
         // Cast a ray in the view direction starting from the mouse position
         double x = io.MousePos.x;
         double y = view_port.data()[3] - io.MousePos.y;
-        if (igl::unproject_onto_mesh(Eigen::Vector2f(x, y), view_m,
-                                     project_m, view_port, tet_vertice_col, tet_faces_col, fid, bc))
-        {
-            for (int i = 0; i < 3; i++)
-            {
+        if (igl::unproject_onto_mesh(Eigen::Vector2f(x, y), view_m, project_m,
+                                     view_port, tet_vertice_col, tet_faces_col,
+                                     fid, bc)) {
+            for (int i = 0; i < 3; i++) {
                 int vid = tet_faces.data()[fid * 3 + i];
                 setTetVetAttriColor(vid, 1.0, 0.0, 0.0);
             }
@@ -177,23 +168,23 @@ void Lobo::LoboTetMesh::mouseClicked()
     }
 }
 
-void Lobo::LoboTetMesh::paintGL(LoboShader *shader)
-{
-    if (!(status_flags & TetMeshStatusFlags_initialGL))
-    {
+void Lobo::LoboTetMesh::paintGL(LoboShader *shader) {
+    if (!(status_flags & TetMeshStatusFlags_initialGL)) {
         return;
     }
-    if (status_flags & TetMeshStatusFlags_datasizeUpdated)
-    {
+    if (status_flags & TetMeshStatusFlags_datasizeUpdated) {
         // need update
         updateGL();
     }
 
     shader_config.setShader(shader);
-    if (shader_config.visiable == false)
-    {
+    if (shader_config.visiable == false) {
         return;
     }
+
+    shader->setBool("useDiffuseTex", false);
+    shader->setBool("useNormalTex", false);
+    shader->setBool("useBumpTex", false);
 
     glm::vec3 diffuse_color =
         glm::vec3(default_material.diffuse[0], default_material.diffuse[1],
@@ -226,8 +217,7 @@ void Lobo::LoboTetMesh::paintGL(LoboShader *shader)
     glDrawElements(GL_TRIANGLES, tet_faces_glint.size(), GL_UNSIGNED_INT, 0);
 }
 
-void Lobo::LoboTetMesh::initialGL()
-{
+void Lobo::LoboTetMesh::initialGL() {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
@@ -240,23 +230,21 @@ void Lobo::LoboTetMesh::initialGL()
     status_flags |= TetMeshStatusFlags_initialGL;
 }
 
-void Lobo::LoboTetMesh::updateGL()
-{
-    if (!(status_flags & TetMeshStatusFlags_datasizeUpdated))
-    {
+void Lobo::LoboTetMesh::updateGL() {
+    if (!(status_flags & TetMeshStatusFlags_datasizeUpdated)) {
         // no need updateGL
         return;
     }
 
-    tet_vertice_col = Lobo::eigen_vec_2_mat(tet_vertice, tet_vertice.size() / 3, 3);
+    tet_vertice_col =
+        Lobo::eigen_vec_2_mat(tet_vertice, tet_vertice.size() / 3, 3);
     tet_faces_col = Lobo::eigen_vec_2_mat(tet_faces, tet_faces.size() / 3, 3);
 
     tet_vertice_attri.resize(tet_vertice.size() / 3 * 11);
     tet_vertice_attri.setZero();
     setTetAttriColor(0.8, 0.8, 0.8);
     tet_faces_glint.resize(tet_faces.size());
-    for (int i = 0; i < tet_faces.size(); i++)
-    {
+    for (int i = 0; i < tet_faces.size(); i++) {
         tet_faces_glint[i] = tet_faces[i];
     }
     updateTetAttri(tet_vertice, 0, 3, 11);
@@ -280,56 +268,49 @@ void Lobo::LoboTetMesh::updateGL()
     status_flags &= ~TetMeshStatusFlags_datasizeUpdated;
 }
 
-void Lobo::LoboTetMesh::deleteGL()
-{
+void Lobo::LoboTetMesh::deleteGL() {
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
 }
 
-void Lobo::LoboTetMesh::generateTet(const char *tetgen_command)
-{
-    if (lobomesh_binding != NULL)
-    {
+void Lobo::LoboTetMesh::generateTet(const char *tetgen_command) {
+    if (lobomesh_binding != NULL) {
         this->setInputPolygon(lobomesh_binding);
     }
 
     std::string command_ = "pq1.414Y";
-    if (tetgen_command != NULL)
-    {
+    if (tetgen_command != NULL) {
         command_ = tetgen_command;
     }
     Eigen::MatrixXd TV;
     Eigen::MatrixXi TT;
 
     std::cout << "tetgen check" << std::endl;
-    std::cout << "tri_vertices" << tri_vertices.rows() << " " << tri_vertices.cols() << std::endl;
-    std::cout << "tri_faces" << tri_faces.rows() << " " << tri_faces.cols() << std::endl;
+    std::cout << "tri_vertices" << tri_vertices.rows() << " "
+              << tri_vertices.cols() << std::endl;
+    std::cout << "tri_faces" << tri_faces.rows() << " " << tri_faces.cols()
+              << std::endl;
 
     int result = igl::copyleft::tetgen::tetrahedralize(
         tri_vertices, tri_faces, command_.c_str(), TV, TT, tet_faces_col);
 
-    //test
-    //Lobo::exportSimpleObj("test.obj",TV,TF);
+    // test
+    // Lobo::exportSimpleObj("test.obj",TV,TF);
 
     // copy data
 
-    if (result == 0)
-    {
+    if (result == 0) {
         tet_vertice.resize(TV.rows() * TV.cols());
-        for (int i = 0; i < TV.rows(); i++)
-        {
-            for (int j = 0; j < TV.cols(); j++)
-            {
+        for (int i = 0; i < TV.rows(); i++) {
+            for (int j = 0; j < TV.cols(); j++) {
                 tet_vertice.data()[i * TV.cols() + j] =
                     TV.data()[j * TV.rows() + i];
             }
         }
         tet_indices.resize(TT.rows() * TT.cols());
-        for (int i = 0; i < TT.rows(); i++)
-        {
-            for (int j = 0; j < TT.cols(); j++)
-            {
+        for (int i = 0; i < TT.rows(); i++) {
+            for (int j = 0; j < TT.cols(); j++) {
                 // one tet has 4 vertices
                 tet_indices.data()[i * TT.cols() + j] =
                     TT.data()[j * TT.rows() + i];
@@ -337,10 +318,8 @@ void Lobo::LoboTetMesh::generateTet(const char *tetgen_command)
         }
 
         tet_faces.resize(tet_faces_col.rows() * tet_faces_col.cols());
-        for (int i = 0; i < tet_faces_col.rows(); i++)
-        {
-            for (int j = 0; j < tet_faces_col.cols(); j++)
-            {
+        for (int i = 0; i < tet_faces_col.rows(); i++) {
+            for (int j = 0; j < tet_faces_col.cols(); j++) {
                 tet_faces.data()[i * tet_faces_col.cols() + j] =
                     tet_faces_col.data()[j * tet_faces_col.rows() + i];
             }
@@ -348,26 +327,21 @@ void Lobo::LoboTetMesh::generateTet(const char *tetgen_command)
 
         status_flags |= TetMeshStatusFlags_datasizeUpdated;
         status_flags |= TetMeshStatusFlags_tetgened;
-    }
-    else
-    {
+    } else {
         std::cout << "tetgen failed" << command_ << filebase << std::endl;
     }
 }
 
-void Lobo::LoboTetMesh::setBindingTriMesh(LoboMesh *lobomesh)
-{
+void Lobo::LoboTetMesh::setBindingTriMesh(LoboMesh *lobomesh) {
     this->lobomesh_binding = lobomesh;
 }
 
-void Lobo::LoboTetMesh::setInputPolygon(LoboMesh *lobomesh)
-{
+void Lobo::LoboTetMesh::setInputPolygon(LoboMesh *lobomesh) {
     // set vertices
     int num_tri_vertices = lobomesh->attrib.vertices.size() / 3;
     tri_vertices.resize(num_tri_vertices, 3);
 
-    for (int i = 0; i < num_tri_vertices; i++)
-    {
+    for (int i = 0; i < num_tri_vertices; i++) {
         tri_vertices.data()[i] = lobomesh->attrib.vertices[i * 3 + 0];
         tri_vertices.data()[i + num_tri_vertices] =
             lobomesh->attrib.vertices[i * 3 + 1];
@@ -377,10 +351,8 @@ void Lobo::LoboTetMesh::setInputPolygon(LoboMesh *lobomesh)
     int num_tri_faces = lobomesh->num_faces;
     tri_faces.resize(num_tri_faces, 3);
     int face_index_slid = 0;
-    for (int i = 0; i < lobomesh->shapes.size(); i++)
-    {
-        for (int j = 0; j < lobomesh->shapes[i].mesh.indices.size() / 3; j++)
-        {
+    for (int i = 0; i < lobomesh->shapes.size(); i++) {
+        for (int j = 0; j < lobomesh->shapes[i].mesh.indices.size() / 3; j++) {
             tri_faces.data()[face_index_slid] =
                 lobomesh->shapes[i].mesh.indices[j * 3].vertex_index;
             tri_faces.data()[face_index_slid + num_tri_faces] =
@@ -391,13 +363,12 @@ void Lobo::LoboTetMesh::setInputPolygon(LoboMesh *lobomesh)
         }
     }
 
-    //test obj
-    //Lobo::exportSimpleObj("test.obj",tri_vertices,tri_faces);
+    // test obj
+    // Lobo::exportSimpleObj("test.obj",tri_vertices,tri_faces);
 }
 
 void Lobo::LoboTetMesh::setInputPolygon(Eigen::VectorXd *vertices,
-                                        Eigen::VectorXi *faces)
-{
+                                        Eigen::VectorXi *faces) {
     tri_vertices.resize(vertices->rows(), vertices->cols());
     memcpy(tri_vertices.data(), vertices->data(),
            sizeof(double) * vertices->rows() * vertices->cols());
@@ -406,31 +377,22 @@ void Lobo::LoboTetMesh::setInputPolygon(Eigen::VectorXd *vertices,
            sizeof(int) * faces->rows() * faces->cols());
 }
 
-void Lobo::LoboTetMesh::exportTetMesh()
-{
-    if (usebinary)
-    {
+void Lobo::LoboTetMesh::exportTetMesh() {
+    if (usebinary) {
         exportTetMeshBinary(Lobo::getPath(filebase.c_str()).c_str());
-    }
-    else
-    {
+    } else {
         exportTetMeshAscii(Lobo::getPath(filebase.c_str()).c_str());
     }
 }
-void Lobo::LoboTetMesh::loadTetMesh()
-{
-    if (usebinary)
-    {
+void Lobo::LoboTetMesh::loadTetMesh() {
+    if (usebinary) {
         loadTetMeshBinary(Lobo::getPath(filebase.c_str()).c_str());
-    }
-    else
-    {
+    } else {
         loadTetMeshAscii(Lobo::getPath(filebase.c_str()).c_str());
     }
 }
 
-void Lobo::LoboTetMesh::loadTetMeshBinary(const char *filebase_)
-{
+void Lobo::LoboTetMesh::loadTetMeshBinary(const char *filebase_) {
     std::ostringstream stringStream;
     stringStream << filebase_ << ".tet";
     std::string filename = stringStream.str();
@@ -438,8 +400,7 @@ void Lobo::LoboTetMesh::loadTetMeshBinary(const char *filebase_)
     std::cout << "loadTetMeshBinary " << filename << std::endl;
 
     std::ifstream in(filename, std::ios::in | std::ios::binary);
-    if (!in.good())
-    {
+    if (!in.good()) {
         std::cout << filename << "file not open" << std::endl;
         return;
     }
@@ -451,11 +412,9 @@ void Lobo::LoboTetMesh::loadTetMeshBinary(const char *filebase_)
     status_flags |= TetMeshStatusFlags_datasizeUpdated;
 }
 
-void Lobo::LoboTetMesh::exportTetMeshBinary(const char *filebase_)
-{
+void Lobo::LoboTetMesh::exportTetMeshBinary(const char *filebase_) {
     if (!(status_flags &
-          (TetMeshStatusFlags_tetgened | TetMeshStatusFlags_loadtet)))
-    {
+          (TetMeshStatusFlags_tetgened | TetMeshStatusFlags_loadtet))) {
         return;
     }
     std::ostringstream stringStream;
@@ -472,8 +431,7 @@ void Lobo::LoboTetMesh::exportTetMeshBinary(const char *filebase_)
     out.close();
 }
 
-void Lobo::LoboTetMesh::loadTetMeshAscii(const char *filebase_)
-{
+void Lobo::LoboTetMesh::loadTetMeshAscii(const char *filebase_) {
     std::cout << "loadTetMeshAscii " << filebase_ << std::endl;
 
     std::ostringstream stringStream;
@@ -493,11 +451,9 @@ void Lobo::LoboTetMesh::loadTetMeshAscii(const char *filebase_)
     std::ifstream inputstream(elementfile);
     inputstream >> numele >> tmp >> tmp;
     tet_indices.resize(numele * 4);
-    for (int i = 0; i < numele; i++)
-    {
+    for (int i = 0; i < numele; i++) {
         inputstream >> tmp;
-        for (int j = 0; j < 4; j++)
-        {
+        for (int j = 0; j < 4; j++) {
             inputstream >> tet_indices.data()[i * 4 + j];
         }
     }
@@ -506,11 +462,9 @@ void Lobo::LoboTetMesh::loadTetMeshAscii(const char *filebase_)
     inputstream.open(nodefile);
     inputstream >> numvet >> tmp >> tmp >> tmp;
     tet_vertice.resize(numvet * 3);
-    for (int i = 0; i < numvet; i++)
-    {
+    for (int i = 0; i < numvet; i++) {
         inputstream >> tmp;
-        for (int j = 0; j < 3; j++)
-        {
+        for (int j = 0; j < 3; j++) {
             inputstream >> tet_vertice.data()[i * 3 + j];
         }
     }
@@ -519,11 +473,9 @@ void Lobo::LoboTetMesh::loadTetMeshAscii(const char *filebase_)
     inputstream.open(facefile);
     inputstream >> numface;
     tet_faces.resize(numface * 3);
-    for (int i = 0; i < numface; i++)
-    {
+    for (int i = 0; i < numface; i++) {
         inputstream >> tmp;
-        for (int j = 0; j < 3; j++)
-        {
+        for (int j = 0; j < 3; j++) {
             inputstream >> tet_faces.data()[i * 3 + j];
         }
     }
@@ -531,11 +483,9 @@ void Lobo::LoboTetMesh::loadTetMeshAscii(const char *filebase_)
     status_flags |= TetMeshStatusFlags_datasizeUpdated;
     status_flags |= TetMeshStatusFlags_loadtet;
 }
-void Lobo::LoboTetMesh::exportTetMeshAscii(const char *filebase_)
-{
+void Lobo::LoboTetMesh::exportTetMeshAscii(const char *filebase_) {
     if (!(status_flags &
-          (TetMeshStatusFlags_tetgened | TetMeshStatusFlags_loadtet)))
-    {
+          (TetMeshStatusFlags_tetgened | TetMeshStatusFlags_loadtet))) {
         return;
     }
     std::cout << "exportTetMeshAscii " << filebase_ << std::endl;
@@ -553,11 +503,9 @@ void Lobo::LoboTetMesh::exportTetMeshAscii(const char *filebase_)
 
     std::ofstream outstream(elementfile);
     outstream << tet_indices.size() / 4 << " 4 0 " << std::endl;
-    for (int i = 0; i < tet_indices.rows() / 4; i++)
-    {
+    for (int i = 0; i < tet_indices.rows() / 4; i++) {
         outstream << i << " ";
-        for (int j = 0; j < 4; j++)
-        {
+        for (int j = 0; j < 4; j++) {
             outstream << tet_indices.data()[i * 4 + j] << " ";
         }
         outstream << std::endl;
@@ -566,11 +514,9 @@ void Lobo::LoboTetMesh::exportTetMeshAscii(const char *filebase_)
 
     outstream.open(nodefile);
     outstream << tet_vertice.size() / 3 << " 3 0 0 " << std::endl;
-    for (int i = 0; i < tet_vertice.rows() / 3; i++)
-    {
+    for (int i = 0; i < tet_vertice.rows() / 3; i++) {
         outstream << i << " ";
-        for (int j = 0; j < 3; j++)
-        {
+        for (int j = 0; j < 3; j++) {
             outstream << tet_vertice.data()[i * 3 + j] << " ";
         }
         outstream << std::endl;
@@ -578,11 +524,9 @@ void Lobo::LoboTetMesh::exportTetMeshAscii(const char *filebase_)
     outstream.close();
     outstream.open(facefile);
     outstream << tet_faces.size() / 3 << std::endl;
-    for (int i = 0; i < tet_faces.rows() / 3; i++)
-    {
+    for (int i = 0; i < tet_faces.rows() / 3; i++) {
         outstream << i << " ";
-        for (int j = 0; j < 3; j++)
-        {
+        for (int j = 0; j < 3; j++) {
             outstream << tet_faces.data()[i * 3 + j] << " ";
         }
         outstream << std::endl;
@@ -591,28 +535,26 @@ void Lobo::LoboTetMesh::exportTetMeshAscii(const char *filebase_)
 }
 
 void Lobo::LoboTetMesh::updateTetAttri(Eigen::VectorXd &inputattri, int offset,
-                                       int attrisize, int totalsize)
-{
-    for (int i = 0; i < inputattri.size() / attrisize; i++)
-    {
+                                       int attrisize, int totalsize) {
+    for (int i = 0; i < inputattri.size() / attrisize; i++) {
         for (int j = 0; j < attrisize; j++)
             tet_vertice_attri.data()[i * totalsize + offset + j] =
                 inputattri.data()[i * attrisize + j];
     }
 }
 
-void Lobo::LoboTetMesh::setTetAttriColor(double r, double g, double b, int offset, int totalsize)
-{
-    for (int i = 0; i < tet_vertice_attri.size() / totalsize; i++)
-    {
+void Lobo::LoboTetMesh::setTetAttriColor(double r, double g, double b,
+                                         int offset, int totalsize) {
+    for (int i = 0; i < tet_vertice_attri.size() / totalsize; i++) {
         tet_vertice_attri.data()[i * totalsize + offset + 0] = r;
         tet_vertice_attri.data()[i * totalsize + offset + 1] = g;
         tet_vertice_attri.data()[i * totalsize + offset + 2] = b;
     }
 }
 
-void Lobo::LoboTetMesh::setTetVetAttriColor(int vid, double r, double g, double b, int offset, int totalsize)
-{
+void Lobo::LoboTetMesh::setTetVetAttriColor(int vid, double r, double g,
+                                            double b, int offset,
+                                            int totalsize) {
     tet_vertice_attri.data()[vid * totalsize + offset + 0] = r;
     tet_vertice_attri.data()[vid * totalsize + offset + 1] = g;
     tet_vertice_attri.data()[vid * totalsize + offset + 2] = b;

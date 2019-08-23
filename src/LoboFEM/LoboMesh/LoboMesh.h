@@ -41,13 +41,25 @@ struct ShapeBuffer {
 struct MaterialBuffer {
     unsigned int diffuse_texid;   // vertex array buffer
     unsigned int emissive_texid;  // vertex array buffer
+    unsigned int normal_texid;  // vertex array buffer
+    unsigned int bump_texid;
 
     std::string diffuse_texname;
     std::string emissive_texname;
+    std::string normal_texname;
+    std::string bump_texname;
+
     // std::map<std::string,unsigned int> disffues_tex;
     bool has_diffuse_tex;
     bool has_emissive_tex;
+    bool has_normal_tex;
+    bool has_bump_tex;
+
+
     bool use_diffuse_tex;
+    bool use_normal_tex;
+    bool use_bump_tex;
+
 };
 
 class LoboMesh {

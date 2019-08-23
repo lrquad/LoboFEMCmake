@@ -2,12 +2,16 @@
 <Scene version="1.0" type = "FEMscene">
 	<LoboScene>
 		<TriMesh name="bar" uniform = "false" smooth = "true">
-			<Path>./models/StudioL.obj</Path>
+			<Path>./models/floor_wood.obj</Path>
 			<Position>0 0 -1.76</Position>
 		</TriMesh>
 		<TriMesh name="bunny" uniform = "false">
 			<Path>./models/bunny.obj</Path>
-			<Position>0 0.0 0.0</Position>
+			<Position>0.0 0.0 0.0</Position>
+		</TriMesh>
+		<TriMesh name="dragon" uniform = "false">
+			<Path>./models/dragon.obj</Path>
+			<Position>2.0 1.0 0.0</Position>
 		</TriMesh>
 	</LoboScene>
 

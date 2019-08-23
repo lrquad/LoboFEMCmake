@@ -10,6 +10,7 @@ out vec3 ourColor;
 out vec2 TexCoords;
 out vec3 ourNormal;
 out vec3 FragPos;
+out vec3 eyePos;
 out vec4 FragPosLightSpace[NR_POINT_LIGHTS];
 
 uniform mat4 model;
@@ -23,11 +24,14 @@ void main()
     gl_Position = projection * view * model * vec4(aPos, 1.0f);
     
     FragPos = vec3(model * vec4(aPos, 1.0));
+    eyePos = vec3(view * model*vec4(aPos, 1.0));
     TexCoords = aTexCoord;
     ourColor = aColor;
-    ourNormal = mat3(transpose(inverse(model))) * aNormal; 
+    mat3 normalMatrix = transpose(inverse(mat3(model)));
+    ourNormal = normalMatrix * aNormal; 
 
     for (int i=0;i<NR_POINT_LIGHTS;i++)
     FragPosLightSpace[i] = lightSpaceMatrix[i] * vec4(FragPos, 1.0);
     //TexCoord = aTexCoord;
+
 }

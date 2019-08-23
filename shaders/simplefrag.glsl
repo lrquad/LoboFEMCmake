@@ -7,6 +7,9 @@ struct Material {
     vec3 specular;
     sampler2D diffuse_tex;
     sampler2D emissive_tex;
+    sampler2D normal_tex;
+    sampler2D bump_tex;
+
     float shininess;
 }; 
 
@@ -33,6 +36,7 @@ in vec3 ourColor;
 in vec2 TexCoords;
 in vec3 ourNormal;
 in vec3 FragPos;
+in vec3 eyePos;
 in vec4 FragPosLightSpace[NR_POINT_LIGHTS];
 uniform sampler2D shadowMap[NR_POINT_LIGHTS];
 
@@ -42,8 +46,12 @@ uniform sampler2D shadowMap[NR_POINT_LIGHTS];
 uniform vec3 viewPos;  
 
 uniform bool useDiffuseTex = false;
+uniform bool useNormalTex = false;
+uniform bool useBumpTex = false;
 uniform bool useFlatNormal = true;
 uniform bool vertex_color_mode = false;
+uniform bool use_blinn = true;
+
 
 uniform Lights lights[NR_POINT_LIGHTS];
 
@@ -56,8 +64,37 @@ void main()
     // properties
     vec3 norm = normalize(ourNormal);
     
+    
     if(useFlatNormal)
     norm = normalize(cross(dFdx(FragPos), dFdy(FragPos)));
+
+    vec3 tmp_norm = norm;
+
+    if(useNormalTex)
+    {
+        vec3 q0 = dFdx(eyePos);
+        vec3 q1 = dFdy(eyePos);
+        vec2 st0 = dFdx(TexCoords.st);
+        vec2 st1 = dFdy(TexCoords.st);
+        vec3 B = normalize( q0 * st1.t - q1 * st0.t);
+        vec3 T = normalize(-q0 * st1.s + q1 * st0.s);
+
+        //vec3 T = normalize(dFdy(FragPos));
+        //T = normalize(T - dot(T, norm) * norm);
+        //vec3 B = normalize(cross(norm, T));
+        mat3 TBN = mat3(T, B, norm);
+        norm = texture(material.normal_tex, TexCoords).rgb;
+        //norm = normalize(norm);
+        norm = normalize(norm * 2.0 - 1.0);  // this normal is in tangent space
+        norm = (TBN)*norm;
+    }
+
+    if(useBumpTex)
+    {
+        // float heightvalue = texture(material.bump_tex, TexCoords).a;
+        // heightvalue = heightvalue*2.0-1.0;
+        // FragPos = FragPos+norm*heightvalue;
+    }
 
     vec3 viewDir = normalize(viewPos - FragPos);
 
@@ -87,12 +124,16 @@ vec3 CalcDirLight(Lights light, vec3 normal, vec3 viewDir,float shadow)
     // diffuse shading
     float diff = max(dot(normal, lightDir), 0.0);
     // specular shading
-    vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    
-    //blinn
-    //vec3 halfwayDir = normalize(lightDir + viewDir);  
-    //spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
+    float spec =0.0;
+    if(use_blinn)
+    {
+        vec3 halfwayDir = normalize(lightDir + viewDir);  
+        spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
+    }else
+    {
+        vec3 reflectDir = reflect(-lightDir, normal);
+        spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    }
     // combine results
     vec3 ambient = light.lightColor * material.ambient;
     vec3 diffuse = light.lightColor * diff * material.diffuse;
@@ -120,8 +161,19 @@ vec3 CalcPointLight(Lights light, vec3 normal, vec3 fragPos, vec3 viewDir,float 
     // diffuse shading
     float diff = max(dot(normal, lightDir), 0.0);
     // specular shading
-    vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    
+    float spec =0.0;
+
+    if(use_blinn)
+    {
+        vec3 halfwayDir = normalize(lightDir + viewDir);  
+        spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
+    }else
+    {
+        vec3 reflectDir = reflect(-lightDir, normal);
+        spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    }
+
     // attenuation
     float distance = length(light.position - fragPos);
     float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));    
@@ -184,8 +236,8 @@ float ShadowCalculation(Lights light,vec4 fragPosLightSpace,sampler2D shadowMap)
     //float contri_shadow = currentDepth - bias > pcfDepth  ? 1.0 : 0.0;
 
     shadow /= 49.0;
-    shadow*=0.5;
-    //shadow = contri_shadow;
+    shadow*=0.95;
+    
     // keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
     if(projCoords.z > 1.0)
         shadow = 0.0;

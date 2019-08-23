@@ -95,6 +95,7 @@ class LoboShaderConfig
     bool flat_mode;
     bool visiable;
     bool cast_shadow;
+    bool use_blinn;
 };
 
 } // namespace Lobo

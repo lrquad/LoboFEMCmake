@@ -120,8 +120,6 @@ int main() {
     //fem_main.initialGL();
     
     //important
-   
-
     // Main loop
     while (!glfwWindowShouldClose(window)) {
         // Poll and handle events (inputs, window resize, etc.)
