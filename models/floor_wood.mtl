@@ -5,7 +5,7 @@ newmtl None
 Ns 0.000000
 Ka 1.000000 1.000000 1.000000
 Kd 0.800000 0.800000 0.800000
-Ks 0.500000 0.500000 0.500000
+Ks 1.000000 1.000000 1.000000
 Ke 0.0 0.0 0.0
 map_Ka ./models/wood/Wood_planks_012_basecolor.jpg
 map_Kd ./models/wood/Wood_planks_012_basecolor.jpg

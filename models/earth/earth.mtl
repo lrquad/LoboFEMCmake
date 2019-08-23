@@ -12,10 +12,10 @@ newmtl 01___Default
 	Kd 0.0000 0.0000 0.0000
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka 4096_earth.jpg
-	map_Kd 4096_earth.jpg
-	map_bump 4096_bump.jpg
-	norm 4096_bump.jpg
+	map_Ka ./models/earth/4096_earth.jpg
+	map_Kd ./models/earth/4096_earth.jpg
+	map_bump ./models/earth/4096_bump.jpg
+	norm ./models/earth/4096_bump.jpg
 
 newmtl 02___Default
 	Ns 10.0000
@@ -28,7 +28,7 @@ newmtl 02___Default
 	Kd 0.5882 0.5882 0.5882
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka 4096_clouds.jpg
-	map_Kd 4096_earth.jpg
-	map_d 4096_clouds.jpg
-	norm 4096_bump.jpg
+	map_Ka ./models/earth/4096_clouds.jpg
+	map_Kd ./models/earth/4096_earth.jpg
+	map_d ./models/earth/4096_clouds.jpg
+	norm ./models/earth/4096_bump.jpg
