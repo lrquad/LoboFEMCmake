@@ -24,6 +24,7 @@ void Lobo::LoboScene::runXMLscript(pugi::xml_node &scene_node)
         {
             std::string tri_path = tri_mesh_node.child("Path").text().as_string();
             bool uniform = false;
+            bool smooth = true;
 
             if(tri_mesh_node.child("uniform"))
             {
@@ -31,11 +32,14 @@ void Lobo::LoboScene::runXMLscript(pugi::xml_node &scene_node)
             }
 
             this->addMesh(tri_path.c_str(),uniform);
+            
             if (tri_mesh_node.child("Position"))
             {
                 std::vector<float> position = Lobo::parseString<float>(tri_mesh_node.child("Position").text().as_string());
                 this->mesh_list.back()->setPosition(position);
             }
+
+            this->mesh_list.back()->shader_config.flat_mode = !smooth;
         }
     }
 }

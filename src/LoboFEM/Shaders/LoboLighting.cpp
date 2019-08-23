@@ -17,14 +17,15 @@ Lobo::LoboLightManager::LoboLightManager()
     }
 
     // initial setting
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 2; i++)
     {
         lighting_list[i]->trigger = true;
         lighting_list[i]->cast_shadow = true;
     }
+    lighting_list[0]->lightColor = glm::vec3(0.98039,0.83922,0.64706);
     lighting_list[0]->lightPos = glm::vec3(6.0, 6.0, 6.0);
     lighting_list[1]->lightPos = glm::vec3(-6, 6.0, 6.0);
-    lighting_list[2]->lightPos = glm::vec3(0.0, 6.0, -6.0);
+    //lighting_list[2]->lightPos = glm::vec3(0.0, 6.0, -6.0);
 }
 
 Lobo::LoboLightManager::~LoboLightManager()

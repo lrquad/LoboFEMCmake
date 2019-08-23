@@ -256,6 +256,17 @@ void Lobo::LoboMesh::updateShapeArrayBufferVertices(int shape_id)
             attrib.vertices[vid * 3 + 1];
         shape_buffer[shape_id].vb[j * size_per_vertex + 2] =
             attrib.vertices[vid * 3 + 2];
+            
+        int nid = shapes[shape_id].mesh.indices[j].normal_index;
+        if (nid != -1)
+        {
+            shape_buffer[shape_id].vb[j * size_per_vertex + 3] =
+                attrib.normals[nid * 3 + 0];
+            shape_buffer[shape_id].vb[j * size_per_vertex + 4] =
+                attrib.normals[nid * 3 + 1];
+            shape_buffer[shape_id].vb[j * size_per_vertex + 5] =
+                attrib.normals[nid * 3 + 2];
+        }
     }
 }
 
@@ -317,6 +328,7 @@ void Lobo::LoboMesh::updateGLbuffer()
     // check if the buffer is already updated
     if (bufferNeedUpdate)
     {
+        Lobo::updateSmoothNorm(attrib, shapes);
         glBindVertexArray(VAO);
         int num_shapes = shapes.size();
         for (int i = 0; i < num_shapes; i++)

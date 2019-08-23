@@ -197,7 +197,7 @@ void Lobo::LoboFEM::makeContext()
     debugDepthQuad.loadShaderFile("./shaders/debugdepth.vs",
                                   "./shaders/debugdepth.fs");
 
-    camera.initCamera(glm::vec3(0.0f, 4.0f, 8.0f), glm::vec3(0.0, 1.0, 0.0), -90, -30);
+    camera.initCamera(glm::vec3(0.0, 3.0f, 8.0f), glm::vec3(0.0, 1.0, 0.0), -90, -16.0);
 }
 void Lobo::LoboFEM::setCurrentContext()
 {

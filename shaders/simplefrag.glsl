@@ -169,10 +169,10 @@ float ShadowCalculation(Lights light,vec4 fragPosLightSpace,sampler2D shadowMap)
     // float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
     // PCF
     float shadow = 0.0;
-    vec2 texelSize = 4.0 / textureSize(shadowMap, 0);
-    for(int x = -2; x <= 2; ++x)
+    vec2 texelSize = 10.0 / textureSize(shadowMap, 0);
+    for(int x = -3; x <= 3; ++x)
     {
-        for(int y = -2; y <= 2; ++y)
+        for(int y = -3; y <= 3; ++y)
         {
             float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
             float contri_shadow = currentDepth - bias > pcfDepth  ? 1.0 : 0.0; 
@@ -183,7 +183,7 @@ float ShadowCalculation(Lights light,vec4 fragPosLightSpace,sampler2D shadowMap)
     //float pcfDepth = texture(shadowMap, projCoords.xy).r; 
     //float contri_shadow = currentDepth - bias > pcfDepth  ? 1.0 : 0.0;
 
-    shadow /= 25.0;
+    shadow /= 49.0;
     shadow*=0.5;
     //shadow = contri_shadow;
     // keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
