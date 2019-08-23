@@ -24,7 +24,8 @@ void main()
     gl_Position = projection * view * model * vec4(aPos, 1.0f);
     
     FragPos = vec3(model * vec4(aPos, 1.0));
-    eyePos = vec3(view * model*vec4(aPos, 1.0));
+    eyePos = vec3(gl_Position);
+    
     TexCoords = aTexCoord;
     ourColor = aColor;
     mat3 normalMatrix = transpose(inverse(mat3(model)));
