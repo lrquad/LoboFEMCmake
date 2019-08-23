@@ -1,9 +1,13 @@
 <?xml version="1.0"?>
 <Scene version="1.0" type = "FEMscene">
 	<LoboScene>
-		<TriMesh name="bar" uniform = "false" smooth = "true">
+		<TriMesh name="alduin" uniform = "false">
+			<Path>./models/alduin/alduin.obj</Path>
+			<Position>2.0 1.0 0.0</Position>
+		</TriMesh>
+		<TriMesh name="floor" uniform = "false" smooth = "true">
 			<Path>./models/floor_wood2.obj</Path>
-			<Position>0 0 0</Position>
+			<Position>0 0 -1.76</Position>
 		</TriMesh>
 		<TriMesh name="bunny" uniform = "false">
 			<Path>./models/bunny.obj</Path>

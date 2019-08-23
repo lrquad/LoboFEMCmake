@@ -33,7 +33,10 @@ public:
     void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 protected:
+
+
     void showMainWindow(ImGui::FileBrowser *fileDialog, bool *p_open = NULL);
+    void saveCurScreenImagePNG(const char* imagename);
 
 
     ImGui::FileBrowser fileDialog;

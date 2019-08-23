@@ -40,10 +40,13 @@
 #include <Eigen/Dense>
 #include <iostream>
 
+Lobo::LoboFEM* fem_main_p = NULL;
+
 static void glfw_error_callback(int error, const char *description) {
     fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
 
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 int main() {
     // Setup window
@@ -70,6 +73,8 @@ int main() {
         window_w, window_h, "New LoboFEM", NULL, NULL);
     if (window == NULL) return 1;
     glfwMakeContextCurrent(window);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
     glfwSwapInterval(1);  // Enable vsync
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -121,7 +126,7 @@ int main() {
     fem_main.initScreenBuffer(); // init screen buffer objects
     fem_main.loadXMLfile("./config/FEM_firstdemo.xml");
 
-
+    fem_main_p = &fem_main;
     //fem_main.initialGL();
     
     //important
@@ -164,3 +169,11 @@ int main() {
     return 0;
 }
 
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    // make sure the viewport matches the new window dimensions; note that width and 
+    // height will be significantly larger than specified on retina displays.
+    if(fem_main_p!=NULL)
+    fem_main_p->framebuffer_size_callback(window,width,height);
+}

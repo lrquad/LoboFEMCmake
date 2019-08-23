@@ -5,13 +5,13 @@
 #include "imgui_impl_opengl3.h"
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
-#include "stb_image_write.h"
+#include "stb_image_write_o.h"
 
 Lobo::LoboFEM::LoboFEM()
 {
     dynamic_scene = NULL;
     scene = NULL;
-    clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+    
     use_screen_buffer = false;
     multisamples = 16;
 }
@@ -86,11 +86,8 @@ void Lobo::LoboFEM::initScreenBuffer()
 
 void Lobo::LoboFEM::windowLoop(GLFWwindow *window)
 {
-
     ImGui::NewFrame();
-
     drawImGui();
-
     ImGui::Render();
 
     //shadow rendering
@@ -133,9 +130,10 @@ void Lobo::LoboFEM::windowLoop(GLFWwindow *window)
 
     if (use_screen_buffer)
     {
-        framebuffer_size_callback(window, display_w, display_h);
+        //framebuffer_size_callback(window, display_w, display_h);
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
     }
+    
 
     glViewport(0, 0, display_w, display_h);
     glClearColor(clear_color.x, clear_color.y, clear_color.z,
@@ -143,7 +141,7 @@ void Lobo::LoboFEM::windowLoop(GLFWwindow *window)
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
-    glEnable(GL_FRAMEBUFFER_SRGB);
+    glDisable(GL_FRAMEBUFFER_SRGB);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -213,6 +211,9 @@ void Lobo::LoboFEM::windowLoop(GLFWwindow *window)
         glBindVertexArray(quadVAO);
         glDrawArrays(GL_TRIANGLES, 0, 6);
     }
+
+    //make imgui SRGB
+    glEnable(GL_FRAMEBUFFER_SRGB);
 }
 
 void Lobo::LoboFEM::drawImGui()
@@ -249,10 +250,7 @@ void Lobo::LoboFEM::showMainWindow(ImGui::FileBrowser *fileDialog, bool *p_open)
         }
 
         ImGui::Text("| %.3f ms/frame (%.1f FPS) | %s ", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate, config_file_path.c_str());
-        if (ImGui::Button("OffScreenBuffer"))
-        {
-            use_screen_buffer = !use_screen_buffer;
-        }
+        
         ImGui::EndMainMenuBar();
     }
 
@@ -264,6 +262,18 @@ void Lobo::LoboFEM::showMainWindow(ImGui::FileBrowser *fileDialog, bool *p_open)
         fileDialog->ClearSelected();
         this->loadXMLfile(config_file_path.c_str());
     }
+
+    ImGuiIO &io = ImGui::GetIO();
+    ImGui::Begin("Program setting",
+                 p_open); // Create a window called "Hello, world!" and
+                          // append into it.
+    ImGui::Checkbox("OffScreenBuffer",&use_screen_buffer);
+    if(ImGui::Button("Save Screen"))
+    {   
+        this->saveCurScreenImagePNG("./demo/default/screenshot.png");
+    }
+
+    ImGui::End();
 }
 
 void Lobo::LoboFEM::paintGL(LoboShader *shader)
@@ -278,6 +288,7 @@ void Lobo::LoboFEM::deleteGL()
 
 void Lobo::LoboFEM::makeContext()
 {
+    clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     //scripts
     scene = new Lobo::LoboScene();
     //scene->addMesh("./models/floor.obj", false);
@@ -349,4 +360,27 @@ void Lobo::LoboFEM::framebuffer_size_callback(GLFWwindow *window, int width, int
     glBindTexture(GL_TEXTURE_2D, screenTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
     glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void Lobo::LoboFEM::saveCurScreenImagePNG(const char* imagename)
+{
+    if(!this->use_screen_buffer)
+    {
+        std::cout<<"no offline buffer"<<std::endl;
+        return;
+    }
+    glBindTexture(GL_TEXTURE_2D, screenTexture);
+
+    int w = Lobo::getCurrentCamera()->view_port[2];
+    int h = Lobo::getCurrentCamera()->view_port[3];
+
+    float* read = (float*)malloc(sizeof(float) * w * h * 3);
+    stbi_flip_vertically_on_write(true);
+    glGetTexImage(GL_TEXTURE_2D,0,GL_RGB,GL_UNSIGNED_BYTE,read);
+    // sizeof(float) * width * height * 3
+
+    stbi_write_png(imagename,w,h,3,read,0);
+
+    glBindTexture(GL_TEXTURE_2D,0);
+    free(read);
 }
