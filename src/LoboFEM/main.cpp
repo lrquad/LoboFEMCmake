@@ -43,12 +43,14 @@
 static void glfw_error_callback(int error, const char *description) {
     fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
+
+
 int main() {
     // Setup window
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit()) return 1;
 
-    const char *glsl_version = "#version 130";
+    const char *glsl_version = "#version 330";
     const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -116,8 +118,9 @@ int main() {
     Lobo::LoboFEM fem_main;
     fem_main.makeContext();
     fem_main.setCurrentContext();
-    //fem_main.initScreenBuffer(); // init screen buffer objects
+    fem_main.initScreenBuffer(); // init screen buffer objects
     fem_main.loadXMLfile("./config/FEM_firstdemo.xml");
+
 
     //fem_main.initialGL();
     

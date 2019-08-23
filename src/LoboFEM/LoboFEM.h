@@ -30,9 +30,11 @@ public:
     virtual void makeContext();
     virtual void setCurrentContext();
     void loadXMLfile(const char *filename);
+    void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 protected:
     void showMainWindow(ImGui::FileBrowser *fileDialog, bool *p_open = NULL);
+
 
     ImGui::FileBrowser fileDialog;
     LoboScene *scene;
@@ -55,8 +57,12 @@ protected:
     unsigned int quadVBO;
     unsigned int framebuffer;
     unsigned int textureColorbuffer;
+    unsigned int textureColorBufferMultiSampled;
+    unsigned int intermediateFBO;
+    unsigned int screenTexture;
     unsigned int rbo;
     bool use_screen_buffer;
+    int multisamples;
 };
 
 } // namespace Lobo
