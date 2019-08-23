@@ -86,16 +86,13 @@ void main()
         vec3 S = normalize( q0 * st1.t - q1 * st0.t);
         vec3 T = normalize(-q0 * st1.s + q1 * st0.s);
         
-        //vec3 T = normalize(dFdy(FragPos));
-        //T = normalize(T - dot(T, norm) * norm);
-        //vec3 B = normalize(cross(norm, T));
         vec3 NfromST = cross( S, T );
         if( dot( NfromST, N ) < 0.0 ) {
             S *= -1.0;
             T *= -1.0;
         }
-        mat3 TBN = mat3(S, T, norm);
 
+        mat3 TBN = mat3(S, T, norm);
         //version 2
         // vec3 dp2perp = cross( q1, N );
         // vec3 dp1perp = cross( N, q0 );
@@ -103,11 +100,9 @@ void main()
         // S = dp2perp * st0.y + dp1perp * st1.y;
         // float invmax = inversesqrt( max( dot(T,T), dot(S,S) ) );
         // TBN = mat3(T * invmax, S * invmax, N);
-        
-
         norm = texture(material.normal_tex, TexCoords).rgb;
         //norm = normalize(norm);
-        norm = normalize(norm * 2.0 - 1.0);  // this normal is in tangent space
+        norm = (norm * 2.0 - 1.0);  // this normal is in tangent space
         norm = normalize((TBN)*norm);
     }
 

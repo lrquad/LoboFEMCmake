@@ -116,7 +116,9 @@ int main() {
     Lobo::LoboFEM fem_main;
     fem_main.makeContext();
     fem_main.setCurrentContext();
+    //fem_main.initScreenBuffer(); // init screen buffer objects
     fem_main.loadXMLfile("./config/FEM_firstdemo.xml");
+
     //fem_main.initialGL();
     
     //important

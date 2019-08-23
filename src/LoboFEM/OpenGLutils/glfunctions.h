@@ -30,6 +30,7 @@ inline void setPositionAttribute(int location, int size, int stride, int offset)
 inline int bindTextureBuffer(const char *filename, unsigned int &texture_id)
 {
     glGenTextures(1, &texture_id);
+
     stbi_set_flip_vertically_on_load(true);
     glBindTexture(GL_TEXTURE_2D, texture_id);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
