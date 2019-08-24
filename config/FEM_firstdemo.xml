@@ -7,25 +7,46 @@
 		</TriMesh>
 		<TriMesh name="bunny" uniform = "false">
 			<Path>./models/bunny.obj</Path>
-			<Position>0.0 0.0 0.0</Position>
+			<Position>0.0 1.0 0.0</Position>
 		</TriMesh>
 
 	</LoboScene>
 
 	<LoboDynamicScene>
-
-		<SceneFolder>/media/ranluo/Data/DEMO/Siggraph2020/bunny/</SceneFolder>
+		<SceneFolder>./demo/Siggraph2020/bunny/</SceneFolder>
+		
 		<BindTetMesh UseBinary="true" tetgen="false" loadmesh="false" savemesh="false">
 			<TrimeshId>1</TrimeshId>
 			<!-- the tet files will be saved as <SceneFolder>/<TetFileBase> -->
 			<TetFileBase>tetmesh/bunny</TetFileBase>
 		</BindTetMesh>
 
-		<FEMSolver type="fullspace" name ="fullspace">
+		<DynamicSolver type="fullspace" name ="fullspace">
 			<!-- the output will be saved in folder <SceneDataFolder>/<DataFolder> -->
 			<SolverFolder>solveroutput/bunny_fullspace/</SolverFolder>
-			<Constraints>constraints/bunny.txt</Constraints>
-		</FEMSolver>
+
+			<HyperelasticModel>
+				<Material type="NeoHookean">
+				<YoungsModulus value = "100.0"></YoungsModulus>
+				<PossionRatio value = "0.3"></PossionRatio>
+				</Material>
+			</HyperelasticModel>
+
+			<KineticModel>
+				<Density value = "1.0"></Density>
+			</KineticModel>
+
+			<ConstraintModel weight ="1000.0">
+				<Constraints>constraints/bunny.txt</Constraints>
+			</ConstraintModel>
+
+			<CollisionModel weight="100.0">
+			</CollisionModel>
+
+			<TimeIntegration method="ImplicitEular">
+			</TimeIntegration>
+
+		</DynamicSolver>
 
 	</LoboDynamicScene>
 

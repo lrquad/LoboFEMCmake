@@ -110,6 +110,7 @@ class LoboMesh {
 
     virtual void getCurVertices(float* outPosition);
     virtual void getCurVertices(double* outPosition);
+    
 
     virtual void resetVertice();
     Lobo::LoboShaderConfig shader_config;

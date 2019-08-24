@@ -129,6 +129,7 @@ void Lobo::LoboMesh::loadObj(const char *filename, bool uniform, bool verbose) {
     for (int i = 0; i < shapes.size(); i++) {
         num_faces += shapes[i].mesh.indices.size() / 3;
     }
+    
 
     if (!warn.empty()) {
         std::cout << warn << std::endl;
