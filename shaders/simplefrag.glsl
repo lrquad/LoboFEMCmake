@@ -208,6 +208,7 @@ float ShadowCalculation(Lights light,vec4 fragPosLightSpace,sampler2D shadowMap)
     float closestDepth = texture(shadowMap, projCoords.xy).r; 
     // get depth of current fragment from light's perspective
     float currentDepth = projCoords.z;
+
     // calculate bias (based on depth map resolution and slope)
     vec3 normal = normalize(ourNormal);
     vec3 lightDir = normalize(light.position - FragPos);
@@ -232,7 +233,7 @@ float ShadowCalculation(Lights light,vec4 fragPosLightSpace,sampler2D shadowMap)
     //float contri_shadow = currentDepth - bias > pcfDepth  ? 1.0 : 0.0;
 
     shadow /= 49.0;
-    shadow*=0.95;
+    //shadow*=0.95;
     
     // keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
     if(projCoords.z > 1.0)
