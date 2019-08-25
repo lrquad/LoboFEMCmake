@@ -70,6 +70,10 @@ void Lobo::LoboTetMesh::drawImGui(bool *p_open) {
         if (ImGui::Button("load Tet")) {
             loadTetMesh();
         };
+        if(ImGui::Button("Save Constraints"))
+        {
+            exportConstrainedVertices(Lobo::getPath("constraints/constrainedDoFs.txt").c_str());
+        }
 
         if (status_flags &
             (TetMeshStatusFlags_tetgened | TetMeshStatusFlags_loadtet)) {
@@ -135,6 +139,7 @@ void Lobo::LoboTetMesh::mouseRectSelect() {
         for (int i = 0; i < P.rows(); i++) {
             if (Lobo::inRect(mouse_rect, P.data()[i], P.data()[P.rows() + i])) {
                 setTetVetAttriColor(i, 0.0, 0.0, 1.0);
+                vertices_flags[i] = 1;
             }
         }
     }
@@ -235,6 +240,8 @@ void Lobo::LoboTetMesh::updateGL() {
         // no need updateGL
         return;
     }
+    vertices_flags.resize(tet_vertice.size() / 3);
+    std::fill(vertices_flags.begin(), vertices_flags.end(), 0);
 
     tet_vertice_col =
         Lobo::eigen_vec_2_mat(tet_vertice, tet_vertice.size() / 3, 3);
@@ -532,6 +539,24 @@ void Lobo::LoboTetMesh::exportTetMeshAscii(const char *filebase_) {
         outstream << std::endl;
     }
     outstream.close();
+}
+
+void Lobo::LoboTetMesh::exportConstrainedVertices(const char *filename) {
+    std::vector<unsigned int> constrained_DoFs;
+    for (int i = 0; i < vertices_flags.size(); i++) {
+        if (vertices_flags[i] == 1) {
+            constrained_DoFs.push_back(i*3);
+            constrained_DoFs.push_back(i*3+1);
+            constrained_DoFs.push_back(i*3+2);
+        }
+    }
+    std::ofstream output(filename);
+    output << constrained_DoFs.size()<<std::endl;
+    for(int i=0;i<constrained_DoFs.size();i++)
+    {
+        output<<constrained_DoFs[i]<<std::endl;
+    }
+    output.close();
 }
 
 void Lobo::LoboTetMesh::updateTetAttri(Eigen::VectorXd &inputattri, int offset,

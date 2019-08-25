@@ -48,6 +48,8 @@ namespace Lobo {
         virtual void exportTetMeshBinary(const char* filename);
         virtual void exportTetMeshAscii(const char* filebase);
 
+        virtual void exportConstrainedVertices(const char* filename);
+
         // generate tetgen
         std::string filebase;
         std::string tetgen_command;
@@ -69,6 +71,8 @@ namespace Lobo {
         Eigen::MatrixXi tet_faces_col;
         //for test
         std::vector<unsigned int> tet_faces_glint;
+        std::vector<unsigned int> vertices_flags;
+
 
         Lobo::LoboShaderConfig shader_config;
 

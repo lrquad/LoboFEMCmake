@@ -1,3 +1,4 @@
+#include "LoboDynamic.h"
 #include "LoboDynamicScene.h"
 #include "LoboVolumtricMesh/LoboTetMesh.h"
 #include "OpenGLutils/LoboScene.h"
@@ -22,6 +23,8 @@ Lobo::LoboDynamicScene::LoboDynamicScene(Lobo::LoboScene *scene_)
 Lobo::LoboDynamicScene::~LoboDynamicScene()
 {
     deleteStdvectorPointer(tetmesh_in_scene);
+    deleteStdvectorPointer(dynamic_solvers);
+
 }
 
 void Lobo::LoboDynamicScene::runXMLscript(pugi::xml_node &scene_node)
@@ -71,6 +74,14 @@ void Lobo::LoboDynamicScene::runXMLscript(pugi::xml_node &scene_node)
                 }
             }
         }
+    }
+
+    for (pugi::xml_node solver_node : scene_node.children("DynamicSolver"))
+    {
+        //we only have on type here
+        Lobo::DynamicSolver* dynamic_solver = new Lobo::DynamicSolver(this);
+        dynamic_solver->runXMLscript(solver_node);
+        dynamic_solvers.push_back(dynamic_solver);
     }
 
 }
