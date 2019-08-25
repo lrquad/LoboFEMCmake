@@ -1,4 +1,5 @@
 cmake_if=${1:-"false"}
+stoprun=${2:-"false"}
 
 if [ $cmake_if = "r" ]; then
     rm -r build/
@@ -13,4 +14,7 @@ fi
 
 make
 cd ..
+
+if [ "$stoprun" = "x" ]; then
 catchsegv ./bin/LoboFEM -o hai
+fi

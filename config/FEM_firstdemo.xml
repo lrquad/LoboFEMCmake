@@ -9,7 +9,6 @@
 			<Path>./models/bunny.obj</Path>
 			<Position>0.0 1.0 0.0</Position>
 		</TriMesh>
-
 	</LoboScene>
 
 	<LoboDynamicScene>
@@ -24,7 +23,7 @@
 		<DynamicSolver type="fullspace" name ="fullspace">
 			<!-- the output will be saved in folder <SceneDataFolder>/<DataFolder> -->
 			<SolverFolder>solveroutput/bunny_fullspace/</SolverFolder>
-			<TargetTetMesh id="1"></TargetTetMesh>
+			<TargetTetMesh id="0"></TargetTetMesh>
 			<HyperelasticModel>
 				<Material type="NeoHookean">
 				<YoungsModulus value = "100.0"></YoungsModulus>
@@ -37,7 +36,7 @@
 			</KineticModel>
 
 			<ConstraintModel weight ="1000.0">
-				<Constraints>constraints/constrainedDoFs.txt</Constraints>
+				<ConstraintsFile>constraints/constrainedDoFs.txt</ConstraintsFile>
 			</ConstraintModel>
 
 			<CollisionModel weight="100.0">

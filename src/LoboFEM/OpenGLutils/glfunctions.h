@@ -53,6 +53,7 @@ inline int bindTextureBuffer(const char *filename, unsigned int &texture_id)
         glGenerateMipmap(GL_TEXTURE_2D);
     }else
     {
+        std::cout<<"texture info: "<<std::endl;
         std::cout << width << " " << height << " " << nrChannels << std::endl;
         std::cout << filename << std::endl;
         std::cout << "Failed to load texture" << std::endl;
