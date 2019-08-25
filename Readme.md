@@ -5,10 +5,8 @@
 - libigl 
 - c++14 (for imfilebrowser)
 
-![bunny](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/bunny.png)
 ![bunny](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/bunny.gif)
 ![scene](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/scene.png)
-
 
 ## Install
     
@@ -28,7 +26,7 @@
     ../bin/LoboFEM
 
 ## Structure
-![Structure](https://github.com/lrquad/LoboFEMCmake/blob/master/LoboFEM.jpeg)
+![Structure](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/LoboFEM.jpeg)
 
 08/25/2019
 - [ ] Fullspace simulation
