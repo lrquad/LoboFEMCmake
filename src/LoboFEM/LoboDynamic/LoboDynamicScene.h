@@ -44,6 +44,9 @@ class LoboDynamicScene {
 protected:
     //system command check and mkdir folder we need
     void prepareDir();
+    void drawImGuiTetMesh();
+    void drawImGuiSolvers();
+
 };
 
 }  // namespace Lobo

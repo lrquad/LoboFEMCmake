@@ -6,8 +6,14 @@ Lobo::DynamicSolver::DynamicSolver(LoboDynamicScene* parent_scene_)
 
 Lobo::DynamicSolver::~DynamicSolver() {}
 
+
+void Lobo::DynamicSolver::drawImGui()
+{
+
+}
+
 void Lobo::DynamicSolver::runXMLscript(pugi::xml_node& solver_node) {
-    
+
 
 
 }

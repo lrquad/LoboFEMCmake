@@ -12,6 +12,8 @@ namespace Lobo
         DynamicSolver(LoboDynamicScene* parent_scene);
         ~DynamicSolver();
 
+        virtual void drawImGui();
+
         virtual void runXMLscript(pugi::xml_node &solver_node);
 
         std::vector<DynamicModel*> models;
