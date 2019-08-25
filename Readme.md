@@ -1,9 +1,19 @@
 # LoboFEM
+## Todo
+08/25/2019
+- [ ] Fullspace simulation
+  - [ ] Fullspace sovler
+  - [ ] Dynamic model
+  - [x] Constraints model
+  - [ ] Hyperelastic model
+  - [ ] Time integration
+
 ## Introduction
 - Imgui
 - OpenGL 
 - libigl 
 - c++14 (for imfilebrowser)
+- hyperelastic material based FEM simulator
 
 ![bunny](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/bunny.gif)
 ![scene](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/scene.png)
@@ -28,13 +38,7 @@
 ## Structure
 ![Structure](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/LoboFEM.jpeg)
 
-08/25/2019
-- [ ] Fullspace simulation
-  - [ ] Fullspace sovler
-  - [ ] Dynamic model
-  - [x] Constraints model
-  - [ ] Hyperelastic model
-  - [ ] Time integration
+
 
 ## Note
     sudo nano /etc/modprobe.d/zz-nvidia-modeset.conf
