@@ -30,8 +30,13 @@
 ## Structure
 ![Structure](https://github.com/lrquad/LoboFEMCmake/blob/master/LoboFEM.jpeg)
 
-Today 08/25/2019
-- [ ]Fullspace simulation
+08/25/2019
+- [ ] Fullspace simulation
+  - [ ] Fullspace sovler
+  - [ ] Dynamic model
+  - [x] Constraints model
+  - [ ] Hyperelastic model
+  - [ ] Time integration
 
 ## Note
     sudo nano /etc/modprobe.d/zz-nvidia-modeset.conf
