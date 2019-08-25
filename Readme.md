@@ -53,5 +53,7 @@ OpenMP 12 threads
 19 FPS
 
 
+https://stackoverflow.com/questions/993352/when-should-i-make-explicit-use-of-the-this-pointer
+https://stackoverflow.com/questions/2812470/why-does-gcc-need-extra-declarations-in-templates-when-vs-does-not/2812501#2812501
 
 

@@ -62,7 +62,8 @@
         "iomanip": "cpp",
         "mutex": "cpp",
         "valarray": "cpp",
-        "algorithm": "cpp"
+        "algorithm": "cpp",
+        "dense": "cpp"
     },
     "C_Cpp.configurationWarnings": "Disabled"
 }
