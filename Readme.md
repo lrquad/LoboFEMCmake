@@ -28,6 +28,8 @@
     ../bin/LoboFEM
 
 ## Structure
+![Structure](https://github.com/lrquad/LoboFEMCmake/blob/master/LoboFEM.jpeg)
+
 - /LoboScene store surface mesh and volumetricmesh
 - /LoboMesh surface mesh load from obj
 - /LoboVolumetricMesh for volumetric mesh
