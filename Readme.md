@@ -30,8 +30,8 @@
 ## Structure
 ![Structure](https://github.com/lrquad/LoboFEMCmake/blob/master/LoboFEM.jpeg)
 
-Today
-- Fullspace simulation
+Today 08/25/2019
+- [ ]Fullspace simulation
 
 ## Note
     sudo nano /etc/modprobe.d/zz-nvidia-modeset.conf
