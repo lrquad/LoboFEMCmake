@@ -4,6 +4,7 @@
 #include "LoboDynamic/LoboDynamicSolver/LoboDynamicModel/DynamicModel.h"
 
 #include <Eigen/Dense>
+
 template <class TYPE>
 class TypeIsotropicMaterial;
 

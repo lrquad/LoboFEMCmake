@@ -21,7 +21,6 @@ namespace Lobo
 
         virtual void precompute();
 
-
         HyperelasticModel* hyperelastic_model;
         KineticModel* kinetic_model;
         LoboTimeIntegration* time_integraion;

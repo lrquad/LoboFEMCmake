@@ -16,6 +16,7 @@ Lobo::HyperelasticModel::~HyperelasticModel()
 void Lobo::HyperelasticModel::precompute()
 {
     this->tetmesh->precomputeElementData();// will check if already precomptued inside the function
+    
     // Dm Dm_inverse per element
     // volume per element
     
