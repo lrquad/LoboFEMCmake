@@ -92,6 +92,7 @@ class LoboShaderConfig
 
     bool vertex_color_mode;
     bool wireframe_mode;
+    bool point_mode;
     bool flat_mode;
     bool visiable;
     bool cast_shadow;

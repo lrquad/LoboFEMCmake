@@ -63,7 +63,8 @@
         "mutex": "cpp",
         "valarray": "cpp",
         "algorithm": "cpp",
-        "dense": "cpp"
+        "dense": "cpp",
+        "core": "cpp"
     },
     "C_Cpp.configurationWarnings": "Disabled"
 }

@@ -1,5 +1,6 @@
 #include "TypeStVKMaterial.h"
 #include <complex>
+#include <omp.h>
 
 LOBO_TEMPLATE_INSTANT(TypeStVKMaterial)
 
@@ -11,6 +12,8 @@ TypeStVKMaterial<TYPE>::TypeStVKMaterial(Lobo::LoboTetMesh* tetmesh, int enableC
 	F_complex.resize(numElements * 9);
 	FC_FC.resize(numElements * 9);
 	TYPE h = 1e-10;
+
+	#pragma omp parallel for
 	for (int i = 0;i < numElements;i++)
 	{
 		//TetElement* tet = tetmesh->getTetElement(i);

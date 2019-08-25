@@ -29,9 +29,8 @@ void Lobo::LoboMesh::defaultValue() {
     eular_angle = glm::vec3(0.0);
     start_show_material = 0;
     num_faces = 0;
-    omp_set_dynamic(0);  // Explicitly disable dynamic teams
-    omp_set_num_threads(
-        12);  // Use 4 threads for all consecutive parallel regions
+    //omp_set_dynamic(0);  // Explicitly disable dynamic teams
+    //omp_set_num_threads(12);  // Use 4 threads for all consecutive parallel regions
 }
 
 void Lobo::LoboMesh::drawImGui(bool *p_open) {

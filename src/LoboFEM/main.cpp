@@ -12,9 +12,7 @@
 // will be refactored in the future
 
 #include "LoboFEM.h"
-
-
-
+#include <omp.h>
 
 #include <stdio.h>
 // About OpenGL function loaders: modern OpenGL doesn't have a standard header
@@ -23,12 +21,12 @@
 // common ones: gl3w, glew, glad. You may use another loader/header of your
 // choice (glext, glLoadGen, etc.), or chose to manually implement your own.
 #if defined(IMGUI_IMPL_OPENGL_LOADER_GL3W)
-#include <GL/gl3w.h>  // Initialize with gl3wInit()
+#include <GL/gl3w.h> // Initialize with gl3wInit()
 #pragma message("C Preprocessor got here!")
 #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLEW)
-#include <GL/glew.h>  // Initialize with glewInit()
+#include <GL/glew.h> // Initialize with glewInit()
 #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLAD)
-#include <glad/glad.h>  // Initialize with gladLoadGL()
+#include <glad/glad.h> // Initialize with gladLoadGL()
 #else
 #include IMGUI_IMPL_OPENGL_LOADER_CUSTOM
 #endif
@@ -40,18 +38,25 @@
 #include <Eigen/Dense>
 #include <iostream>
 
-Lobo::LoboFEM* fem_main_p = NULL;
+Lobo::LoboFEM *fem_main_p = NULL;
 
-static void glfw_error_callback(int error, const char *description) {
+static void glfw_error_callback(int error, const char *description)
+{
     fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
-int main() {
+int main()
+{
+    omp_set_dynamic(0); // Explicitly disable dynamic teams
+    omp_set_num_threads(
+        12); // Use 4 threads for all consecutive parallel regions
+
     // Setup window
     glfwSetErrorCallback(glfw_error_callback);
-    if (!glfwInit()) return 1;
+    if (!glfwInit())
+        return 1;
 
     const char *glsl_version = "#version 330";
     const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
@@ -71,13 +76,15 @@ int main() {
     // Create window with graphics context
     GLFWwindow *window = glfwCreateWindow(
         window_w, window_h, "New LoboFEM", NULL, NULL);
-    if (window == NULL) return 1;
+    if (window == NULL)
+        return 1;
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    glfwSwapInterval(1);  // Enable vsync
+    glfwSwapInterval(1); // Enable vsync
 
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
@@ -91,10 +98,11 @@ int main() {
     bool err = gladLoadGL() == 0;
 #else
     bool err =
-        false;  // If you use IMGUI_IMPL_OPENGL_LOADER_CUSTOM, your loader is
-                // likely to requires some form of initialization.
+        false; // If you use IMGUI_IMPL_OPENGL_LOADER_CUSTOM, your loader is
+               // likely to requires some form of initialization.
 #endif
-    if (err) {
+    if (err)
+    {
         fprintf(stderr, "Failed to initialize OpenGL loader!\n");
         return 1;
     }
@@ -108,7 +116,7 @@ int main() {
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
-    ImGuiStyle& style = ImGui::GetStyle();
+    ImGuiStyle &style = ImGui::GetStyle();
     style.Colors[2].w = 0.8;
     // ImGui::StyleColorsClassic();
 
@@ -128,10 +136,11 @@ int main() {
 
     fem_main_p = &fem_main;
     //fem_main.initialGL();
-    
+
     //important
     // Main loop
-    while (!glfwWindowShouldClose(window)) {
+    while (!glfwWindowShouldClose(window))
+    {
         // Poll and handle events (inputs, window resize, etc.)
         // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to
         // tell if dear imgui wants to use your inputs.
@@ -146,12 +155,12 @@ int main() {
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
-        
+
         fem_main.windowLoop(window);
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-        glfwSwapInterval(1);  // Enable vsync
+        glfwSwapInterval(1); // Enable vsync
 
         glfwSwapBuffers(window);
     }
@@ -169,11 +178,10 @@ int main() {
     return 0;
 }
 
-
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
-    // make sure the viewport matches the new window dimensions; note that width and 
+    // make sure the viewport matches the new window dimensions; note that width and
     // height will be significantly larger than specified on retina displays.
-    if(fem_main_p!=NULL)
-    fem_main_p->framebuffer_size_callback(window,width,height);
+    if (fem_main_p != NULL)
+        fem_main_p->framebuffer_size_callback(window, width, height);
 }

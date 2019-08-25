@@ -17,7 +17,7 @@ TypeTetElementMaterial<TYPE>::TypeTetElementMaterial(Lobo::LoboTetMesh* tetmesh,
 	else
 		EdivNuFactor = NULL;
 
-
+	#pragma omp parallel for
 	for (int el = 0; el < numElements; el++)
 	{
 		Lobo::Material* material = tetmesh->getElementMaterial(el);

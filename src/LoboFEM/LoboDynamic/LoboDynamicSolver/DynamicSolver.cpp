@@ -48,8 +48,10 @@ void Lobo::DynamicSolver::runXMLscript(pugi::xml_node &solver_node)
         models.push_back(constrainmodel);
     }
 
-    if(solver_node.child("HyperelasticModel"))
-    {
+    
+}
 
-    }
+void Lobo::DynamicSolver::precompute()
+{
+    
 }

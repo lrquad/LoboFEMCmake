@@ -11,6 +11,7 @@ Lobo::LoboShaderConfig::LoboShaderConfig()
     vertex_color_mode=false;
     cast_shadow = true;
     use_blinn = true;
+    point_mode=false;
 }
 
 Lobo::LoboShaderConfig::~LoboShaderConfig()
@@ -21,6 +22,7 @@ Lobo::LoboShaderConfig::~LoboShaderConfig()
 void Lobo::LoboShaderConfig::drawImGui(bool *p_open) {
     if (ImGui::TreeNodeEx("Shader Configuration##2",ImGuiWindowFlags_NoCollapse)) {
         ImGui::Checkbox("wireframe_mode", &wireframe_mode);
+        ImGui::Checkbox("point_mode",&point_mode);
         ImGui::Checkbox("flat_mode", &flat_mode);
         ImGui::Checkbox("use_blinn",&use_blinn);
         ImGui::Checkbox("visiable",&visiable);
@@ -33,8 +35,18 @@ void Lobo::LoboShaderConfig::drawImGui(bool *p_open) {
 
 void Lobo::LoboShaderConfig::setShader(LoboShader* shader)
 {
+    glPointSize(1.0);
+
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    
     if (wireframe_mode == true) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    
+    if(point_mode==true) 
+    {
+        glPolygonMode(GL_FRONT_AND_BACK,GL_POINT);
+        glPointSize(10.0);
+    }
+
     shader->setBool("useFlatNormal",flat_mode);
     shader->setBool("vertex_color_mode",vertex_color_mode);
     shader->setBool("use_blinn",use_blinn);

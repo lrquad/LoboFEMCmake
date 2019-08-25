@@ -10,7 +10,8 @@ enum TetMeshStatusFlags_
     TetMeshStatusFlags_tetgened = 1 << 0, // generted mesh by tetgen
     TetMeshStatusFlags_loadtet = 1 << 1,
     TetMeshStatusFlags_initialGL = 1 << 2,
-    TetMeshStatusFlags_datasizeUpdated = 1 << 3
+    TetMeshStatusFlags_datasizeUpdated = 1 << 3,
+    TetMeshStatusFlags_precomputed = 1 << 4
 };
 
 namespace Lobo
@@ -42,6 +43,7 @@ struct TetElementData
 {
     Eigen::Matrix3d Dm;
     Eigen::Matrix3d Dm_inverse;
+    double volume;
     /* data */
 };
 
@@ -120,14 +122,25 @@ public:
 
     //interface
     int getNumElements() { return tet_indices.size() / 4; }
+    int getNumVertex(){return tet_vertice.size()/3;}
     Material *getElementMaterial(int elementid) { return &materials[materialid[elementid]]; }
-
     TetElementData* getTetElement(int elementid){return &elements_data[elementid];};
 
+    //Eigen interface
+    void getNodeRestPosition(int nodeid,Eigen::Vector3d &p);
+    Eigen::Vector3d getNodeRestPosition(int nodeid);
+
 protected:
+
     virtual void updateTetAttri(Eigen::VectorXd &inputattri, int offset, int attrisize, int totalsize);
     virtual void setTetAttriColor(double r, double g, double b, int offset = 8, int totalsize = 11);
     virtual void setTetVetAttriColor(int vid, double r, double g, double b, int offset = 8, int totalsize = 11);
+
+
+    //tetmesh precompute function
+    virtual void correctElementNodeOrder(int elementid);
+    virtual void computeElementVolume(int elementid);
+    virtual void computeElementShapeFunctionDerivate(int elementid);
 
     tinyobj::material_t default_material;
     LoboMesh *lobomesh_binding;
@@ -135,6 +148,8 @@ protected:
     std::vector<Material> materials;
     std::vector<int> materialid;
     std::vector<TetElementData> elements_data;
+
+    double mesh_total_volume;
 
 };
 } // namespace Lobo

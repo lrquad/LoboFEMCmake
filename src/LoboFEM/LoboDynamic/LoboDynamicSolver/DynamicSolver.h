@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <cstring>
 #include "Utils/pugixml/pugixml.hpp"
 
 namespace Lobo
@@ -22,8 +23,7 @@ namespace Lobo
 
         virtual void runXMLscript(pugi::xml_node &solver_node);
 
-
-
+        virtual void precompute();
 
         std::vector<DynamicModel*> models;
         

@@ -4,6 +4,8 @@
 #include <igl/project.h>
 
 #include "Functions/EigenMatrixIO.h"
+#include "Functions/computeTriangle.h"
+
 #include "LoboDynamic/LoboDynamicScene.h"
 #include "LoboMesh/LoboMesh.h"
 #include "imgui.h"
@@ -12,6 +14,8 @@
 #include "OpenGLutils/LoboCamera.h"
 #include "Utils/glmEigenConverter.h"
 #include "Utils/glmMyFunctions.h"
+
+
 
 Lobo::LoboTetMesh::LoboTetMesh()
 {
@@ -31,6 +35,8 @@ Lobo::LoboTetMesh::LoboTetMesh()
     shader_config.wireframe_mode = false;
     shader_config.vertex_color_mode = true;
     lobomesh_binding = NULL;
+
+    mesh_total_volume = 0.0;
 }
 
 Lobo::LoboTetMesh::~LoboTetMesh() {}
@@ -86,6 +92,8 @@ void Lobo::LoboTetMesh::drawImGui(bool *p_open)
         {
             ImGui::Text("tet_vertice %d tet_num_tet %d", tet_vertice.rows() / 3,
                         tet_indices.rows() / 4);
+
+            ImGui::Text("Mesh volume: %.3f m^3",mesh_total_volume);
         }
 
         if (ImGui::Button("hide trimesh"))
@@ -203,7 +211,7 @@ void Lobo::LoboTetMesh::paintGL(LoboShader *shader)
     if (status_flags & TetMeshStatusFlags_datasizeUpdated)
     {
         // need update
-        reinitialTetMesh();
+        updateGL();
     }
 
     shader_config.setShader(shader);
@@ -261,20 +269,9 @@ void Lobo::LoboTetMesh::initialGL()
     status_flags |= TetMeshStatusFlags_initialGL;
 }
 
-void Lobo::LoboTetMesh::precomputeElementData()
-{
-    
-}
 
 void Lobo::LoboTetMesh::reinitialTetMesh()
 {
-    if (!(status_flags & TetMeshStatusFlags_datasizeUpdated))
-    {
-        // no need reinitialTetMesh
-        return;
-    }
-    //update geometry info 
-
     vertices_flags.resize(tet_vertice.size() / 3);
     std::fill(vertices_flags.begin(), vertices_flags.end(), 0);
 
@@ -294,12 +291,6 @@ void Lobo::LoboTetMesh::reinitialTetMesh()
 
     //default material
     setAllMaterial(1.0,1000.0,0.4);
-
-
-
-
-    updateGL();
-    status_flags &= ~TetMeshStatusFlags_datasizeUpdated;
 }
 
 void Lobo::LoboTetMesh::updateGL()
@@ -327,6 +318,7 @@ void Lobo::LoboTetMesh::updateGL()
     setPositionAttribute(1, 3, 11, 3);
     setPositionAttribute(2, 2, 11, 6);
     setPositionAttribute(3, 3, 11, 8);
+    status_flags &= ~TetMeshStatusFlags_datasizeUpdated;
 }
 
 void Lobo::LoboTetMesh::deleteGL()
@@ -404,6 +396,8 @@ void Lobo::LoboTetMesh::generateTet(const char *tetgen_command)
     {
         std::cout << "tetgen failed" << command_ << filebase << std::endl;
     }
+
+    reinitialTetMesh();
 }
 
 void Lobo::LoboTetMesh::setBindingTriMesh(LoboMesh *lobomesh)
@@ -500,6 +494,7 @@ void Lobo::LoboTetMesh::loadTetMeshBinary(const char *filebase_)
     in.close();
     status_flags |= TetMeshStatusFlags_loadtet;
     status_flags |= TetMeshStatusFlags_datasizeUpdated;
+    reinitialTetMesh();
 }
 
 void Lobo::LoboTetMesh::exportTetMeshBinary(const char *filebase_)
@@ -581,6 +576,7 @@ void Lobo::LoboTetMesh::loadTetMeshAscii(const char *filebase_)
     inputstream.close();
     status_flags |= TetMeshStatusFlags_datasizeUpdated;
     status_flags |= TetMeshStatusFlags_loadtet;
+    reinitialTetMesh();
 }
 void Lobo::LoboTetMesh::exportTetMeshAscii(const char *filebase_)
 {
@@ -696,12 +692,114 @@ void Lobo::LoboTetMesh::setTetVetAttriColor(int vid, double r, double g,
 void Lobo::LoboTetMesh::setAllMaterial(double density, double youngsmodulus, double possionratio)
 {
     materials.clear();
-    materialid.resize(tet_indices.size()/4);
-    std::fill(materialid.begin(),materialid.end(),1);
+    materialid.resize(getNumElements());
+    std::fill(materialid.begin(),materialid.end(),0);
+
     Material m;
     m.density = density;
     m.youngsmodulus = youngsmodulus;
     m.possionratio = possionratio;
-
     materials.push_back(m);
 }
+
+void Lobo::LoboTetMesh::precomputeElementData()
+{
+    if(status_flags&TetMeshStatusFlags_precomputed)
+    {
+        //already precomputed
+        return;
+    }
+    int numElements = getNumElements();
+    elements_data.resize(numElements);
+
+    mesh_total_volume = 0.0;
+    for(int i=0;i<numElements;i++)
+    {
+        correctElementNodeOrder(i);
+        computeElementVolume(i);
+        computeElementShapeFunctionDerivate(i); // precompute dF_du
+        mesh_total_volume+=elements_data[i].volume;
+
+    }
+
+    status_flags |= TetMeshStatusFlags_precomputed;
+}
+
+void Lobo::LoboTetMesh::getNodeRestPosition(int nodeid,Eigen::Vector3d &p)
+{
+    for(int j=0;j<3;j++)
+        {
+            p.data()[j] = tet_vertice.data()[nodeid*3+j];
+        }
+}
+
+Eigen::Vector3d Lobo::LoboTetMesh::getNodeRestPosition(int nodeid)
+{
+    Eigen::Vector3d tmp;
+    getNodeRestPosition(nodeid,tmp);
+    return tmp;
+}
+
+void Lobo::LoboTetMesh::correctElementNodeOrder(int elementid)
+{
+    int ni[4];
+	Eigen::Vector3d node_p[4];
+    for(int i=0;i<4;i++)
+    {
+        ni[i] = tet_indices[elementid*4+i];
+        for(int j=0;j<3;j++)
+        {
+            getNodeRestPosition(ni[i],node_p[i]);
+        }
+    }
+	Eigen::Vector3d direction_v;
+    Lobo::computeTriangleNorm(node_p[0], node_p[1], node_p[2], direction_v);
+    Eigen::Vector3d n3n0 = node_p[3] - node_p[0];
+    if (n3n0.dot(direction_v) < 0)
+	{
+		//element->node_indices[1] = n2;
+		//element->node_indices[2] = n1;
+        tet_indices[elementid*4+1] = ni[2];
+        tet_indices[elementid*4+2] = ni[1];
+        std::cout<<"bad order element" <<std::endl;
+	}
+}
+
+void Lobo::LoboTetMesh::computeElementVolume(int elementid)
+{
+    Eigen::Vector3d a = this->getNodeRestPosition(tet_indices[elementid*4+0]);
+    Eigen::Vector3d b = this->getNodeRestPosition(tet_indices[elementid*4+1]);
+    Eigen::Vector3d c = this->getNodeRestPosition(tet_indices[elementid*4+2]);
+    Eigen::Vector3d d = this->getNodeRestPosition(tet_indices[elementid*4+3]);
+
+    elements_data[elementid].volume = Lobo::computeTetVolumeABS(a, b, c, d);
+
+}
+
+
+void Lobo::LoboTetMesh::computeElementShapeFunctionDerivate(int elementid)
+{
+    int ni[4];
+	Eigen::Vector3d node_p[4];
+    for(int i=0;i<4;i++)
+    {
+        ni[i] = tet_indices[elementid*4+i];
+        for(int j=0;j<3;j++)
+        {
+            getNodeRestPosition(ni[i],node_p[i]);
+        }
+    }
+
+    TetElementData* te = &elements_data[elementid];
+
+    for (int i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			te->Dm.data()[j*3+i] = node_p[j].data()[i] -
+				node_p[3].data()[i];
+		}
+	}
+	te->Dm_inverse = te->Dm.inverse();
+}
+
