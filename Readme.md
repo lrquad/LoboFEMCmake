@@ -7,6 +7,8 @@
   - [x] Constraints model
   - [ ] Hyperelastic model
   - [ ] Time integration
+  - [ ] Kinetic model
+  - [x] Precomptue tetmesh
 
 ## Introduction
 - Imgui
