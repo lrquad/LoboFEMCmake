@@ -30,9 +30,8 @@
 ## Structure
 ![Structure](https://github.com/lrquad/LoboFEMCmake/blob/master/LoboFEM.jpeg)
 
-- /LoboScene store surface mesh and volumetricmesh
-- /LoboMesh surface mesh load from obj
-- /LoboVolumetricMesh for volumetric mesh
+Today
+- Fullspace simulation
 
 ## Note
     sudo nano /etc/modprobe.d/zz-nvidia-modeset.conf
