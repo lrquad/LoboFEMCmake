@@ -11,6 +11,9 @@ endif ()
 
 find_package(OpenMP REQUIRED)
 
+
+find_package(MKL REQUIRED)
+
 include(cmake/glad.cmake)
 include(cmake/glfw.cmake)
 include(cmake/imgui.cmake)

@@ -11,6 +11,7 @@ include_directories(
     ${IMGUI_INCLUDE_DIR}
     ${EIGEN3_INCLUDE_DIR}
     ${TETGEN_INCLUDE_DIR}
+    ${MKL_INCLUDE_DIR}
     )
 message(${GLFW_INCLUDE_DIR})
 
@@ -21,5 +22,6 @@ target_link_libraries(${PROJECT}
     ${IMGUI_LIBRARIES}
     ${OpenMP_CXX_LIBRARIES}
     ${TETGEN_LIBRARIES}
+    ${MKL_LIBRARIES}
     "stdc++fs"
     )
