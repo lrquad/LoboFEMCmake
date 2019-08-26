@@ -53,10 +53,8 @@ void Lobo::KineticModel::precompute() {
     }
     gravity_force = mass_matrix*gravity_force;
 
-
     //test 
     
-
 }
 
 void Lobo::KineticModel::computeEnergySparse(
@@ -69,7 +67,7 @@ void Lobo::KineticModel::computeEnergySparse(
     hyperelasticmodel->computeEnergySparse(free_variables, energy,
                                            jacobi, hessian,
                                            computationflags);
-    double elastic_energy = energy;
+    double elastic_energy = *energy;
     
     //just add value to stiffness_matrix
     computationflags &= ~Computeflags_reset;
@@ -78,7 +76,7 @@ void Lobo::KineticModel::computeEnergySparse(
     constrainmodel->computeEnergySparse(free_variables, energy,
                                         jacobi, hessian,
                                         computationflags);
-    double constrain_energy = energy-elastic_energy;
+    double constrain_energy = *energy-elastic_energy;
 
 
     //kinetic parts
@@ -90,8 +88,9 @@ void Lobo::KineticModel::computeEnergySparse(
 	*energy += e.data()[0] * inv_t*inv_t*0.5;
 
     //jacobi
-    Eigen::VectorXd all_ext = -mass_matrix*(q_buffer) / (timestep*timestep) + external_forces + gravity_force;
+    Eigen::VectorXd all_ext = mass_matrix*(q_buffer) / (timestep*timestep) - external_forces - gravity_force;
     *jacobi += all_ext;
+
 }
 
 void Lobo::KineticModel::runXMLscript(pugi::xml_node &xml_node) {}

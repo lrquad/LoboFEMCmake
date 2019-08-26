@@ -6,14 +6,16 @@ namespace Lobo
 class LoboDynamicScene;
 class LoboTetMesh;
 
-class DynamicModel
-{
-    enum ComputationFlag {
+enum ComputationFlag {
     Computeflags_energy = 0,
     Computeflags_fisrt = 1 << 0,  // generted mesh by tetgen
     Computeflags_second = 1 << 1,
     Computeflags_reset = 1 << 2,
     };
+
+class DynamicModel
+{
+    
 
 public:
     DynamicModel();

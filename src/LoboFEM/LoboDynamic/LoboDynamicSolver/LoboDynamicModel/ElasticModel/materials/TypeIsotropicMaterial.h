@@ -42,12 +42,15 @@ public:
 	virtual void getMuLame(int eleid, TYPE &mu) {};
 
 
+	double h_CSFD;
+
+
 };
 
 template<class TYPE>
 TypeIsotropicMaterial<TYPE>::~TypeIsotropicMaterial()
 {
-
+	h_CSFD = lobo_h;
 }
 
 template<class TYPE>

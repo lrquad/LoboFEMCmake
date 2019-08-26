@@ -38,7 +38,7 @@ TypeTetElementMaterial<TYPE>::TypeTetElementMaterial(Lobo::LoboTetMesh* tetmesh,
 		}
 	}
 	
-	TYPE h = 1e-30;
+	TYPE h = lobo_h;
 	element_dF_du.resize(numElements * 12);
 	element_dF_dudu.resize(numElements * 12);
 	element_dF_dudv.resize(numElements * 78);
