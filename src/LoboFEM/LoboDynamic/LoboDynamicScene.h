@@ -35,6 +35,7 @@ class LoboDynamicScene {
     virtual void setPlay(){status_flags = dynamicsceneflag_play;};
     virtual void setStop(){status_flags = dynamicsceneflag_stop;};
 
+    virtual int getStep();
 
     virtual void paintGL(LoboShader* shader, bool depth_render = false);
     virtual void initialGL();

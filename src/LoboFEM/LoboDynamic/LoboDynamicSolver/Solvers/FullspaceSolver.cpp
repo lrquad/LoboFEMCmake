@@ -101,3 +101,13 @@ void Lobo::FullspaceSolver::stepForward()
     time_integraion->stepFoward();
     bind_tetMesh->updateTetVertices(&(time_integraion->q));
 }
+
+ int Lobo::FullspaceSolver::getCurStep()
+ {
+     int tmp = 0;
+     if(time_integraion)
+     {
+         tmp = time_integraion->step;
+     }
+     return tmp;
+ }

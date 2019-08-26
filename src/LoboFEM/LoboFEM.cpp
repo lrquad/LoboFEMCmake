@@ -1,3 +1,4 @@
+#include <iomanip>
 #include "LoboFEM.h"
 
 #include "imgui.h"
@@ -11,8 +12,9 @@ Lobo::LoboFEM::LoboFEM()
 {
     dynamic_scene = NULL;
     scene = NULL;
-    
+
     use_screen_buffer = false;
+    export_screen_buffer = false;
     multisamples = 16;
 }
 
@@ -136,7 +138,6 @@ void Lobo::LoboFEM::windowLoop(GLFWwindow *window)
         //framebuffer_size_callback(window, display_w, display_h);
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
     }
-    
 
     glViewport(0, 0, display_w, display_h);
     glClearColor(clear_color.x, clear_color.y, clear_color.z,
@@ -217,6 +218,11 @@ void Lobo::LoboFEM::windowLoop(GLFWwindow *window)
 
     //make imgui SRGB
     glEnable(GL_FRAMEBUFFER_SRGB);
+
+    if (export_screen_buffer)
+    {
+        saveCurScreenImagePNGAnimaition("./demo/default/animation");
+    }
 }
 
 void Lobo::LoboFEM::drawImGui()
@@ -252,8 +258,8 @@ void Lobo::LoboFEM::showMainWindow(ImGui::FileBrowser *fileDialog, bool *p_open)
             ImGui::EndMenu();
         }
 
-        ImGui::Text("| %.3f ms/frame (%.1f FPS) | %s ", 1000.0f * ImGui::GetIO().DeltaTime, 1.0/ImGui::GetIO().DeltaTime, config_file_path.c_str());
-        
+        ImGui::Text("| %.3f ms/frame (%.1f FPS) | %s |%d", 1000.0f * ImGui::GetIO().DeltaTime, 1.0 / ImGui::GetIO().DeltaTime, config_file_path.c_str(), dynamic_scene->getStep());
+
         ImGui::EndMainMenuBar();
     }
 
@@ -261,7 +267,7 @@ void Lobo::LoboFEM::showMainWindow(ImGui::FileBrowser *fileDialog, bool *p_open)
 
     if (fileDialog->HasSelected())
     {
-        config_file_path = fileDialog->GetSelected().string();
+        //config_file_path = fileDialog->GetSelected().string();
         fileDialog->ClearSelected();
         this->loadXMLfile(config_file_path.c_str());
     }
@@ -270,10 +276,18 @@ void Lobo::LoboFEM::showMainWindow(ImGui::FileBrowser *fileDialog, bool *p_open)
     ImGui::Begin("Program setting",
                  p_open); // Create a window called "Hello, world!" and
                           // append into it.
-    ImGui::Checkbox("OffScreenBuffer",&use_screen_buffer);
-    if(ImGui::Button("Save Screen"))
-    {   
+    ImGui::Checkbox("OffScreenBuffer", &use_screen_buffer);
+    if (ImGui::Button("Save Screen"))
+    {
         this->saveCurScreenImagePNG("./demo/default/screenshot.png");
+    }
+    ImGui::Checkbox("Export screen buffer", &export_screen_buffer);
+    
+    if (ImGui::Button("Generate Animation"))
+    {
+       export_screen_buffer = false;
+       system("ffmpeg -r 60 -f image2 -i ./demo/default/animation%05d.png -vcodec libx264 -crf 10  -pix_fmt yuv420p ./demo/default/screen_recored.mp4");
+       system("ffmpeg -i ./demo/default/screen_recored.mp4 ./demo/default/screen_recored.gif");
     }
 
     ImGui::End();
@@ -322,6 +336,7 @@ void Lobo::LoboFEM::setCurrentContext()
 
 void Lobo::LoboFEM::loadXMLfile(const char *filename)
 {
+    config_file_path = filename;
     deleteGL();
     delete dynamic_scene;
     delete scene;
@@ -365,11 +380,11 @@ void Lobo::LoboFEM::framebuffer_size_callback(GLFWwindow *window, int width, int
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void Lobo::LoboFEM::saveCurScreenImagePNG(const char* imagename)
+void Lobo::LoboFEM::saveCurScreenImagePNG(const char *imagename)
 {
-    if(!this->use_screen_buffer)
+    if (!this->use_screen_buffer)
     {
-        std::cout<<"no offline buffer"<<std::endl;
+        std::cout << "no offline buffer" << std::endl;
         return;
     }
     glBindTexture(GL_TEXTURE_2D, screenTexture);
@@ -377,13 +392,21 @@ void Lobo::LoboFEM::saveCurScreenImagePNG(const char* imagename)
     int w = Lobo::getCurrentCamera()->view_port[2];
     int h = Lobo::getCurrentCamera()->view_port[3];
 
-    float* read = (float*)malloc(sizeof(float) * w * h * 3);
+    float *read = (float *)malloc(sizeof(float) * w * h * 3);
     stbi_flip_vertically_on_write(true);
-    glGetTexImage(GL_TEXTURE_2D,0,GL_RGB,GL_UNSIGNED_BYTE,read);
+    glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_UNSIGNED_BYTE, read);
     // sizeof(float) * width * height * 3
 
-    stbi_write_png(imagename,w,h,3,read,0);
+    stbi_write_png(imagename, w, h, 3, read, 0);
 
-    glBindTexture(GL_TEXTURE_2D,0);
+    glBindTexture(GL_TEXTURE_2D, 0);
     free(read);
+}
+
+void Lobo::LoboFEM::saveCurScreenImagePNGAnimaition(const char *imagebase)
+{
+    std::ostringstream stringStream;
+    stringStream << imagebase << std::setfill('0') << std::setw(5) << this->dynamic_scene->getStep() << ".png";
+    std::string pngfile = stringStream.str();
+    saveCurScreenImagePNG(pngfile.c_str());
 }

@@ -193,6 +193,20 @@ void Lobo::LoboDynamicScene::stepForward()
     }
 }
 
+int Lobo::LoboDynamicScene::getStep()
+{
+    int cur_step = -DBL_MAX;
+    for (int i = 0; i < dynamic_solvers.size(); i++)
+    {
+       int solver_step =  dynamic_solvers[i]->getCurStep();
+       if(solver_step > cur_step)
+       {
+           cur_step = solver_step;
+       }
+    }
+    return cur_step;
+}
+
 void Lobo::LoboDynamicScene::paintGL(LoboShader *shader, bool depth_render)
 {
     for (int i = 0; i < tetmesh_in_scene.size(); i++)

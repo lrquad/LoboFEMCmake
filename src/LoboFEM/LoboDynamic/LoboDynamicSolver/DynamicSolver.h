@@ -22,6 +22,7 @@ namespace Lobo
         virtual void drawImGui();
 
         virtual void stepForward() = 0;
+        virtual int getCurStep() = 0;
 
         virtual void runXMLscript(pugi::xml_node &solver_node);
 

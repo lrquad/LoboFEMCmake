@@ -37,6 +37,7 @@ protected:
 
     void showMainWindow(ImGui::FileBrowser *fileDialog, bool *p_open = NULL);
     void saveCurScreenImagePNG(const char* imagename);
+    void saveCurScreenImagePNGAnimaition(const char* imagebase);
 
 
     ImGui::FileBrowser fileDialog;
@@ -64,7 +65,10 @@ protected:
     unsigned int intermediateFBO;
     unsigned int screenTexture;
     unsigned int rbo;
+    
     bool use_screen_buffer;
+    bool export_screen_buffer;
+
     int multisamples;
 };
 

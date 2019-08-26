@@ -21,6 +21,7 @@ namespace Lobo
 
         virtual void precompute();
         virtual void stepForward();
+         virtual int getCurStep();
 
 
         HyperelasticModel* hyperelastic_model;

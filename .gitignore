@@ -48,7 +48,11 @@ bin/
 build/
 lib/
 
+demo/default/animation*
+demo/default/*.mp4
+
 !models/**
+
 #models/*
 # !/models/cornell_box.obj
 # !/models/cornell_box.mtl

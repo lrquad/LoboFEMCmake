@@ -7,6 +7,7 @@
     - [x] K and f
   - [x] Optimization solver
 - [ ] Eigen MKL test on ubuntu
+- [ ] Analytical stvk
 
 08/25/2019
 - [x] Fullspace simulation
@@ -28,6 +29,7 @@
 
 ![bunny](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/bunny.gif)
 ![scene](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/scene.png)
+![scene](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/screen_recored.gif)
 
 ## Install
     
