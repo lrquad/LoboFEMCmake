@@ -3,11 +3,12 @@
 08/25/2019
 - [ ] Fullspace simulation
   - [ ] Fullspace sovler
-  - [ ] Dynamic model
+  - [x] Dynamic model
   - [x] Constraints model
   - [ ] Hyperelastic model
-  - [ ] Time integration
-  - [ ] Kinetic model
+    - [ ] multi thread stiffness and internal forces
+  - [x] Time integration
+  - [x] Kinetic model
   - [x] Precomptue tetmesh
 
 ## Introduction
