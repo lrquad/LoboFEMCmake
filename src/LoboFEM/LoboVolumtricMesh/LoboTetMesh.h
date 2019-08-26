@@ -1,5 +1,7 @@
 #pragma once
 #include <Eigen/Dense>
+#include <Eigen/Sparse>
+
 #include <string>
 #include "Shaders/LoboShader.h"
 #include "ObjLoader/tiny_obj_loader.h"
@@ -89,6 +91,8 @@ public:
     //for simulation
     virtual void setAllMaterial(double density, double youngsmodulus, double possionratio);
 
+    virtual void computeDiagMassMatrix(Eigen::SparseMatrix<double>* mass);
+
     virtual void precomputeElementData();
 
     // generate tetgen
@@ -103,7 +107,10 @@ public:
     Eigen::MatrixXi tri_faces;
 
     // Tetrahedralized interior
+    int numElementVertices;
     Eigen::VectorXd tet_vertice;       //#numVertices*3 X 1
+    Eigen::VectorXd ori_tet_vertice;       //#numVertices*3 X 1
+
     Eigen::VectorXf tet_vertice_attri; //#numVertices*3 X1
     Eigen::VectorXi tet_indices;       //#numTet*4 X 1
     Eigen::VectorXi tet_faces;         //#numface*3 // for rendering X 1

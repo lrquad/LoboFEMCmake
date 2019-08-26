@@ -11,8 +11,8 @@ namespace Lobo
         ConstrainModel();
         ~ConstrainModel();
 
-        virtual void computeEnergySparse(double* free_variables,double * energy, double* jacobi, Eigen::SparseMatrix<double>* hessian, int computationflags){};
-    virtual void computeEnergyDense(double* free_variables,double * energy, double* jacobi, double* hessian, int computationflags){};
+        virtual void computeEnergySparse(Eigen::VectorXd* free_variables,double * energy, Eigen::VectorXd* jacobi, Eigen::SparseMatrix<double>* hessian, int computationflags){};
+    virtual void computeEnergyDense(Eigen::VectorXd* free_variables,double * energy, Eigen::VectorXd* jacobi, Eigen::MatrixXd* hessian, int computationflags){};
 
         virtual void loadConstraints(const char* filename);
 
