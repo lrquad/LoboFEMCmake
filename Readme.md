@@ -1,5 +1,11 @@
 # LoboFEM
 ## Todo
+08/26/2019
+- [ ] Fullspace simulation
+  - [ ] Hyperelastic model
+    - [ ] K and f
+  - [ ] Optimization solver
+
 08/25/2019
 - [ ] Fullspace simulation
   - [ ] Fullspace sovler
