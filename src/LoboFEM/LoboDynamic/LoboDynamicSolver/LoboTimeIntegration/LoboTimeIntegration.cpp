@@ -20,6 +20,15 @@ Lobo::LoboTimeIntegration::LoboTimeIntegration(int num_DOfs_,
     q_vel_1.resize(r);
     q_accel_1.resize(r);
 
+    q.setZero();
+    q_vel.setZero();
+    q_accel.setZero();
+    q_residual.setZero();
+    q_delta.setZero();
+    q_1.setZero();
+    q_vel_1.setZero();
+    q_accel_1.setZero();
+
     step = 0;
 
 }

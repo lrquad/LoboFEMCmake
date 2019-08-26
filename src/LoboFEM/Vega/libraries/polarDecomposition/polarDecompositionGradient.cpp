@@ -51,7 +51,7 @@
 
 #include "polarDecompositionGradient.h"
 #include "matrixMultiplyMacros.h"
-#include "mat3d.h"
+#include "Vega/libraries/minivector/mat3d.h"
 #include <iostream>
 
 void PolarDecompositionGradient::Compute(const double * M, const double * Q, const double * S, const double * MDot, double * omega, double * QDot, double * SDot, const double * MDotDot, double * omegaDot, double * QDotDot)

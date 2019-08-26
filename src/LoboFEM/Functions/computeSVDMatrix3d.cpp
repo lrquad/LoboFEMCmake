@@ -2,12 +2,12 @@
 #include "Vega/libraries/minivector/eig3.h"
 using namespace Eigen;
 
-using namespace Lobo;
-
+namespace Lobo
+{
 void computeSVD(Matrix3d &F, Matrix3d &U, Matrix3d &V, Matrix3d &singularF, double singularValue_eps, int modifiedSVD)
 {
 	singularF.setZero();
-	Matrix3d normalEq = F.transpose()*F;
+	Matrix3d normalEq = F.transpose() * F;
 	Vector3d eigenValues;
 	Vector3d eigenVectors[3];
 	eigen_sym(normalEq, eigenValues, eigenVectors);
@@ -30,10 +30,8 @@ void computeSVD(Matrix3d &F, Matrix3d &U, Matrix3d &V, Matrix3d &singularF, doub
 	singualrFInvers[0] = (singularF.data()[0 * 3 + 0] > singularValue_eps) ? (1.0 / singularF.data()[0 * 3 + 0]) : 0.0;
 	singualrFInvers[1] = (singularF.data()[1 * 3 + 1] > singularValue_eps) ? (1.0 / singularF.data()[1 * 3 + 1]) : 0.0;
 	singualrFInvers[2] = (singularF.data()[2 * 3 + 2] > singularValue_eps) ? (1.0 / singularF.data()[2 * 3 + 2]) : 0.0;
-	U = F*V*singualrFInvers.asDiagonal();
-	if ((singularF.data()[0 * 3 + 0] < singularValue_eps)
-		&& (singularF.data()[1 * 3 + 1] < singularValue_eps)
-		&& (singularF.data()[2 * 3 + 2] < singularValue_eps))
+	U = F * V * singualrFInvers.asDiagonal();
+	if ((singularF.data()[0 * 3 + 0] < singularValue_eps) && (singularF.data()[1 * 3 + 1] < singularValue_eps) && (singularF.data()[2 * 3 + 2] < singularValue_eps))
 	{
 		U.setIdentity();
 	}
@@ -45,8 +43,7 @@ void computeSVD(Matrix3d &F, Matrix3d &U, Matrix3d &V, Matrix3d &singularF, doub
 			int dimA = dim;
 			int dimB = (dim + 1) % 3;
 			int dimC = (dim + 2) % 3;
-			if ((singularF.data()[dimB * 3 + dimB] < singularValue_eps)
-				&& (singularF.data()[dimC * 3 + dimC] < singularValue_eps))
+			if ((singularF.data()[dimB * 3 + dimB] < singularValue_eps) && (singularF.data()[dimC * 3 + dimC] < singularValue_eps))
 			{
 				Vector3d temVec1(U.data()[dimA * 3 + 0], U.data()[dimA * 3 + 1], U.data()[dimA * 3 + 2]);
 				Vector3d temVec2;
@@ -99,7 +96,7 @@ void computeSVD(Matrix3d &F, Matrix3d &U, Matrix3d &V, Matrix3d &singularF, doub
 		}
 
 		//Original code need to set a flag modeifiedSVD, our simulator is only for
-		//invertible, so I removed the flag. 
+		//invertible, so I removed the flag.
 		if ((!done) && (modifiedSVD == 1))
 		{
 			if (U.determinant() < 0.0)
@@ -107,8 +104,7 @@ void computeSVD(Matrix3d &F, Matrix3d &U, Matrix3d &V, Matrix3d &singularF, doub
 				int smallestSingularValueIndex = 0;
 				for (int dim = 1; dim < 3; dim++)
 				{
-					if (singularF.data()[dim * 3 + dim]
-						< singularF.data()[smallestSingularValueIndex * 3 + smallestSingularValueIndex])
+					if (singularF.data()[dim * 3 + dim] < singularF.data()[smallestSingularValueIndex * 3 + smallestSingularValueIndex])
 					{
 						smallestSingularValueIndex = dim;
 					}
@@ -125,11 +121,11 @@ void computeSVD(Matrix3d &F, Matrix3d &U, Matrix3d &V, Matrix3d &singularF, doub
 	}
 }
 
-void eigen_sym(Matrix3d & a, Vector3d & eig_val, Vector3d(&eig_vec)[3])
+void eigen_sym(Matrix3d &a, Vector3d &eig_val, Vector3d (&eig_vec)[3])
 {
-	double A[3][3] = { { a.data()[0], a.data()[3], a.data()[6] },
-	{ a.data()[1], a.data()[4], a.data()[7] },
-	{ a.data()[2], a.data()[5], a.data()[8] } };
+	double A[3][3] = {{a.data()[0], a.data()[3], a.data()[6]},
+					  {a.data()[1], a.data()[4], a.data()[7]},
+					  {a.data()[2], a.data()[5], a.data()[8]}};
 
 	double V[3][3];
 	double d[3];
@@ -157,3 +153,4 @@ void findOrthonormalVector(Vector3d &v1, Vector3d &v2)
 	axis[smallestIndex] = 1.0;
 	v2 = v1.cross(axis).normalized();
 }
+} // namespace Lobo

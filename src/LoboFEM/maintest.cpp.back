@@ -56,14 +56,20 @@ int main(int argc, char *argv[])
     double h = 1e-5;
 
 	h = 1e-30;
-	LoboComplext x;
-	x.real_ = 4.0;
-	x.image_ = h;
-	LoboComplext result_;
+	LoboComplexDualt x;
+	x.real_.real_ = 0.01;
+	x.image_.real_ = h;
+	x.real_.image_ = h;
+	
+	LoboComplexDualt result_ = x*x;
+    std::cout<<result_<<std::endl;
+	
+	LoboComplext x_s;
+	x_s.real_ = 0.01;
+	x_s.image_ = h;
+	std::cout<<x_s*x_s<<std::endl;
 
-    std::cout<<x*x<<std::endl;
-
-    polarText();
+    //polarText();
 
     return 0;
 }

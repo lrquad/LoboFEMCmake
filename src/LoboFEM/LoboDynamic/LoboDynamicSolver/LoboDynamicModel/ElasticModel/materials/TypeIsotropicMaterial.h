@@ -50,12 +50,12 @@ public:
 template<class TYPE>
 TypeIsotropicMaterial<TYPE>::~TypeIsotropicMaterial()
 {
-	h_CSFD = lobo_h;
+
 }
 
 template<class TYPE>
 TypeIsotropicMaterial<TYPE>::TypeIsotropicMaterial()
 {
-
+	h_CSFD = lobo_h;
 }
 

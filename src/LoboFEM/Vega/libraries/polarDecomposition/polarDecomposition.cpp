@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "polarDecomposition.h"
-#include "mat3d.h"
+#include "Vega/libraries/minivector/mat3d.h"
 
 /*
   See polarDecomposition.h for license information.

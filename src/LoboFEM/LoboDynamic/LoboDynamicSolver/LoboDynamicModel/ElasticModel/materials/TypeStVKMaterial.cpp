@@ -12,7 +12,7 @@ TypeStVKMaterial<TYPE>::TypeStVKMaterial(Lobo::LoboTetMesh* tetmesh, int enableC
 
 	F_complex.resize(numElements * 9);
 	FC_FC.resize(numElements * 9);
-	TYPE h = lobo_h;
+	TYPE h = this->h_CSFD;
 
 	#pragma omp parallel for
 	for (int i = 0;i < numElements;i++)
@@ -288,7 +288,6 @@ void TypeStVKMaterial<TYPE>::computeAutoDiffEnergyVectorMatrix(int elementIndex,
 
 			stiffness->data()[v * 12 + u] = energy.image_.image_;
 			energy_ = energy.real_.real_;
-
 			index++;
 		}
 	}

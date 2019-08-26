@@ -86,6 +86,9 @@ void Lobo::LoboFEM::initScreenBuffer()
 
 void Lobo::LoboFEM::windowLoop(GLFWwindow *window)
 {
+    //update scene before rendering
+    dynamic_scene->update();
+
     ImGui::NewFrame();
     drawImGui();
     ImGui::Render();
@@ -249,7 +252,7 @@ void Lobo::LoboFEM::showMainWindow(ImGui::FileBrowser *fileDialog, bool *p_open)
             ImGui::EndMenu();
         }
 
-        ImGui::Text("| %.3f ms/frame (%.1f FPS) | %s ", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate, config_file_path.c_str());
+        ImGui::Text("| %.3f ms/frame (%.1f FPS) | %s ", 1000.0f * ImGui::GetIO().DeltaTime, 1.0/ImGui::GetIO().DeltaTime, config_file_path.c_str());
         
         ImGui::EndMainMenuBar();
     }

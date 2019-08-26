@@ -1,6 +1,6 @@
 /* Eigen-decomposition for symmetric 3x3 real matrices.
    Public domain, copied from the public domain Java library JAMA. */
-
+#pragma once
 #ifndef _eig_h
 
 /* Symmetric matrix A => eigenvectors in columns of V, corresponding

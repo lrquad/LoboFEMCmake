@@ -65,6 +65,8 @@ public:
     virtual void reinitialTetMesh();
     virtual void updateGL();
 
+    virtual void updateTetVertices(Eigen::VectorXd *u);
+
     virtual void deleteGL();
 
     virtual void setBindingTriMesh(LoboMesh *lobomesh);

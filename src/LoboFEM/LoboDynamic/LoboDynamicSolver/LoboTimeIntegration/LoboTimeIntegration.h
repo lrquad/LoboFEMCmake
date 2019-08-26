@@ -1,6 +1,7 @@
 #pragma once
 #include <Eigen/Dense>
 #include <vector>
+#include "Utils/pugixml/pugixml.hpp"
 
 namespace Lobo {
 class KineticModel;
@@ -19,6 +20,9 @@ class LoboTimeIntegration {
     LoboTimeIntegration(int num_DOfs_, double damping_ratio_, double timestep_,int skip_steps_, int flags_);
     ~LoboTimeIntegration();
     
+
+    virtual void runXMLscript(pugi::xml_node &xml_node){};
+    virtual void precompute() = 0;
     virtual void stepFoward() = 0;
 
     std::vector<Eigen::VectorXd> sequence_q;

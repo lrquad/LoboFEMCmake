@@ -7,6 +7,11 @@
 
 namespace Lobo {
 
+enum DynamicSceneFlag {
+    dynamicsceneflag_stop = 1 << 0,
+    dynamicsceneflag_play = 1 << 1  // generted mesh by tetgen
+    };
+
 class LoboScene;
 class LoboTetMesh;
 class LoboShader;
@@ -25,7 +30,11 @@ class LoboDynamicScene {
 
     virtual void mouseRectSelect();
     
-    virtual void update();  // forward one timestep
+    virtual void update();  // update every frame
+    virtual void stepForward();
+    virtual void setPlay(){status_flags = dynamicsceneflag_play;};
+    virtual void setStop(){status_flags = dynamicsceneflag_stop;};
+
 
     virtual void paintGL(LoboShader* shader, bool depth_render = false);
     virtual void initialGL();
@@ -47,6 +56,7 @@ protected:
     void drawImGuiTetMesh();
     void drawImGuiSolvers();
 
+    int status_flags;
 };
 
 }  // namespace Lobo

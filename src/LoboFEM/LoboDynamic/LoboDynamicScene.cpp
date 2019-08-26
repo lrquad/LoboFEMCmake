@@ -17,7 +17,10 @@ std::string Lobo::getPath(const char *filename)
 }
 
 Lobo::LoboDynamicScene::LoboDynamicScene(Lobo::LoboScene *scene_)
-    : scene(scene_) {}
+    : scene(scene_)
+{
+    status_flags = 0;
+}
 
 Lobo::LoboDynamicScene::~LoboDynamicScene()
 {
@@ -62,6 +65,12 @@ void Lobo::LoboDynamicScene::runXMLscript(pugi::xml_node &scene_node)
                 {
                     const char *tetgen_command =
                         this->tetmesh_in_scene.back()->tetgen_command.c_str();
+
+                    if(tetmesh_node.attribute("tetgen_comd"))
+                    {
+                        tetgen_command = tetmesh_node.attribute("tetgen_comd").as_string();
+                    }
+
                     this->tetmesh_in_scene.back()->generateTet(tetgen_command);
                 }
                 if (loadmesh)
@@ -83,16 +92,13 @@ void Lobo::LoboDynamicScene::runXMLscript(pugi::xml_node &scene_node)
 
         if (solver_node.attribute("type"))
         {
-            if(strcmp(solver_node.attribute("type").as_string(),"fullspace")==0)
-            dynamic_solver = new Lobo::FullspaceSolver(this);
-            else 
+            if (strcmp(solver_node.attribute("type").as_string(), "fullspace") == 0)
+                dynamic_solver = new Lobo::FullspaceSolver(this);
+            else
             {
                 //other type of solver
             }
         }
-
-
-
 
         if (dynamic_solver != NULL)
         {
@@ -114,6 +120,22 @@ void Lobo::LoboDynamicScene::drawImGui(bool *p_open)
     {
         prepareDir();
     }
+    ImGui::Separator();
+    if (ImGui::Button("StepForward"))
+    {
+        this->stepForward();
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Play"))
+    {
+        this->setPlay();
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Stop"))
+    {
+        this->setStop();
+    }
+
     ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
     if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags))
     {
@@ -149,7 +171,27 @@ void Lobo::LoboDynamicScene::mouseRectSelect()
         ImVec2(io.MousePos.x, io.MousePos.y), col, 4.0f, ImDrawCornerFlags_All);
 }
 
-void Lobo::LoboDynamicScene::update() {}
+void Lobo::LoboDynamicScene::update()
+{
+    if(status_flags&dynamicsceneflag_play)
+    {
+        for(int i=0;i<dynamic_solvers.size();i++)
+        {
+            dynamic_solvers[i]->stepForward();
+        }
+    }else
+    {
+        /* code */
+    }
+}
+
+void Lobo::LoboDynamicScene::stepForward()
+{
+    for (int i = 0; i < dynamic_solvers.size(); i++)
+    {
+        dynamic_solvers[i]->stepForward();
+    }
+}
 
 void Lobo::LoboDynamicScene::paintGL(LoboShader *shader, bool depth_render)
 {

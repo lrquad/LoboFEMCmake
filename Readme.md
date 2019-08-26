@@ -1,18 +1,20 @@
 # LoboFEM
 ## Todo
+
 08/26/2019
-- [ ] Fullspace simulation
-  - [ ] Hyperelastic model
-    - [ ] K and f
-  - [ ] Optimization solver
+- [x] Fullspace simulation
+  - [x] Hyperelastic model
+    - [x] K and f
+  - [x] Optimization solver
+- [ ] Eigen MKL test on ubuntu
 
 08/25/2019
-- [ ] Fullspace simulation
-  - [ ] Fullspace sovler
+- [x] Fullspace simulation
+  - [x] Fullspace sovler
   - [x] Dynamic model
   - [x] Constraints model
-  - [ ] Hyperelastic model
-    - [ ] multi thread stiffness and internal forces
+  - [x] Hyperelastic model
+    - [x] multi thread stiffness and internal forces
   - [x] Time integration
   - [x] Kinetic model
   - [x] Precomptue tetmesh

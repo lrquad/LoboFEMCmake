@@ -21,20 +21,20 @@ namespace Lobo
 
         virtual void drawImGui();
 
+        virtual void stepForward() = 0;
+
         virtual void runXMLscript(pugi::xml_node &solver_node);
 
         virtual void precompute();
+
+        virtual void setBindTetmeshFromScene(int tetmesh_id);
 
         std::vector<DynamicModel*> models;
         
         //general models
         ConstrainModel* constrainmodel;
-
-
         LoboDynamicScene* parent_scene;
         int target_tetmesh_id;
         LoboTetMesh* bind_tetMesh;
-
-
     };
 }

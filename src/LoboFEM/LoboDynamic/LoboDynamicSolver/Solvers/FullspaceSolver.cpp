@@ -76,6 +76,7 @@ void Lobo::FullspaceSolver::runXMLscript(pugi::xml_node &solver_node) {
             time_integraion = new Lobo::ImplicitSparseIntegration(
                 kinetic_model, kinetic_model->num_DOFs, damping_ratio,
                 time_step, skip_step, flags);
+            time_integraion->runXMLscript(modelnode);
         }
     }
 
@@ -92,4 +93,11 @@ void Lobo::FullspaceSolver::precompute() {
                                        // tetmesh
 
     //hyperelastic_model->precompute(); 
+    time_integraion->precompute();
+}
+
+void Lobo::FullspaceSolver::stepForward()
+{
+    time_integraion->stepFoward();
+    bind_tetMesh->updateTetVertices(&(time_integraion->q));
 }

@@ -51,7 +51,7 @@ int main()
 {
     omp_set_dynamic(0); // Explicitly disable dynamic teams
     omp_set_num_threads(
-        12); // Use 4 threads for all consecutive parallel regions
+        24); // Use 4 threads for all consecutive parallel regions
 
     // Setup window
     glfwSetErrorCallback(glfw_error_callback);

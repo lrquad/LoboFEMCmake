@@ -16,15 +16,15 @@ namespace Lobo
 
         virtual void drawImGui();
         
+
         virtual void runXMLscript(pugi::xml_node &solver_node);
 
-
         virtual void precompute();
+        virtual void stepForward();
+
 
         HyperelasticModel* hyperelastic_model;
         KineticModel* kinetic_model;
         LoboTimeIntegration* time_integraion;
-        LoboTetMesh* tetmesh;
-
     };
 }

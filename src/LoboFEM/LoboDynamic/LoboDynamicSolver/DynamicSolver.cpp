@@ -31,13 +31,17 @@ void Lobo::DynamicSolver::drawImGui()
     }
 }
 
+
+void Lobo::DynamicSolver::setBindTetmeshFromScene(int tetmesh_id)
+{   
+    bind_tetMesh = this->parent_scene->tetmesh_in_scene[tetmesh_id];
+}
 void Lobo::DynamicSolver::runXMLscript(pugi::xml_node &solver_node)
 {
-
     if (solver_node.child("TargetTetMesh"))
     {
         target_tetmesh_id = solver_node.child("TargetTetMesh").attribute("id").as_int();
-        bind_tetMesh = this->parent_scene->tetmesh_in_scene[target_tetmesh_id];
+        setBindTetmeshFromScene(target_tetmesh_id);
     }
 
     if(solver_node.child("ConstraintModel"))
@@ -47,8 +51,6 @@ void Lobo::DynamicSolver::runXMLscript(pugi::xml_node &solver_node)
         constrainmodel = new Lobo::ConstrainModel();
         models.push_back(constrainmodel);
     }
-
-    
 }
 
 void Lobo::DynamicSolver::precompute()

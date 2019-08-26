@@ -40,6 +40,22 @@ void Lobo::HyperelasticModel::runXMLscript(pugi::xml_node &xml_node)
                    xml_node.child("Material").attribute("type").as_string()) ==
             0)
         {
+            double YoungsModulus = 100.0;
+            double PossionRatio = 0.4;
+            double Density = 1.0;
+            if (xml_node.child("YoungsModulus"))
+            {
+                YoungsModulus = xml_node.child("YoungsModulus").attribute("value").as_double();
+            }
+            if (xml_node.child("PossionRatio"))
+            {
+                PossionRatio = xml_node.child("PossionRatio").attribute("value").as_double();
+            }
+            if (xml_node.child("Density"))
+            {
+                Density = xml_node.child("Density").attribute("value").as_double();
+            }
+            tetmesh->setAllMaterial(Density, YoungsModulus, PossionRatio);
             this->elastic_material =
                 new TypeStVKMaterial<double>(tetmesh, 1, 500.0);
             materialtype = "StVK";
@@ -65,15 +81,20 @@ void Lobo::HyperelasticModel::computeEnergySparse(Eigen::VectorXd *free_variable
     currentdisplacement = *free_variables;
     if (computationflags & Computeflags_reset)
     {
+        if(computationflags&Computeflags_energy)
         *energy = 0;
 
+        if(computationflags&Computeflags_fisrt)
         jacobi->setZero();
 
+        if(computationflags&Computeflags_second)
+        {
         for (int i = 0; i < hessian->outerSize(); ++i)
             for (Eigen::SparseMatrix<double>::InnerIterator it(*hessian, i); it; ++it)
             {
                 it.valueRef() = 0;
             }
+        }
     }
 
     int num_ele = tetmesh->getNumElements();
@@ -96,14 +117,14 @@ void Lobo::HyperelasticModel::computeEnergySparse(Eigen::VectorXd *free_variable
 
     for (int i = 0; i < num_ele; i++)
     {
-        assignTetElementForceAndMatrix(i,energy,jacobi,hessian,computationflags,1.0);
+        assignTetElementForceAndMatrix(i, energy, jacobi, hessian, computationflags, 1.0);
     }
 }
 
 void Lobo::HyperelasticModel::setAccelerationIndices(int **row, int **column)
 {
     this->row_ = row;
-    this->column_ = column_;
+    this->column_ = column;
 }
 
 void Lobo::HyperelasticModel::computeStiffnessMatrixTopology(
@@ -236,9 +257,12 @@ void Lobo::HyperelasticModel::getTetForceMatrixCSFD(int eleid, Eigen::VectorXd *
     Eigen::Matrix3d Dm_inverse = te->Dm_inverse;
     computeElementDeformationshapeMatrix(eleid, Ds);
     F = Ds * Dm_inverse;
+
     if (isinvertible)
     {
+
         computeSVD(F, m_U, m_V, m_singularF, 1e-9, 1);
+
         for (int i = 0; i < 3; i++)
         {
             if (m_singularF.data()[i * 3 + i] < inversion_Threshold)
@@ -249,13 +273,14 @@ void Lobo::HyperelasticModel::getTetForceMatrixCSFD(int eleid, Eigen::VectorXd *
         F = m_U * m_singularF * m_V.transpose();
     }
 
-    elastic_material->computeAutoDiffEnergyVectorMatrix(eleid, internalforce->data(), stiffness, energy_list[eleid]);
+    elastic_material->computeAutoDiffEnergyVectorMatrix(eleid, internalforce->data(), stiffness, F, energy_list[eleid]);
+
     energy_list[eleid] *= te->volume;
     double h = elastic_material->h_CSFD;
     for (int i = 0; i < 12; i++)
     {
-        internalforce[i] *= te->volume;
-        internalforce[i] /= h;
+        internalforce->data()[i] *= te->volume;
+        internalforce->data()[i] /= h;
     }
 
     (*stiffness) *= te->volume;
@@ -283,17 +308,17 @@ void Lobo::HyperelasticModel::getTetForceCSFD(int eleid, Eigen::VectorXd *intern
         F = m_U * m_singularF * m_V.transpose();
     }
 
-    isotropicMaterial->computeAutoDiffEnergyVector(eleid, internalforce->data(), F, energy_list[eleid]);
+    elastic_material->computeAutoDiffEnergyVector(eleid, internalforce->data(), F, energy_list[eleid]);
     energy_list[eleid] *= te->volume;
     double h = elastic_material->h_CSFD;
     for (int i = 0; i < 12; i++)
     {
-        internalforce[i] *= te->volume;
-        internalforce[i] /= h;
+        internalforce->data()[i] *= te->volume;
+        internalforce->data()[i] /= h;
     }
 }
 
-void Lobo::HyperelasticModel::assignTetElementForceAndMatrix(int eleid, double *energy, Eigen::VectorXd *internalforce, Eigen::SparseMatrix<double> *sparseMatrix, int flags, double weights = 1.0)
+void Lobo::HyperelasticModel::assignTetElementForceAndMatrix(int eleid, double *energy, Eigen::VectorXd *internalforce, Eigen::SparseMatrix<double> *sparseMatrix, int flags, double weights)
 {
 
     if (flags & Computeflags_energy)
@@ -306,9 +331,9 @@ void Lobo::HyperelasticModel::assignTetElementForceAndMatrix(int eleid, double *
         for (int i = 0; i < 4; i++)
         {
             int n = tetmesh->tet_indices[eleid * 4 + i];
-            internalforce[n * 3] += internalforce_list[eleid]->data()[i * 3 + 0];
-            internalforce[n * 3 + 1] += internalforce_list[eleid]->data()[i * 3 + 1];
-            internalforce[n * 3 + 2] += internalforce_list[eleid]->data()[i * 3 + 2];
+            internalforce->data()[n * 3] += internalforce_list[eleid]->data()[i * 3 + 0];
+            internalforce->data()[n * 3 + 1] += internalforce_list[eleid]->data()[i * 3 + 1];
+            internalforce->data()[n * 3 + 2] += internalforce_list[eleid]->data()[i * 3 + 2];
         }
     }
 
@@ -333,7 +358,7 @@ void Lobo::HyperelasticModel::assignTetElementForceAndMatrix(int eleid, double *
                         int trurow = row + r;
                         int trucol = col + l;
 
-                        int index = column_[te->index_][3 * numElementVertices * block_c + block_r];
+                        int index = column_[eleid][3 * numElementVertices * block_c + block_r];
                         sparseMatrix->valuePtr()[index] += stiffness_list[eleid]->data()[block_c * 12 + block_r];
                     }
                 }

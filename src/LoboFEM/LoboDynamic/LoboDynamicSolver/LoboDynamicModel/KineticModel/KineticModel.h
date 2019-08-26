@@ -26,10 +26,12 @@ public:
 
     virtual void runXMLscript(pugi::xml_node &xml_node);
 
-    virtual void setKineticStatus(Eigen::VectorXd &q_,Eigen::VectorXd &q_vel_,Eigen::VectorXd &q_1_);
+    virtual void setKineticStatus(Eigen::VectorXd &q_vel_,Eigen::VectorXd &q_1_);
 
     virtual void computeEnergySparse(Eigen::VectorXd*free_variables, double *energy, Eigen::VectorXd*jacobi, Eigen::SparseMatrix<double> *hessian, int computationflags);
     virtual void computeEnergyDense(Eigen::VectorXd*free_variables, double *energy, Eigen::VectorXd*jacobi, Eigen::MatrixXd*hessian, int computationflags){};
+
+    virtual void getSparseTopoloty(Eigen::SparseMatrix<double> &spmatrix);
 
     void setTimeStep(double v){timestep = v;}
 
@@ -48,7 +50,6 @@ protected:
     HyperelasticModel* hyperelasticmodel;
     ConstrainModel* constrainmodel;
 
-    Eigen::VectorXd q;
     Eigen::VectorXd q_vel;
     Eigen::VectorXd q_1;
     double timestep;
