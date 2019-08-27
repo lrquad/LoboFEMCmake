@@ -5,7 +5,7 @@
 
 08/27/2019
 - [ ] Collision
-- [ ] Constraints
+- [x] Constraints
 
 08/26/2019
 - [x] Fullspace simulation
