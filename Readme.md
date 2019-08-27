@@ -27,9 +27,10 @@
 - c++14 (for imfilebrowser)
 - hyperelastic material based FEM simulator
 
-![bunny](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/bunny.gif)
-![scene](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/scene.png)
+
 ![scene](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/screen_recored.gif)
+![scene](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/scene.png)
+![bunny](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/bunny.gif)
 
 ## Install
 
