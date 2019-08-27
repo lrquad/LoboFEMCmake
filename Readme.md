@@ -1,4 +1,6 @@
 # LoboFEM
+![scene](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/scene.png)
+
 ## Todo
 
 08/27/2019
@@ -36,7 +38,6 @@
 ![scene](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/screen_recored2.gif)
 ![scene](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/screen_recored3.gif)
 ![scene](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/screen_recored4.gif)
-![scene](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/scene.png)
 
 ## Install
 
