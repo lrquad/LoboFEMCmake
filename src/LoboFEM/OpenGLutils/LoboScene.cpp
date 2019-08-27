@@ -58,10 +58,12 @@ void Lobo::LoboScene::drawImGui(bool *p_open)
     ImGui::BeginChild("left pane", ImVec2(150, 0), true);
     for (int i = 0; i < mesh_list.size(); i++)
     {
+        ImGui::PushID(i);
         char label[128];
         sprintf(label, "%s", mesh_list[i]->obj_file_name.c_str());
         if (ImGui::Selectable(label, selected == i))
             selected = i;
+        ImGui::PopID();
     }
     ImGui::EndChild();
     ImGui::SameLine();

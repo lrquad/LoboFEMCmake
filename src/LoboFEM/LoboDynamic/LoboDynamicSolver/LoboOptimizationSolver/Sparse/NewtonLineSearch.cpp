@@ -44,8 +44,15 @@ void Lobo::NewtonLineSearch::solve(Eigen::VectorXd* initialGuessq)
         {
             pre_energy = energy;
         }
-
+    
+        #ifdef EIGEN_USE_MKL_ALL
+        Eigen::PardisoLDLT<Eigen::SparseMatrix<double>> LDLT;
+        LDLT.pardisoParameterArray()[33] = 1;
+		LDLT.pardisoParameterArray()[59] = 0;
+        #else // DEBUG
         Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> LDLT;
+        #endif
+
         LDLT.compute(hessian);
         
         Eigen::VectorXd result_ = LDLT.solve(jacobi);
@@ -62,7 +69,7 @@ void Lobo::NewtonLineSearch::solve(Eigen::VectorXd* initialGuessq)
 
         while(!wolfecondition)
         {
-            if(newton_stepping <0.001)
+            if(newton_stepping <0.01)
             {
                 break;
             }

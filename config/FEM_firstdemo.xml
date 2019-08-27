@@ -2,7 +2,7 @@
 <Scene version="1.0" type = "FEMscene">
 	<LoboScene>
 		<TriMesh name="floor" uniform = "false">
-			<Path>./models/floor_grass.obj</Path>
+			<Path>./models/floor_wood.obj</Path>
 			<Position>0.0 0.0 -1.0</Position>
 		</TriMesh>
 		<TriMesh name="bunny" uniform = "true">
@@ -25,7 +25,7 @@
 			<SolverFolder>solveroutput/bunny_fullspace/</SolverFolder>
 			<TargetTetMesh id="0"></TargetTetMesh>
 			<HyperelasticModel>
-				<Material type="StVK">
+				<Material type="NeoHookean">
 					<YoungsModulus value = "100.0"></YoungsModulus>
 					<PossionRatio value = "0.3"></PossionRatio>
 					<Density value = "1.0"></Density>
@@ -43,11 +43,10 @@
 			</CollisionModel>
 
 			<TimeIntegration method="ImplicitSparse" timestep="0.005" damping="0.999" skipsteps="1" recordq="false">
-			<Optimization method="newton" maxiter="5" tol="0.001"></Optimization>
+				<Optimization method="newton" maxiter="5" tol="0.001"></Optimization>
 			</TimeIntegration>
 
 		</DynamicSolver>
-
 	</LoboDynamicScene>
 
 </Scene>

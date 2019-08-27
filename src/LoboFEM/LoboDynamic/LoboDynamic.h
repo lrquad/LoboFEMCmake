@@ -10,6 +10,8 @@
 
 #include "LoboDynamic/LoboDynamicSolver/LoboDynamicModel/ElasticModel/materials/TypeIsotropicMaterial.h"
 #include "LoboDynamic/LoboDynamicSolver/LoboDynamicModel/ElasticModel/materials/TypeStVKMaterial.h"
+#include "LoboDynamic/LoboDynamicSolver/LoboDynamicModel/ElasticModel/materials/TypeNeoHookeanMaterial.h"
+
 
 #include "LoboDynamic/LoboDynamicSolver/LoboOptimizationSolver/LoboOptimizationSolver.h"
 #include "LoboDynamic/LoboDynamicSolver/LoboOptimizationSolver/Sparse/NewtonLineSearch.h"

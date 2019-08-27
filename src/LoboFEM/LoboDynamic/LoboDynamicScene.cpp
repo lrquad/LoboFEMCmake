@@ -279,8 +279,10 @@ void Lobo::LoboDynamicScene::drawImGuiTetMesh()
     {
         char label[128];
         sprintf(label, "%s", tetmesh_in_scene[i]->filebase.c_str());
+        ImGui::PushID(i);
         if (ImGui::Selectable(label, selected == i))
             selected = i;
+        ImGui::PopID();
     }
     ImGui::EndChild();
     ImGui::SameLine();
@@ -299,10 +301,12 @@ void Lobo::LoboDynamicScene::drawImGuiSolvers()
     ImGui::BeginChild("left pane", ImVec2(150, 0), true);
     for (int i = 0; i < dynamic_solvers.size(); i++)
     {
+        ImGui::PushID(i);
         char label[128];
         sprintf(label, "%d", i);
         if (ImGui::Selectable(label, selected == i))
             selected = i;
+         ImGui::PopID();
     }
     ImGui::EndChild();
     ImGui::SameLine();

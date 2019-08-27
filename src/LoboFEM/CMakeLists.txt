@@ -2,6 +2,10 @@ make_executable()
 
 add_definitions(-DIMGUI_IMPL_OPENGL_LOADER_GLAD)
 
+if(MKL_FOUND)
+    add_definitions(-DEIGEN_USE_MKL_ALL)
+endif()
+
 include_directories(
     ${PLOG_INCLUDE_DIR}
     ${GLM_INCLUDE_DIR}
@@ -13,7 +17,8 @@ include_directories(
     ${TETGEN_INCLUDE_DIR}
     ${MKL_INCLUDE_DIR}
     )
-message(${GLFW_INCLUDE_DIR})
+
+message(STATUS "=====>" ${MKL_INCLUDE_DIR})
 
 target_link_libraries(${PROJECT}
     ${OPENGL_LIBRARIES}
@@ -25,3 +30,7 @@ target_link_libraries(${PROJECT}
     ${MKL_LIBRARIES}
     "stdc++fs"
     )
+message(STATUS "=====>" ${MKL_LIBRARIES})
+
+
+message(STATUS "=====>" ${CMAKE_CXX_FLAGS})

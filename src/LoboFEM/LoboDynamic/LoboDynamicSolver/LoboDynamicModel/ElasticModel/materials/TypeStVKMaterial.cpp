@@ -8,26 +8,6 @@ LOBO_TEMPLATE_INSTANT(TypeStVKMaterial)
 template <class TYPE>
 TypeStVKMaterial<TYPE>::TypeStVKMaterial(Lobo::LoboTetMesh* tetmesh, int enableCompressionResistance /*= 0*/, TYPE compressionResistance /*= 0.0*/):TypeTetElementMaterial<TYPE>(tetmesh,enableCompressionResistance,compressionResistance)
 {
-	int numElements = tetmesh->getNumElements();
-
-	F_complex.resize(numElements * 9);
-	FC_FC.resize(numElements * 9);
-	TYPE h = this->h_CSFD;
-
-	#pragma omp parallel for
-	for (int i = 0;i < numElements;i++)
-	{
-		//TetElement* tet = tetmesh->getTetElement(i);
-		Lobo::TetElementData* tet = tetmesh->getTetElement(i);
-		Matrix3 Dm_inverse = tet->Dm_inverse.cast<TYPE>();
-		for (int j = 0;j < 9;j++)
-		{
-			F_complex[i * 9 + j].setZero();
-			F_complex[i * 9 + j].data()[j] = h;
-			F_complex[i * 9 + j] *= Dm_inverse;
-			FC_FC[i * 9 + j] = F_complex[i * 9 + j].transpose()*F_complex[i * 9 + j];
-		}
-	}
 
 }
 
@@ -190,7 +170,7 @@ void TypeStVKMaterial<TYPE>::computeAutoDiffEnergyVector(int elementIndex, TYPE*
 		E_trace = (TYPE)0.5*lambdaLame[elementIndex]*E_trace*E_trace;
 		energy += E_trace;
 
-		forces[r] = energy.image_;
+		forces[r] = energy.image_/this->h_CSFD;
 		energy_ = energy.real_;
 	}
 
@@ -283,10 +263,10 @@ void TypeStVKMaterial<TYPE>::computeAutoDiffEnergyVectorMatrix(int elementIndex,
 
 			if (u == v)
 			{
-				forces[u] = energy.real_.image_;
+				forces[u] = energy.real_.image_/this->h_CSFD;
 			}
 
-			stiffness->data()[v * 12 + u] = energy.image_.image_;
+			stiffness->data()[v * 12 + u] = energy.image_.image_/this->h_CSFD/this->h_CSFD;
 			energy_ = energy.real_.real_;
 			index++;
 		}
