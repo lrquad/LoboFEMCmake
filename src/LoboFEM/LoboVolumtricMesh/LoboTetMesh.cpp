@@ -876,6 +876,11 @@ void Lobo::LoboTetMesh::generateBarycentricCoordinate()
 
     for(int i=0;i<num_trinode;i++)
     {
+        Eigen::Vector3d position;
+        position.data()[0] = lobomesh_binding->attrib.vertices[i*3+0];
+        position.data()[1] = lobomesh_binding->attrib.vertices[i*3+1];
+        position.data()[2] = lobomesh_binding->attrib.vertices[i*3+2];
+        
         
 
     }
