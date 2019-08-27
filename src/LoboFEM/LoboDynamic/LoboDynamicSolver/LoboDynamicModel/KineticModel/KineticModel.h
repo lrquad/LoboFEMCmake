@@ -59,9 +59,6 @@ protected:
     Eigen::SparseMatrix<double> stiffness_matrix;
 
 
-    // acceleration indices
-	int ** row_;
-	int ** column_;
-    
+   
 };
 } // namespace Lobo

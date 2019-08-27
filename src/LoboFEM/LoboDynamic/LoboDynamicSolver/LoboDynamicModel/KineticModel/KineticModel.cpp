@@ -30,6 +30,8 @@ Lobo::KineticModel::~KineticModel()
     for (int i = 0; i < numElements; i++)
         free(column_[i]);
     free(column_);
+
+    free(diagonal_);
 }
 
 // precomptue final sparse matrix topology
@@ -49,6 +51,7 @@ void Lobo::KineticModel::precompute()
 
     hyperelasticmodel->precompute();
     hyperelasticmodel->setAccelerationIndices(row_, column_);
+    constrainmodel->setAccelerationDiagIndices(diagonal_);
 
     //precomptue gravity force
     gravity_force.resize(num_DOFs);
@@ -77,9 +80,12 @@ void Lobo::KineticModel::computeEnergySparse(
     computationflags &= ~Computeflags_reset;
 
     // Eigen::VectorXd constrain_force(num_DOFs);
-    // constrainmodel->computeEnergySparse(free_variables, energy,
-    //                                     jacobi, hessian,
-    //                                     computationflags);
+    if (constrainmodel->trigger)
+    {
+        constrainmodel->computeEnergySparse(free_variables, energy,
+                                            jacobi, hessian,
+                                            computationflags);
+    }
     // double constrain_energy = *energy-elastic_energy;
 
     //kinetic parts
@@ -129,7 +135,10 @@ void Lobo::KineticModel::getSparseTopoloty(Eigen::SparseMatrix<double> &spmatrix
     spmatrix = stiffness_matrix_topology;
 }
 
-void Lobo::KineticModel::runXMLscript(pugi::xml_node &xml_node) {}
+void Lobo::KineticModel::runXMLscript(pugi::xml_node &xml_node)
+{
+    Lobo::DynamicModel::runXMLscript(xml_node);
+}
 
 void Lobo::KineticModel::setKineticStatus(Eigen::VectorXd &q_vel_, Eigen::VectorXd &q_1_)
 {
@@ -158,6 +167,12 @@ void Lobo::KineticModel::computeAccelerationIndices(
 
     row_ = (int **)malloc(sizeof(int *) * numElements);
     column_ = (int **)malloc(sizeof(int *) * numElements);
+    diagonal_ = (int *)malloc(sizeof(int) * tetmesh->getNumVertex() * 3); // for diagnal index
+
+    for (int i = 0; i < tetmesh->getNumVertex() * 3; i++)
+    {
+        diagonal_[i] = sparsetopology->getValueIndex(i, i);
+    }
 
     int numElementVertices = tetmesh->numElementVertices;
     for (int el = 0; el < numElements; el++)

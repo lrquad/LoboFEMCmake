@@ -46,6 +46,9 @@ Lobo::HyperelasticModel::~HyperelasticModel()
 
 void Lobo::HyperelasticModel::runXMLscript(pugi::xml_node &xml_node)
 {
+    Lobo::DynamicModel::runXMLscript(xml_node);
+
+
     this->tetmesh->precomputeElementData();
 
     if (xml_node.child("Material"))
@@ -182,12 +185,6 @@ void Lobo::HyperelasticModel::computeEnergySparse(
         assignTetElementForceAndMatrix(i, energy, jacobi, hessian,
                                        computationflags, 1.0);
     }
-}
-
-void Lobo::HyperelasticModel::setAccelerationIndices(int **row, int **column)
-{
-    this->row_ = row;
-    this->column_ = column;
 }
 
 void Lobo::HyperelasticModel::computeStiffnessMatrixTopology(

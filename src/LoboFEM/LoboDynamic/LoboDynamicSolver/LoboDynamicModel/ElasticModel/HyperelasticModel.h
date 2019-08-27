@@ -21,7 +21,6 @@ public:
     ~HyperelasticModel();
 
     virtual void precompute();
-    virtual void setAccelerationIndices(int **row_, int **column_);
     virtual void computeStiffnessMatrixTopology(Eigen::SparseMatrix<double> *K);
 
     virtual void runXMLscript(pugi::xml_node &xml_node);
@@ -77,8 +76,5 @@ protected:
     int colMajorMatrixToTeran[9];
 	int teranToColMajorMatrix[9];
 
-    // acceleration indices
-    int **row_;
-    int **column_;
 };
 } // namespace Lobo

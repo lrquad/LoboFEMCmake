@@ -36,6 +36,7 @@ void Lobo::DynamicSolver::setBindTetmeshFromScene(int tetmesh_id)
 {   
     bind_tetMesh = this->parent_scene->tetmesh_in_scene[tetmesh_id];
 }
+
 void Lobo::DynamicSolver::runXMLscript(pugi::xml_node &solver_node)
 {
     if (solver_node.child("TargetTetMesh"))
@@ -46,9 +47,11 @@ void Lobo::DynamicSolver::runXMLscript(pugi::xml_node &solver_node)
 
     if(solver_node.child("ConstraintModel"))
     {
-        double weight = solver_node.child("ConstraintModel").attribute("weight").as_double();
-        std::string filepath = solver_node.child("ConstraintModel").child("ConstraintsFile").text().as_string();
-        constrainmodel = new Lobo::ConstrainModel();
+        pugi::xml_node model_node = solver_node.child("ConstraintModel");
+
+        double weight = model_node.attribute("weight").as_double();
+        constrainmodel = new Lobo::ConstrainModel(bind_tetMesh);
+        constrainmodel->runXMLscript(model_node);
         models.push_back(constrainmodel);
     }
 }
