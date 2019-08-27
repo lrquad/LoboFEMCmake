@@ -325,7 +325,8 @@ void Lobo::LoboTetMesh::updateGL()
 void Lobo::LoboTetMesh::updateTetVertices(Eigen::VectorXd *u)
 {
     tet_vertice = *u + ori_tet_vertice;
-
+    tet_vertice_col =
+        Lobo::eigen_vec_2_mat(tet_vertice, tet_vertice.size() / 3, 3);
     updateTetAttri(tet_vertice, 0, 3, 11);
 }
 

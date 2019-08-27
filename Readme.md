@@ -34,6 +34,7 @@
 
 ![scene](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/screen_recored.gif)
 ![scene](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/screen_recored2.gif)
+![scene](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/screen_recored3.gif)
 ![scene](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/scene.png)
 ![bunny](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/bunny.gif)
 

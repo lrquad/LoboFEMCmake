@@ -24,7 +24,7 @@
 			<!-- the output will be saved in folder <SceneDataFolder>/<DataFolder> -->
 			<SolverFolder>solveroutput/bunny_fullspace/</SolverFolder>
 			<TargetTetMesh id="0"></TargetTetMesh>
-			<HyperelasticModel invertible="true" useMCSFD="true">
+			<HyperelasticModel invertible="true" useMCSFD="false">
 				<Material type="NeoHookean">
 					<YoungsModulus value = "100.0"></YoungsModulus>
 					<PossionRatio value = "0.3"></PossionRatio>

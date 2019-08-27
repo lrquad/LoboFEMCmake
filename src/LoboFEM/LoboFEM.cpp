@@ -286,7 +286,7 @@ void Lobo::LoboFEM::showMainWindow(ImGui::FileBrowser *fileDialog, bool *p_open)
     if (ImGui::Button("Generate Animation"))
     {
        export_screen_buffer = false;
-       system("yes | ffmpeg -r 120 -f image2 -i ./demo/default/screen/animation%05d.png -vcodec libx264 -crf 10  -pix_fmt yuv420p ./demo/default/screen/screen_recored.mp4");
+       system("yes | ffmpeg -r 60 -f image2 -i ./demo/default/screen/animation%05d.png -vcodec libx264 -crf 10  -pix_fmt yuv420p ./demo/default/screen/screen_recored.mp4");
        system("yes | ffmpeg -i ./demo/default/screen/screen_recored.mp4 -vf fps=15,scale=320:-1:flags=lanczos,palettegen ./demo/default/screen/palette.png");
        system("yes | ffmpeg -i ./demo/default/screen/screen_recored.mp4 -i ./demo/default/screen/palette.png -filter_complex \"fps=15,scale=640:-1:flags=lanczos[x];[x][1:v]paletteuse\" ./demo/default/screen/screen_recored.gif");
     }
