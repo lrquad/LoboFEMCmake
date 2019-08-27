@@ -50,6 +50,7 @@ lib/
 
 demo/default/animation*
 demo/default/*.mp4
+demo/default/screen/**
 
 !models/**
 
