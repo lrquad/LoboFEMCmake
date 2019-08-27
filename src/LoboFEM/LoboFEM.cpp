@@ -90,6 +90,7 @@ void Lobo::LoboFEM::windowLoop(GLFWwindow *window)
 {
     //update scene before rendering
     dynamic_scene->update();
+    //scene->collision_world.doDetection();
 
     ImGui::NewFrame();
     drawImGui();

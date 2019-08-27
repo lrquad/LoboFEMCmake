@@ -6,6 +6,7 @@
 08/27/2019
 - [ ] Collision
 - [x] Constraints
+- [ ] Tri mesh and Tet mesh adapter
 
 08/26/2019
 - [x] Fullspace simulation

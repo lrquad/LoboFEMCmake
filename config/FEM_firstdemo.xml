@@ -4,17 +4,24 @@
 		<TriMesh name="floor" uniform = "false">
 			<Path>./models/floor_wood.obj</Path>
 			<Position>0.0 0.0 -1.0</Position>
+			<Collision static="true"></Collision>
 		</TriMesh>
 		<TriMesh name="bunny" uniform = "true">
 			<Path>./models/bunny_low.obj</Path>
 			<Position>0.0 1.0 0.0</Position>
+			<Collision static="false"></Collision>
+		</TriMesh>
+		<TriMesh name="bar" uniform = "false" smooth="false">
+			<Path>./models/shape/cylinder.obj</Path>
+			<Position>0.0 0.2 0.0</Position>
+			<Collision static="true"></Collision>
 		</TriMesh>
 	</LoboScene>
 
 	<LoboDynamicScene>
 		<SceneFolder>./demo/Siggraph2020/bunny/</SceneFolder>
 
-		<BindTetMesh UseBinary="true" tetgen="true" loadmesh="false" savemesh="true" tetgen_comd="p">
+		<BindTetMesh UseBinary="true" tetgen="false" loadmesh="true" savemesh="false" tetgen_comd="p">
 			<TrimeshId>1</TrimeshId>
 			<!-- the tet files will be saved as <SceneFolder>/<TetFileBase> -->
 			<TetFileBase>tetmesh/bunny</TetFileBase>

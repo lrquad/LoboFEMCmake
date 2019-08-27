@@ -6,6 +6,8 @@
 #include <Eigen/Dense>
 #include <fstream>
 
+class BVHCollisionDetector;
+
 namespace Lobo {
 
 inline void exportSimpleObj(const char* filename, Eigen::MatrixXd& tri_vertices,
@@ -110,10 +112,12 @@ class LoboMesh {
 
     virtual void getCurVertices(float* outPosition);
     virtual void getCurVertices(double* outPosition);
-    
+    virtual void getFaceIndices(int* indices);
 
     virtual void resetVertice();
     Lobo::LoboShaderConfig shader_config;
+
+    BVHCollisionDetector* bvh_dectector;
 
    protected:
     // imgui

@@ -29,6 +29,7 @@ void Lobo::LoboMesh::defaultValue() {
     eular_angle = glm::vec3(0.0);
     start_show_material = 0;
     num_faces = 0;
+    bvh_dectector = NULL;
     //omp_set_dynamic(0);  // Explicitly disable dynamic teams
     //omp_set_num_threads(12);  // Use 4 threads for all consecutive parallel regions
 }
@@ -473,6 +474,18 @@ void Lobo::LoboMesh::getCurVertices(float *outPosition) {
 void Lobo::LoboMesh::getCurVertices(double *outPosition) {
     for (int i = 0; i < attrib.vertices.size(); i++) {
         outPosition[i] = attrib.vertices[i];
+    }
+}
+
+void Lobo::LoboMesh::getFaceIndices(int* indices)
+{
+    int offset = 0;
+    for (int i = 0; i < shapes.size(); i++) {
+        for(int j=0;j<shapes[i].mesh.indices.size();j++)
+        {
+            indices[offset] = shapes[i].mesh.indices[j].vertex_index;
+            offset++;
+        }
     }
 }
 

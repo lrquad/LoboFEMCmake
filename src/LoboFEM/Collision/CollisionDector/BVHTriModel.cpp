@@ -6,6 +6,12 @@ using namespace Eigen;
 BVHTriModel::BVHTriModel(Lobo::LoboMesh* trimesh_)
 {
 	this->trimesh = trimesh_;
+	int numVertex = trimesh->attrib.vertices.size()/3;
+	trimeshposition.resize(numVertex*3);
+	trimeshindices.resize(trimesh->num_faces*3);
+	
+	trimesh->getCurVertices(trimeshposition.data());
+	trimesh->getFaceIndices(trimeshindices.data());
 	//trimeshposition = trimesh->getCurrentPositionFloat();
 	//trimeshindices = trimesh->getIndices();
 	
@@ -46,6 +52,8 @@ BVHTriModel::~BVHTriModel()
 void BVHTriModel::updateDeform()
 {
 	//trimeshposition = trimesh->getCurrentPositionFloat();
+	trimesh->getCurVertices(trimeshposition.data());
+
 	for (int i = 0;i < _num_vtx;i++)
 	{
 		_vtxs[i].x = trimeshposition.data()[i * 3 + 0];

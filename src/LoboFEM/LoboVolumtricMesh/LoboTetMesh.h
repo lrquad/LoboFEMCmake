@@ -45,6 +45,8 @@ struct TetElementData
 {
     Eigen::Matrix3d Dm;
     Eigen::Matrix3d Dm_inverse;
+    Eigen::Matrix4d shape_function_inv;
+
     double volume;
     /* data */
 };
@@ -96,6 +98,13 @@ public:
     virtual void computeDiagMassMatrix(Eigen::SparseMatrix<double>* mass);
 
     virtual void precomputeElementData();
+
+
+    //adapter for trimesh
+    virtual void generateBarycentricCoordinate();
+    virtual void computeBarycentricWeights(int eleid,Eigen::Vector3d&position,Eigen::Vector4d& weights);
+    virtual int getContainedElement(Eigen::Vector3d &position);
+    virtual bool containsVertex(int eleid, Eigen::Vector3d &pos);
 
     // generate tetgen
     std::string filebase;
@@ -157,6 +166,10 @@ protected:
     std::vector<Material> materials;
     std::vector<int> materialid;
     std::vector<TetElementData> elements_data;
+
+    //for triangle mesh binding
+    Eigen::VectorXi tri_ele_idl;
+    Eigen::VectorXd tri_ele_weights;
 
     double mesh_total_volume;
 

@@ -37,12 +37,14 @@ public:
 	void setIsstatic(bool val) { isstatic = val; }
 	bool getSelfCollisionTest() const { return selfCollisionTest; }
 	void setSelfCollisionTest(bool val) { selfCollisionTest = val; }
+
 protected:
 
 	void computeCollideInfo(int tri1, int tri2, BVHCollisionDetector* objB);
 	std::vector<CollideInfo> collitionInfo;
 	BVHTriModel* bvhTriModel;
 	Lobo::LoboMesh* trimesh;
+
 	bool isstatic;
 	bool selfCollisionTest;
 

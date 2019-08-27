@@ -5,6 +5,10 @@
 #include <imgui.h>
 #include "Utils/pugixml/pugixml.hpp"
 
+#include "Collision/CollisionDector/CollisionWorld.h"
+
+class BVHCollisionDetector;
+
 namespace Lobo {
     
 class LoboScene {
@@ -12,6 +16,7 @@ public:
     LoboScene(){};
     ~LoboScene(){
         deleteStdvectorPointer(mesh_list);
+        deleteStdvectorPointer(bvh_list);
     };
 
     virtual void runXMLscript(pugi::xml_node &scene_node);
@@ -29,5 +34,15 @@ public:
     virtual void deleteGL();
 
     std::vector<LoboMesh*> mesh_list;
+    //LoboMesh boudning box bvh
+
+    std::vector<BVHCollisionDetector*> bvh_list;
+    CollisionWorld collision_world;
+
+protected:
+
+    virtual void addMeshBVH(LoboMesh* trimesh,bool isstatic,bool selfcollision);
+
+
 };
 }  // namespace Lobo

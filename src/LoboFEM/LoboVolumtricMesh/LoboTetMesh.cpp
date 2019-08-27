@@ -2,6 +2,7 @@
 #include <igl/copyleft/tetgen/tetrahedralize.h>
 #include <igl/unproject_onto_mesh.h>
 #include <igl/project.h>
+#include <igl/barycentric_coordinates.h>
 
 #include "Functions/EigenMatrixIO.h"
 #include "Functions/computeTriangle.h"
@@ -292,6 +293,9 @@ void Lobo::LoboTetMesh::reinitialTetMesh()
     setAllMaterial(1.0, 1000.0, 0.4);
 
     ori_tet_vertice = tet_vertice;
+
+    status_flags &= ~TetMeshStatusFlags_precomputed;
+    precomputeElementData();
 }
 
 void Lobo::LoboTetMesh::updateGL()
@@ -412,6 +416,9 @@ void Lobo::LoboTetMesh::generateTet(const char *tetgen_command)
 void Lobo::LoboTetMesh::setBindingTriMesh(LoboMesh *lobomesh)
 {
     this->lobomesh_binding = lobomesh;
+
+
+
 }
 
 void Lobo::LoboTetMesh::setInputPolygon(LoboMesh *lobomesh)
@@ -843,4 +850,70 @@ void Lobo::LoboTetMesh::computeElementShapeFunctionDerivate(int elementid)
         }
     }
     te->Dm_inverse = te->Dm.inverse();
+
+    Eigen::Matrix4d referenceShape;
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			referenceShape.data()[i * 4 + j] = node_p[i].data()[j];
+		}
+		referenceShape.data()[i * 4 + 3] = 1;
+	}
+
+	//need test
+	Eigen::Matrix4d inverseShapefunction = referenceShape.inverse();
+	te->shape_function_inv = inverseShapefunction;
+
+}
+
+
+void Lobo::LoboTetMesh::generateBarycentricCoordinate()
+{
+    this->lobomesh_binding;
+    int num_trinode = this->lobomesh_binding->attrib.vertices.size()/3;
+    tri_ele_weights.resize(num_trinode);
+
+    for(int i=0;i<num_trinode;i++)
+    {
+        
+
+    }
+
+}
+
+void Lobo::LoboTetMesh::computeBarycentricWeights(int eleid,Eigen::Vector3d&pos,Eigen::Vector4d& weights)
+{
+    Eigen::Vector4d point;
+	point.data()[0] = pos.data()[0];
+	point.data()[1] = pos.data()[1];
+	point.data()[2] = pos.data()[2];
+	point.data()[3] = 1;
+
+	if (eleid == -1)
+	{
+		weights.setZero();
+		return;
+	}
+
+	weights = elements_data[eleid].shape_function_inv*point;
+}
+
+int Lobo::LoboTetMesh::getContainedElement(Eigen::Vector3d &position)
+{
+    int numElements = this->getNumElements();
+    for (int element = 0; element < numElements; element++)
+	{
+		if (containsVertex(element, position))
+			return element;
+	}
+	return -1;
+}
+
+bool Lobo::LoboTetMesh::containsVertex(int eleid, Eigen::Vector3d &pos)
+{
+    Eigen::Vector4d weight;
+    this->computeBarycentricWeights(eleid,pos,weight);
+    
+    return ((weight.data()[0] >= -1e-2) && (weight.data()[1] >= -1e-2) && (weight.data()[2] >= -1e-2) && (weight.data()[3] >= -1e-2));
 }

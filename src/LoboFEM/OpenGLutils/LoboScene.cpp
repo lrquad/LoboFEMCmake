@@ -1,5 +1,6 @@
 #include "LoboScene.h"
 #include "Functions/parseString.h"
+#include "Collision/CollisionDector/BVHCollisionDetector.h"
 
 void Lobo::LoboScene::addMesh(const char *filename, bool uniform)
 {
@@ -45,6 +46,12 @@ void Lobo::LoboScene::runXMLscript(pugi::xml_node &scene_node)
             }
 
             this->mesh_list.back()->shader_config.flat_mode = !smooth;
+
+            if(tri_mesh_node.child("Collision"))
+            {
+                bool isstatic = tri_mesh_node.child("Collision").attribute("static").as_bool();
+                this->addMeshBVH(this->mesh_list.back(),isstatic,false);
+            }
         }
     }
 }
@@ -70,7 +77,13 @@ void Lobo::LoboScene::drawImGui(bool *p_open)
     ImGui::BeginGroup();
     ImGui::BeginChild("item view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()));
     if (selected < mesh_list.size() && selected >= 0)
+    {
+        if(mesh_list[selected]->bvh_dectector!=NULL)
+        {
+            ImGui::Text("bvh on.");
+        }
         mesh_list[selected]->drawImGui();
+    }
     ImGui::EndChild();
     ImGui::EndGroup();
     ImGui::End();
@@ -98,4 +111,13 @@ void Lobo::LoboScene::deleteGL()
     {
         mesh_list[i]->deleteGL();
     }
+}
+
+void Lobo::LoboScene::addMeshBVH(LoboMesh* trimesh,bool isstatic,bool selfcollision)
+{
+    BVHCollisionDetector* bvh = new BVHCollisionDetector(trimesh);
+    bvh->setIsstatic(isstatic);
+    bvh->setSelfCollisionTest(selfcollision);
+    this->bvh_list.push_back(bvh);    
+    trimesh->bvh_dectector = bvh_list.back();
 }
