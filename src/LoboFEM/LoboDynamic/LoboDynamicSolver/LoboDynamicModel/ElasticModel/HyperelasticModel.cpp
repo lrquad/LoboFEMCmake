@@ -31,31 +31,32 @@ void Lobo::HyperelasticModel::runXMLscript(pugi::xml_node &xml_node) {
     this->tetmesh->precomputeElementData();
 
     if (xml_node.child("Material")) {
+        pugi::xml_node material_node = xml_node.child("Material");
         double YoungsModulus = 100.0;
         double PossionRatio = 0.4;
         double Density = 1.0;
-        if (xml_node.child("YoungsModulus")) {
+        if (material_node.child("YoungsModulus")) {
             YoungsModulus =
-                xml_node.child("YoungsModulus").attribute("value").as_double();
+                material_node.child("YoungsModulus").attribute("value").as_double();
         }
-        if (xml_node.child("PossionRatio")) {
+        if (material_node.child("PossionRatio")) {
             PossionRatio =
-                xml_node.child("PossionRatio").attribute("value").as_double();
+                material_node.child("PossionRatio").attribute("value").as_double();
         }
-        if (xml_node.child("Density")) {
-            Density = xml_node.child("Density").attribute("value").as_double();
+        if (material_node.child("Density")) {
+            Density = material_node.child("Density").attribute("value").as_double();
         }
         tetmesh->setAllMaterial(Density, YoungsModulus, PossionRatio);
 
         if (strcmp("StVK",
-                   xml_node.child("Material").attribute("type").as_string()) ==
+                   material_node.attribute("type").as_string()) ==
             0) {
             this->elastic_material =
                 new TypeStVKMaterial<double>(tetmesh, 1, 500.0);
             materialtype = "StVK";
         }
         if (strcmp("NeoHookean",
-                   xml_node.child("Material").attribute("type").as_string()) ==
+                   material_node.attribute("type").as_string()) ==
             0) {
             this->elastic_material =
                 new TypeNeoHookeanMaterial<double>(tetmesh, 1, 500.0);

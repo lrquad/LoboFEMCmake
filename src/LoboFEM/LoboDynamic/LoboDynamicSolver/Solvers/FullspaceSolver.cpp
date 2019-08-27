@@ -19,6 +19,7 @@ void Lobo::FullspaceSolver::drawImGui() {
 
     if (hyperelastic_model) {
         ImGui::Text("Material %s", hyperelastic_model->materialtype.c_str());
+        ImGui::Text("Youngsmodulues %.4f", bind_tetMesh->getElementMaterial(0)->getE());
     }
     ImGui::Separator();
 
