@@ -32,6 +32,7 @@ public:
     std::string materialtype;
     bool isinvertible;
     double inversion_Threshold;
+    bool useMCSFD;
 
 protected:
     virtual void precomputedFdU();
@@ -43,7 +44,19 @@ protected:
     virtual void getTetForceMatrixCSFD(int eleid, Eigen::VectorXd *internalforce, Eigen::MatrixXd *stiffness);
     virtual void getTetForceCSFD(int eleid, Eigen::VectorXd *internalforce);
 
+    virtual void getTetForceMatrixAnalytical(int eleid, Eigen::VectorXd *internalforce, Eigen::MatrixXd *stiffness, int computationflags);
+
+
 	virtual void assignTetElementForceAndMatrix(int eleid,double* energy, Eigen::VectorXd *internalforce, Eigen::SparseMatrix<double>* sparseMatrix, int flags, double weights = 1.0);
+
+
+    virtual void ComputeDiagonalPFromStretches(int eleid, double* lambda, double* PDiag, double &energy);
+    virtual void compute_dPdF(int eleid, Eigen::Matrix3d dPdF[9], double* fhat, Eigen::Matrix3d &U, Eigen::Matrix3d &V);
+	virtual void compute_dfdF(int eleid, Eigen::Matrix3d (&dP_dF)[9], Eigen::MatrixXd &dfdF, std::vector<Eigen::Matrix3d> &dF);
+
+
+    inline double gammaValue(int i, int j, double sigma[3], double invariants[3], double gradient[3], double hessian[6]);
+	int tensor9x9Index(int i, int j, int m, int n);
 
     LoboDynamicScene *scene;
     LoboTetMesh *tetmesh;
@@ -59,6 +72,10 @@ protected:
     std::vector<Eigen::VectorXd *> internalforce_list;
     std::vector<Eigen::MatrixXd *> stiffness_list;
     std::vector<double> energy_list;
+
+    //
+    int colMajorMatrixToTeran[9];
+	int teranToColMajorMatrix[9];
 
     // acceleration indices
     int **row_;

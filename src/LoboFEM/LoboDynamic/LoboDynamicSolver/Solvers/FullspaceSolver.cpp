@@ -19,10 +19,11 @@ void Lobo::FullspaceSolver::drawImGui() {
 
     if (hyperelastic_model) {
         ImGui::Text("Material %s", hyperelastic_model->materialtype.c_str());
+        ImGui::Text("isinvertible %s", hyperelastic_model->isinvertible?"true":"false");
+        ImGui::Text("useMCSFD %s", hyperelastic_model->useMCSFD?"true":"false");
         ImGui::Text("Youngsmodulues %.4f", bind_tetMesh->getElementMaterial(0)->getE());
     }
     ImGui::Separator();
-
     if (time_integraion) {
         ImGui::Text("Timestep %.4f", time_integraion->timestep);
         ImGui::Text("Damping_ratio %.4f", time_integraion->damping_ratio);

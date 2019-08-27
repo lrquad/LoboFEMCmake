@@ -1,13 +1,17 @@
 # LoboFEM
 ## Todo
 
+08/27/2019
+- [ ] Collision
+- [ ] Constraints
+
 08/26/2019
 - [x] Fullspace simulation
   - [x] Hyperelastic model
     - [x] K and f
   - [x] Optimization solver
-- [ ] Eigen MKL test on ubuntu
-- [ ] Analytical stvk
+- [x] Eigen MKL test on ubuntu
+- [x] Analytical stvk
 
 08/25/2019
 - [x] Fullspace simulation

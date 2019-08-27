@@ -9,10 +9,6 @@
 			<Path>./models/bunny_low.obj</Path>
 			<Position>0.0 1.0 0.0</Position>
 		</TriMesh>
-		<TriMesh name="bunny2" uniform = "true">
-			<Path>./models/bunny_low.obj</Path>
-			<Position>-1.0 1.0 0.6</Position>
-		</TriMesh>
 	</LoboScene>
 
 	<LoboDynamicScene>
@@ -24,21 +20,15 @@
 			<TetFileBase>tetmesh/bunny</TetFileBase>
 		</BindTetMesh>
 
-		<BindTetMesh UseBinary="true" tetgen="true" loadmesh="false" savemesh="true" tetgen_comd="p">
-			<TrimeshId>2</TrimeshId>
-			<!-- the tet files will be saved as <SceneFolder>/<TetFileBase> -->
-			<TetFileBase>tetmesh/bunny</TetFileBase>
-		</BindTetMesh>
-
 		<DynamicSolver type="fullspace" name ="fullspace" precompute="true">
 			<!-- the output will be saved in folder <SceneDataFolder>/<DataFolder> -->
 			<SolverFolder>solveroutput/bunny_fullspace/</SolverFolder>
 			<TargetTetMesh id="0"></TargetTetMesh>
-			<HyperelasticModel>
+			<HyperelasticModel invertible="true" useMCSFD="true">
 				<Material type="NeoHookean">
 					<YoungsModulus value = "100.0"></YoungsModulus>
 					<PossionRatio value = "0.3"></PossionRatio>
-					<Density value = "1.0"></Density>
+					<Density value = "5.0"></Density>
 				</Material>
 			</HyperelasticModel>
 
@@ -52,39 +42,12 @@
 			<CollisionModel weight="100.0">
 			</CollisionModel>
 
-			<TimeIntegration method="ImplicitSparse" timestep="0.005" damping="0.999" skipsteps="1" recordq="false">
-				<Optimization method="newton" maxiter="5" tol="0.001"></Optimization>
+			<TimeIntegration method="ImplicitSparse" timestep="0.005" damping="0.995" skipsteps="1" recordq="false">
+				<Optimization method="newton" maxiter="1" tol="0.001"></Optimization>
 			</TimeIntegration>
 
 		</DynamicSolver>
-
-		<DynamicSolver type="fullspace" name ="fullspace" precompute="true">
-			<!-- the output will be saved in folder <SceneDataFolder>/<DataFolder> -->
-			<SolverFolder>solveroutput/bunny_fullspace/</SolverFolder>
-			<TargetTetMesh id="1"></TargetTetMesh>
-			<HyperelasticModel>
-				<Material type="NeoHookean">
-					<YoungsModulus value = "50.0"></YoungsModulus>
-					<PossionRatio value = "0.3"></PossionRatio>
-					<Density value = "2.0"></Density>
-				</Material>
-			</HyperelasticModel>
-
-			<KineticModel>
-			</KineticModel>
-
-			<ConstraintModel weight ="1000.0">
-				<ConstraintsFile>constraints/constrainedDoFs.txt</ConstraintsFile>
-			</ConstraintModel>
-
-			<CollisionModel weight="100.0">
-			</CollisionModel>
-
-			<TimeIntegration method="ImplicitSparse" timestep="0.005" damping="0.99" skipsteps="1" recordq="false">
-				<Optimization method="newton" maxiter="5" tol="0.001"></Optimization>
-			</TimeIntegration>
-
-		</DynamicSolver>
+		
 	</LoboDynamicScene>
 
 	
