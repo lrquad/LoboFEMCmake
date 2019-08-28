@@ -11,6 +11,11 @@
 			<Position>0.0 1.0 0.0</Position>
 			<Collision static="false"></Collision>
 		</TriMesh>
+		<TriMesh name="bunny" uniform = "true">
+			<Path>./models/bunny_low.obj</Path>
+			<Position>0.0 2.0 0.0</Position>
+			<Collision static="false"></Collision>
+		</TriMesh>
 		<TriMesh name="bar" uniform = "false" smooth="true">
 			<Path>./models/shape/cylinder.obj</Path>
 			<Position>0.0 0.2 0.0</Position>
@@ -21,8 +26,13 @@
 	<LoboDynamicScene>
 		<SceneFolder>./demo/Siggraph2020/bunny/</SceneFolder>
 
-		<BindTetMesh UseBinary="true" tetgen="false" loadmesh="true" savemesh="false" tetgen_comd="p">
+		<BindTetMesh UseBinary="true" tetgen="true" loadmesh="false" savemesh="false" tetgen_comd="p">
 			<TrimeshId>1</TrimeshId>
+			<!-- the tet files will be saved as <SceneFolder>/<TetFileBase> -->
+			<TetFileBase>tetmesh/bunny</TetFileBase>
+		</BindTetMesh>
+		<BindTetMesh UseBinary="true" tetgen="true" loadmesh="false" savemesh="false" tetgen_comd="p">
+			<TrimeshId>2</TrimeshId>
 			<!-- the tet files will be saved as <SceneFolder>/<TetFileBase> -->
 			<TetFileBase>tetmesh/bunny</TetFileBase>
 		</BindTetMesh>
@@ -47,7 +57,36 @@
 				<ConstraintsFile>constraints/constrainedDoFs.txt</ConstraintsFile>
 			</ConstraintModel>
 
-			<CollisionModel weight="5.0" friction="1.0" trigger="true">
+			<CollisionModel weight="4.0" friction="1.0" trigger="true">
+			</CollisionModel>
+
+			<TimeIntegration method="ImplicitSparse" timestep="0.01" damping="0.9995" skipsteps="1" recordq="false">
+				<Optimization method="newton" maxiter="10" tol="0.001"></Optimization>
+			</TimeIntegration>
+
+		</DynamicSolver>
+
+		<DynamicSolver type="fullspace" name ="fullspace" precompute="true">
+			<!-- the output will be saved in folder <SceneDataFolder>/<DataFolder> -->
+			<SolverFolder>solveroutput/bunny_fullspace/</SolverFolder>
+
+			<KineticModel>
+			</KineticModel>
+
+			<TargetTetMesh id="1"></TargetTetMesh>
+			<HyperelasticModel invertible="true" useMCSFD="false" trigger="true">
+				<Material type="NeoHookean">
+					<YoungsModulus value = "200.0"></YoungsModulus>
+					<PossionRatio value = "0.3"></PossionRatio>
+					<Density value = "4.0"></Density>
+				</Material>
+			</HyperelasticModel>
+
+			<ConstraintModel weight ="1000.0" trigger="false">
+				<ConstraintsFile>constraints/constrainedDoFs.txt</ConstraintsFile>
+			</ConstraintModel>
+
+			<CollisionModel weight="4.0" friction="0.05" trigger="true">
 			</CollisionModel>
 
 			<TimeIntegration method="ImplicitSparse" timestep="0.01" damping="0.9995" skipsteps="1" recordq="false">
