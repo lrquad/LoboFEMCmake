@@ -3,28 +3,35 @@
 #include "imgui.h"
 
 Lobo::FullspaceSolver::FullspaceSolver(Lobo::LoboDynamicScene *parent_scene_)
-    : DynamicSolver(parent_scene_) {
+    : DynamicSolver(parent_scene_)
+{
     hyperelastic_model = NULL;
     time_integraion = NULL;
 }
 
-Lobo::FullspaceSolver::~FullspaceSolver() {
+Lobo::FullspaceSolver::~FullspaceSolver()
+{
     delete hyperelastic_model;
     delete time_integraion;
 }
 
-void Lobo::FullspaceSolver::drawImGui() {
+void Lobo::FullspaceSolver::drawImGui()
+{
     ImGui::Text("Fullspace solver");
     DynamicSolver::drawImGui();
 
-    if (hyperelastic_model) {
+    
+
+    if (hyperelastic_model)
+    {
         ImGui::Text("Material %s", hyperelastic_model->materialtype.c_str());
-        ImGui::Text("isinvertible %s", hyperelastic_model->isinvertible?"true":"false");
-        ImGui::Text("useMCSFD %s", hyperelastic_model->useMCSFD?"true":"false");
+        ImGui::Text("isinvertible %s", hyperelastic_model->isinvertible ? "true" : "false");
+        ImGui::Text("useMCSFD %s", hyperelastic_model->useMCSFD ? "true" : "false");
         ImGui::Text("Youngsmodulues %.4f", bind_tetMesh->getElementMaterial(0)->getE());
     }
     ImGui::Separator();
-    if (time_integraion) {
+    if (time_integraion)
+    {
         ImGui::Text("Timestep %.4f", time_integraion->timestep);
         ImGui::Text("Damping_ratio %.4f", time_integraion->damping_ratio);
         ImGui::Text("Step %d", time_integraion->step);
@@ -32,10 +39,30 @@ void Lobo::FullspaceSolver::drawImGui() {
     }
 }
 
-void Lobo::FullspaceSolver::runXMLscript(pugi::xml_node &solver_node) {
+void Lobo::FullspaceSolver::runXMLscript(pugi::xml_node &solver_node)
+{
     DynamicSolver::runXMLscript(solver_node);
 
-    if (solver_node.child("HyperelasticModel")) {
+    if (solver_node.child("ConstraintModel"))
+    {
+        pugi::xml_node model_node = solver_node.child("ConstraintModel");
+
+        double weight = model_node.attribute("weight").as_double();
+        constrainmodel = new Lobo::ConstrainModel(bind_tetMesh);
+        constrainmodel->runXMLscript(model_node);
+        models.push_back(constrainmodel);
+    }
+
+    if (solver_node.child("CollisionModel"))
+    {
+        pugi::xml_node model_node = solver_node.child("CollisionModel");
+        collisionmodel = new Lobo::CollisionModel(bind_tetMesh);
+        collisionmodel->runXMLscript(model_node);
+        models.push_back(collisionmodel);
+    }
+
+    if (solver_node.child("HyperelasticModel"))
+    {
         pugi::xml_node modelnode = solver_node.child("HyperelasticModel");
         hyperelastic_model =
             new Lobo::HyperelasticModel(parent_scene, bind_tetMesh);
@@ -43,21 +70,24 @@ void Lobo::FullspaceSolver::runXMLscript(pugi::xml_node &solver_node) {
         models.push_back(hyperelastic_model);
     }
 
-    if (solver_node.child("KineticModel")) {
+    if (solver_node.child("KineticModel"))
+    {
         pugi::xml_node modelnode = solver_node.child("KineticModel");
         kinetic_model = new Lobo::KineticModel(
-            parent_scene, bind_tetMesh, hyperelastic_model, constrainmodel,collisionmodel);
+            parent_scene, bind_tetMesh, hyperelastic_model, constrainmodel, collisionmodel);
         kinetic_model->runXMLscript(modelnode);
         models.push_back(kinetic_model);
     }
 
     //create time integration
 
-    if (solver_node.child("TimeIntegration")) {
+    if (solver_node.child("TimeIntegration"))
+    {
         pugi::xml_node modelnode = solver_node.child("TimeIntegration");
 
         if (strcmp(modelnode.attribute("method").as_string(),
-                   "ImplicitSparse") == 0) {
+                   "ImplicitSparse") == 0)
+        {
             double damping_ratio = 0.99;
             double time_step = 0.01;
             int skip_step = 1;
@@ -73,7 +103,8 @@ void Lobo::FullspaceSolver::runXMLscript(pugi::xml_node &solver_node) {
                 skip_step = modelnode.attribute("skipsteps").as_int();
 
             if (modelnode.attribute("recordq"))
-                if (modelnode.attribute("recordq").as_bool()) {
+                if (modelnode.attribute("recordq").as_bool())
+                {
                     flags |= IntegratorFlags_recordq;
                 }
 
@@ -84,19 +115,20 @@ void Lobo::FullspaceSolver::runXMLscript(pugi::xml_node &solver_node) {
         }
     }
 
-    if(solver_node.attribute("precompute").as_bool())
+    if (solver_node.attribute("precompute").as_bool())
     {
         precompute();
     }
 }
 
-void Lobo::FullspaceSolver::precompute() {
+void Lobo::FullspaceSolver::precompute()
+{
     DynamicSolver::precompute();
 
     kinetic_model->precompute(); // will also precompute and update
-                                       // tetmesh
+                                 // tetmesh
 
-    //hyperelastic_model->precompute(); 
+    //hyperelastic_model->precompute();
     time_integraion->precompute();
 }
 
@@ -106,12 +138,12 @@ void Lobo::FullspaceSolver::stepForward()
     bind_tetMesh->updateTetVertices(&(time_integraion->q));
 }
 
- int Lobo::FullspaceSolver::getCurStep()
- {
-     int tmp = 0;
-     if(time_integraion)
-     {
-         tmp = time_integraion->step;
-     }
-     return tmp;
- }
+int Lobo::FullspaceSolver::getCurStep()
+{
+    int tmp = 0;
+    if (time_integraion)
+    {
+        tmp = time_integraion->step;
+    }
+    return tmp;
+}

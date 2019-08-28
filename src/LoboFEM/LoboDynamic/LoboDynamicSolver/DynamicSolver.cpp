@@ -47,25 +47,7 @@ void Lobo::DynamicSolver::runXMLscript(pugi::xml_node &solver_node)
         setBindTetmeshFromScene(target_tetmesh_id);
     }
 
-    if(solver_node.child("ConstraintModel"))
-    {
-        pugi::xml_node model_node = solver_node.child("ConstraintModel");
-
-        double weight = model_node.attribute("weight").as_double();
-        constrainmodel = new Lobo::ConstrainModel(bind_tetMesh);
-        constrainmodel->runXMLscript(model_node);
-        models.push_back(constrainmodel);
-    }
-
     
-    if(solver_node.child("CollisionModel"))
-    {
-        pugi::xml_node model_node = solver_node.child("CollisionModel");
-
-        collisionmodel = new Lobo::CollisionModel(bind_tetMesh);
-        collisionmodel->runXMLscript(model_node);
-        models.push_back(collisionmodel);
-    }
 
 }
 

@@ -39,8 +39,6 @@ public:
     Eigen::VectorXd external_forces;
     Eigen::VectorXd gravity_force;
 
-
-
 protected:
 
     virtual void computeAccelerationIndices(SparseMatrixTopologyTYPE<double> *sparsetopology);
