@@ -34,12 +34,10 @@
 - c++14 (for imfilebrowser)
 - hyperelastic material based FEM simulator
 
-
-![scene](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/screen_recored.gif)
+Multi objects
 
 ![scene](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/screen_recored2.gif)
 
-Multi objects
 
 ![scene](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/screen_recored3.gif)
 
@@ -47,9 +45,17 @@ Constraint
 
 ![scene](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/screen_recored4.gif)
 
-Collision
+Collision (no friction force yet)
 
 ![scene](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/screen_recored5.gif)
+
+Collision (friction force stiffnes 0.1)
+
+![scene](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/screen_recored6.gif)
+
+Collision (friction force stiffnes 1.0)
+
+![scene](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/screen_recored7.gif)
 
 
 ## Install

@@ -23,7 +23,11 @@ class CollisionModel : public DynamicModel {
                                     int computationflags){};
 
     double weight_stiffness;
+    double friction_weight_stiffness;
+
     Eigen::VectorXd q_1;
+    Eigen::VectorXd q_vel_1;
+
 
    protected:
     LoboTetMesh* tetmesh;
