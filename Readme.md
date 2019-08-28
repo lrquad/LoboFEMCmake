@@ -3,6 +3,12 @@
 
 ## Todo
 
+08/28/2019
+- [ ] Reduced model
+- [ ] Cubature
+- [ ] Modal derivatives
+- [ ] Autoencoder based reduced model
+
 08/27/2019
 - [x] Collision
 - [x] Constraints
