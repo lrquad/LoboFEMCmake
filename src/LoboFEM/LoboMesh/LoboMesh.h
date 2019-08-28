@@ -114,6 +114,8 @@ class LoboMesh {
     virtual void getCurVertices(double* outPosition);
     virtual void getFaceIndices(int* indices);
 
+    virtual void updateGeometryInfo();
+
     virtual void resetVertice();
     Lobo::LoboShaderConfig shader_config;
 

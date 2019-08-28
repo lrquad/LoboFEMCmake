@@ -4,9 +4,9 @@
 ## Todo
 
 08/27/2019
-- [ ] Collision
+- [x] Collision
 - [x] Constraints
-- [ ] Tri mesh and Tet mesh adapter
+- [x] Tri mesh and Tet mesh adapter
 
 08/26/2019
 - [x] Fullspace simulation
@@ -36,9 +36,18 @@
 
 
 ![scene](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/screen_recored.gif)
+
 ![scene](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/screen_recored2.gif)
+
+Multi objects
 ![scene](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/screen_recored3.gif)
+
+Constraint
 ![scene](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/screen_recored4.gif)
+
+Collision
+![scene](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/screen_recored5.gif)
+
 
 ## Install
 

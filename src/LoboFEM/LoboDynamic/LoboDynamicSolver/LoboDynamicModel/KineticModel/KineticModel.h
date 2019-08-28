@@ -12,13 +12,14 @@ namespace Lobo
 
 class HyperelasticModel;
 class ConstrainModel;
+class CollisionModel;
 
 class KineticModel : public DynamicModel
 {
 private:
     /* data */
 public:
-    KineticModel(LoboDynamicScene *scene_, LoboTetMesh *tetmesh_,HyperelasticModel* elastic_model_,ConstrainModel* constrain_model_);
+    KineticModel(LoboDynamicScene *scene_, LoboTetMesh *tetmesh_,HyperelasticModel* elastic_model_,ConstrainModel* constrain_model_,CollisionModel* collisionmodel_);
     ~KineticModel();
 
     //precomptue final sparse matrix topology
@@ -49,6 +50,7 @@ protected:
 
     HyperelasticModel* hyperelasticmodel;
     ConstrainModel* constrainmodel;
+    CollisionModel* collisionmodel;
 
     Eigen::VectorXd q_vel;
     Eigen::VectorXd q_1;

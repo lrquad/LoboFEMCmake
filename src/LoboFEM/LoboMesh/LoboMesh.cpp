@@ -10,6 +10,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <omp.h>
 #include "glm/gtx/euler_angles.hpp"
+#include "Collision/CollisionDector/BVHCollisionDetector.h"
 
 namespace fs = std::experimental::filesystem;
 
@@ -451,12 +452,15 @@ void Lobo::LoboMesh::updateRigidTransformation(glm::vec3 position,
     }
 
     bufferNeedUpdate = true;
+    updateGeometryInfo();
 }
 
 void Lobo::LoboMesh::updateVertices(float *newPosition) {
     memcpy(attrib.vertices.data(), newPosition,
            sizeof(float) * attrib.vertices.size());
     bufferNeedUpdate = true;
+    updateGeometryInfo();
+
 }
 
 void Lobo::LoboMesh::updateVertices(double *newPosition) {
@@ -464,6 +468,7 @@ void Lobo::LoboMesh::updateVertices(double *newPosition) {
         attrib.vertices[i] = newPosition[i];
     }
     bufferNeedUpdate = true;
+    updateGeometryInfo();
 }
 
 void Lobo::LoboMesh::getCurVertices(float *outPosition) {
@@ -493,4 +498,12 @@ void Lobo::LoboMesh::resetVertice() {
     memcpy(attrib.vertices.data(), ori_vertices.data(),
            sizeof(float) * attrib.vertices.size());
     bufferNeedUpdate = true;
+}
+
+void Lobo::LoboMesh::updateGeometryInfo()
+{
+    if(bvh_dectector!=NULL)
+    {
+        bvh_dectector->updateCollisionShape();
+    }
 }

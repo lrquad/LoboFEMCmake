@@ -12,6 +12,7 @@ namespace Lobo
 
 
     class ConstrainModel;
+    class CollisionModel;
 
     class DynamicSolver
     {
@@ -34,6 +35,7 @@ namespace Lobo
         
         //general models
         ConstrainModel* constrainmodel;
+        CollisionModel* collisionmodel;
         LoboDynamicScene* parent_scene;
         int target_tetmesh_id;
         LoboTetMesh* bind_tetMesh;

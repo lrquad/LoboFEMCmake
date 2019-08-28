@@ -83,7 +83,7 @@ void Lobo::ConstrainModel::computeEnergySparse(Eigen::VectorXd *free_variables, 
         }
     }
 
-    if (computationflags & Computeflags_fisrt)
+    if (computationflags & Computeflags_second)
     {
         for(int i=0;i<num_constraints;i++)
         {

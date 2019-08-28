@@ -5,6 +5,7 @@
 
 #include "LoboDynamic/LoboDynamicSolver/LoboDynamicModel/DynamicModel.h"
 #include "LoboDynamic/LoboDynamicSolver/LoboDynamicModel/ConstrainModel/ConstrainModel.h"
+#include "LoboDynamic/LoboDynamicSolver/LoboDynamicModel/CollisionModel/CollisionModel.h"
 #include "LoboDynamic/LoboDynamicSolver/LoboDynamicModel/ElasticModel/HyperelasticModel.h"
 #include "LoboDynamic/LoboDynamicSolver/LoboDynamicModel/KineticModel/KineticModel.h"
 

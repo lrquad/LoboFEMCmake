@@ -46,10 +46,12 @@ void Lobo::FullspaceSolver::runXMLscript(pugi::xml_node &solver_node) {
     if (solver_node.child("KineticModel")) {
         pugi::xml_node modelnode = solver_node.child("KineticModel");
         kinetic_model = new Lobo::KineticModel(
-            parent_scene, bind_tetMesh, hyperelastic_model, constrainmodel);
+            parent_scene, bind_tetMesh, hyperelastic_model, constrainmodel,collisionmodel);
         kinetic_model->runXMLscript(modelnode);
         models.push_back(kinetic_model);
     }
+
+    //create time integration
 
     if (solver_node.child("TimeIntegration")) {
         pugi::xml_node modelnode = solver_node.child("TimeIntegration");

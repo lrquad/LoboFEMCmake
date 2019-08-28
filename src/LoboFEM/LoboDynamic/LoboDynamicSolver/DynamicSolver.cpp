@@ -10,10 +10,12 @@ Lobo::DynamicSolver::DynamicSolver(LoboDynamicScene *parent_scene_)
     bind_tetMesh = NULL;
     target_tetmesh_id = -1;
     constrainmodel = NULL;
+    collisionmodel =NULL;
 }
 
 Lobo::DynamicSolver::~DynamicSolver() {
     delete constrainmodel;
+    delete collisionmodel;
 }
 
 void Lobo::DynamicSolver::drawImGui()
@@ -54,6 +56,17 @@ void Lobo::DynamicSolver::runXMLscript(pugi::xml_node &solver_node)
         constrainmodel->runXMLscript(model_node);
         models.push_back(constrainmodel);
     }
+
+    
+    if(solver_node.child("CollisionModel"))
+    {
+        pugi::xml_node model_node = solver_node.child("CollisionModel");
+
+        collisionmodel = new Lobo::CollisionModel(bind_tetMesh);
+        collisionmodel->runXMLscript(model_node);
+        models.push_back(collisionmodel);
+    }
+
 }
 
 void Lobo::DynamicSolver::precompute()

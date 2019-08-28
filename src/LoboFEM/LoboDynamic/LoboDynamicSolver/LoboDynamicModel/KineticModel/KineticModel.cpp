@@ -1,15 +1,17 @@
 #include "KineticModel.h"
 #include "LoboDynamic/LoboDynamicSolver/LoboDynamicModel/ElasticModel/HyperelasticModel.h"
 #include "LoboDynamic/LoboDynamicSolver/LoboDynamicModel/ConstrainModel/ConstrainModel.h"
-
+#include "LoboDynamic/LoboDynamicSolver/LoboDynamicModel/CollisionModel/CollisionModel.h"
 Lobo::KineticModel::KineticModel(LoboDynamicScene *scene_,
                                  LoboTetMesh *tetmesh_,
                                  HyperelasticModel *elastic_model_,
-                                 ConstrainModel *constrain_model_)
+                                 ConstrainModel *constrain_model_,
+                                 CollisionModel* collisionmodel_)
     : scene(scene_),
       tetmesh(tetmesh_),
       hyperelasticmodel(elastic_model_),
-      constrainmodel(constrain_model_)
+      constrainmodel(constrain_model_),
+      collisionmodel(collisionmodel_)
 {
 
     num_DOFs = tetmesh->getNumVertex() * 3; // all vertices are free variables
@@ -52,6 +54,7 @@ void Lobo::KineticModel::precompute()
     hyperelasticmodel->precompute();
     hyperelasticmodel->setAccelerationIndices(row_, column_);
     constrainmodel->setAccelerationDiagIndices(diagonal_);
+    collisionmodel->setAccelerationDiagIndices(diagonal_);
 
     //precomptue gravity force
     gravity_force.resize(num_DOFs);
@@ -87,19 +90,18 @@ void Lobo::KineticModel::computeEnergySparse(
                                             computationflags);
     }
     // double constrain_energy = *energy-elastic_energy;
+    if(collisionmodel->trigger)
+    {
+        collisionmodel->q_1 = q_1;
+        collisionmodel->computeEnergySparse(free_variables, energy,
+                                            jacobi, hessian,
+                                            computationflags);
+    }
 
     //kinetic parts
     Eigen::VectorXd q_buffer = (*free_variables - q_1 - timestep * q_vel);
     //
     external_forces.setZero();
-    for (int i = 0; i < tetmesh->getNumVertex(); i++)
-    {
-        Eigen::Vector3d ori_p = tetmesh->getNodeRestPosition(i);
-        if (ori_p.data()[1] + free_variables->data()[i * 3 + 1] < 0)
-        {
-            external_forces.data()[i * 3 + 1] = -1.0 * (ori_p.data()[1] + free_variables->data()[i * 3 + 1]);
-        }
-    }
     external_forces += gravity_force;
 
     //energy

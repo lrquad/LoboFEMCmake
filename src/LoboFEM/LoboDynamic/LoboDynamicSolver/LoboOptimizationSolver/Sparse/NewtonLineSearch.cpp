@@ -59,7 +59,7 @@ void Lobo::NewtonLineSearch::solve(Eigen::VectorXd* initialGuessq)
 
         //wolfe condition
         newton_stepping = 1.0;
-		bool wolfecondition = true;
+		bool wolfecondition = false;
 		double c1 = 0.0;
 		double c2 = 0.9;
         //prepare wolf condition buffer

@@ -5,6 +5,7 @@
 #include "Shaders/LoboShader.h"
 #include "LoboImGui/cpp/imgui_stdlib.h"
 #include "Functions/deleteSTDvector.h"
+#include "Collision/CollisionDector/CollisionWorld.h"
 
 std::string demo_path = "./demo/default/";
 
@@ -175,10 +176,12 @@ void Lobo::LoboDynamicScene::update()
 {
     if(status_flags&dynamicsceneflag_play)
     {
+        
         for(int i=0;i<dynamic_solvers.size();i++)
         {
             dynamic_solvers[i]->stepForward();
         }
+
     }else
     {
         /* code */

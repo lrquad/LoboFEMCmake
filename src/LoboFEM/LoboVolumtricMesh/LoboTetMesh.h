@@ -46,6 +46,7 @@ struct TetElementData
     Eigen::Matrix3d Dm;
     Eigen::Matrix3d Dm_inverse;
     Eigen::Matrix4d shape_function_inv;
+    Eigen::Vector3d center_p;
 
     double volume;
     /* data */
@@ -104,6 +105,8 @@ public:
     virtual void generateBarycentricCoordinate();
     virtual void computeBarycentricWeights(int eleid,Eigen::Vector3d&position,Eigen::Vector4d& weights);
     virtual int getContainedElement(Eigen::Vector3d &position);
+    virtual int getCloesetElement(Eigen::Vector3d &position);
+
     virtual bool containsVertex(int eleid, Eigen::Vector3d &pos);
 
     // generate tetgen
@@ -128,6 +131,9 @@ public:
 
     Eigen::MatrixXd tet_vertice_col;
     Eigen::MatrixXi tet_faces_col;
+    Eigen::MatrixXi tet_indices_col;
+
+
     //for test
     std::vector<unsigned int> tet_faces_glint;
     std::vector<unsigned int> vertices_flags;
@@ -148,6 +154,13 @@ public:
     void getNodeRestPosition(int nodeid,Eigen::Vector3d &p);
     Eigen::Vector3d getNodeRestPosition(int nodeid);
 
+    LoboMesh * getBindMesh(){return lobomesh_binding;};
+
+    //for triangle mesh binding
+    Eigen::VectorXi tri_ele_idl; //tri vertex to tet ele
+    Eigen::VectorXi tri_vertices_idl; //tri vertex to tet node
+    Eigen::VectorXd tri_ele_weights;
+
 protected:
 
     virtual void updateTetAttri(Eigen::VectorXd &inputattri, int offset, int attrisize, int totalsize);
@@ -167,9 +180,7 @@ protected:
     std::vector<int> materialid;
     std::vector<TetElementData> elements_data;
 
-    //for triangle mesh binding
-    Eigen::VectorXi tri_ele_idl;
-    Eigen::VectorXd tri_ele_weights;
+    
 
     double mesh_total_volume;
 

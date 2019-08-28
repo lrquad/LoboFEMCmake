@@ -120,4 +120,6 @@ void Lobo::LoboScene::addMeshBVH(LoboMesh* trimesh,bool isstatic,bool selfcollis
     bvh->setSelfCollisionTest(selfcollision);
     this->bvh_list.push_back(bvh);    
     trimesh->bvh_dectector = bvh_list.back();
+    //add to world
+    this->collision_world.addCollisionDetector(bvh);
 }
