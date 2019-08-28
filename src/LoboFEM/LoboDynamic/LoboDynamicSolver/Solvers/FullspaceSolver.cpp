@@ -7,12 +7,16 @@ Lobo::FullspaceSolver::FullspaceSolver(Lobo::LoboDynamicScene *parent_scene_)
 {
     hyperelastic_model = NULL;
     time_integraion = NULL;
+    constrainmodel = NULL;
+    collisionmodel = NULL;
 }
 
 Lobo::FullspaceSolver::~FullspaceSolver()
 {
     delete hyperelastic_model;
     delete time_integraion;
+    delete constrainmodel;
+    delete collisionmodel;
 }
 
 void Lobo::FullspaceSolver::drawImGui()

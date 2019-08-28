@@ -48,7 +48,6 @@ void Lobo::HyperelasticModel::runXMLscript(pugi::xml_node &xml_node)
 {
     Lobo::DynamicModel::runXMLscript(xml_node);
 
-
     this->tetmesh->precomputeElementData();
 
     if (xml_node.child("Material"))
@@ -62,15 +61,18 @@ void Lobo::HyperelasticModel::runXMLscript(pugi::xml_node &xml_node)
             YoungsModulus =
                 material_node.child("YoungsModulus").attribute("value").as_double();
         }
+        
         if (material_node.child("PossionRatio"))
         {
             PossionRatio =
                 material_node.child("PossionRatio").attribute("value").as_double();
         }
+        
         if (material_node.child("Density"))
         {
             Density = material_node.child("Density").attribute("value").as_double();
         }
+
         tetmesh->setAllMaterial(Density, YoungsModulus, PossionRatio);
 
         if (strcmp("StVK",

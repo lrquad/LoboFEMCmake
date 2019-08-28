@@ -9,13 +9,11 @@ Lobo::DynamicSolver::DynamicSolver(LoboDynamicScene *parent_scene_)
 {
     bind_tetMesh = NULL;
     target_tetmesh_id = -1;
-    constrainmodel = NULL;
-    collisionmodel =NULL;
+    
 }
 
 Lobo::DynamicSolver::~DynamicSolver() {
-    delete constrainmodel;
-    delete collisionmodel;
+    
 }
 
 void Lobo::DynamicSolver::drawImGui()
