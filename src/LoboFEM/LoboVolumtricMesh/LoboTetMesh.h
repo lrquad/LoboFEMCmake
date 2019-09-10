@@ -46,6 +46,7 @@ struct TetElementData
     Eigen::Matrix3d Dm;
     Eigen::Matrix3d Dm_inverse;
     Eigen::Matrix4d shape_function_inv;
+    Eigen::MatrixXd Phi_derivate;
     Eigen::Vector3d center_p;
 
     double volume;
@@ -108,6 +109,8 @@ public:
     virtual int getCloesetElement(Eigen::Vector3d &position);
 
     virtual bool containsVertex(int eleid, Eigen::Vector3d &pos);
+
+    virtual void getNodeElements(std::vector<std::vector<int>> &node_elements);
 
     // generate tetgen
     std::string filebase;

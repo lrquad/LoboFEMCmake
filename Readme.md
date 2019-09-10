@@ -3,11 +3,10 @@
 
 ## Todo
 
-08/28/2019
-- [ ] Reduced model
-- [ ] Cubature
-- [ ] Modal derivatives
-- [ ] Autoencoder based reduced model
+09/10/2019
+- [ ] Linear elastic
+- [ ] Modal warping
+- [ ] Mouse force
 
 08/27/2019
 - [x] Collision
