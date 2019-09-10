@@ -39,6 +39,12 @@ void Lobo::ImplicitSparseIntegration::runXMLscript(pugi::xml_node &xml_node)
             {
                 opsovler = new Lobo::NewtonLineSearch(kineticmodel,maxiter,tol);
             }
+
+            if (strcmp(modelnode.attribute("method").as_string(),
+                       "linear") == 0)
+            {
+                opsovler = new Lobo::LinearStaticSolver(kineticmodel);
+            }
         }
     }
 }

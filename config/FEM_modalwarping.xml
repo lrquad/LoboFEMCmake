@@ -6,38 +6,34 @@
 			<Position>0.0 0.0 -1.0</Position>
 			<Collision static="true"></Collision>
 		</TriMesh>
-		<TriMesh name="bunny" uniform = "true">
-			<Path>./models/bunny_low.obj</Path>
+		<TriMesh name="bar" uniform = "true" smooth="false">
+			<Path>./models/bar/bar.obj</Path>
 			<Position>0.0 1.0 0.0</Position>
 			<Collision static="false"></Collision>
 		</TriMesh>
-		<TriMesh name="bar" uniform = "false" smooth="true">
-			<Path>./models/shape/cylinder.obj</Path>
-			<Position>0.0 0.2 0.0</Position>
-			<Collision static="true"></Collision>
-		</TriMesh>
+		
 	</LoboScene>
 
 	<LoboDynamicScene>
-		<SceneFolder>./demo/Siggraph2020/bunny/</SceneFolder>
+		<SceneFolder>./demo/Siggraph2020/bar/</SceneFolder>
 
 		<BindTetMesh UseBinary="true" tetgen="true" loadmesh="false" savemesh="false" tetgen_comd="p">
 			<TrimeshId>1</TrimeshId>
 			<!-- the tet files will be saved as <SceneFolder>/<TetFileBase> -->
-			<TetFileBase>tetmesh/bunny</TetFileBase>
+			<TetFileBase>tetmesh/bar</TetFileBase>
 		</BindTetMesh>
 
-		<DynamicSolver type="fullspace" name ="fullspace" precompute="true">
+		<DynamicSolver type="modalwarpingfullspace" name ="fullspace" precompute="true">
 			<!-- the output will be saved in folder <SceneDataFolder>/<DataFolder> -->
-			<SolverFolder>solveroutput/bunny_fullspace/</SolverFolder>
+			<SolverFolder>solveroutput/bar/</SolverFolder>
 
-			<KineticModel>
+			<KineticModel method="LinearKineticModel">
 			</KineticModel>
 
 			<TargetTetMesh id="0"></TargetTetMesh>
 			<HyperelasticModel invertible="true" useMCSFD="false" trigger="true">
 				<Material type="NeoHookean">
-					<YoungsModulus value = "400.0"></YoungsModulus>
+					<YoungsModulus value = "1000.0"></YoungsModulus>
 					<PossionRatio value = "0.3"></PossionRatio>
 					<Density value = "1.0"></Density>
 				</Material>
@@ -47,11 +43,11 @@
 				<ConstraintsFile>constraints/constrainedDoFs.txt</ConstraintsFile>
 			</ConstraintModel>
 
-			<CollisionModel weight="4.0" friction="1.0" trigger="true">
+			<CollisionModel weight="0.0" friction="1.0" trigger="false">
 			</CollisionModel>
 
 			<TimeIntegration method="ImplicitSparse" timestep="0.01" damping="0.9995" skipsteps="1" recordq="false">
-				<Optimization method="newton" maxiter="10" tol="0.001"></Optimization>
+				<Optimization method="linear" maxiter="10" tol="0.001"></Optimization>
 			</TimeIntegration>
 
 		</DynamicSolver>

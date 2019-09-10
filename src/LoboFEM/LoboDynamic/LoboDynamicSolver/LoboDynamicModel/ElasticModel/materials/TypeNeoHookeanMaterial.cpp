@@ -299,8 +299,6 @@ void TypeNeoHookeanMaterial<TYPE>::computeAutoDiffEnergyVectorMatrix(int element
 			stiffness->data()[v * 12 + u] = energy.image_.image_/this->h_CSFD/this->h_CSFD;
 			energy_ = energy.real_.real_;
 
-			
-
 			index++;
 		}
 	}

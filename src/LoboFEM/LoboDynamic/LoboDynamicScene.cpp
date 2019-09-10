@@ -95,10 +95,15 @@ void Lobo::LoboDynamicScene::runXMLscript(pugi::xml_node &scene_node)
         {
             if (strcmp(solver_node.attribute("type").as_string(), "fullspace") == 0)
                 dynamic_solver = new Lobo::FullspaceSolver(this);
-            else
+            else if(strcmp(solver_node.attribute("type").as_string(), "modalwarpingfullspace") == 0)
             {
+                dynamic_solver = new Lobo::ModalWarpingSovler(this);
                 //other type of solver
+            }else
+            {
+
             }
+            
         }
 
         if (dynamic_solver != NULL)

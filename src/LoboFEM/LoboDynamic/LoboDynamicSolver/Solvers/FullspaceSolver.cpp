@@ -77,8 +77,27 @@ void Lobo::FullspaceSolver::runXMLscript(pugi::xml_node &solver_node)
     if (solver_node.child("KineticModel"))
     {
         pugi::xml_node modelnode = solver_node.child("KineticModel");
-        kinetic_model = new Lobo::KineticModel(
+        
+        if(!modelnode.attribute("method"))
+        {
+            kinetic_model = new Lobo::KineticModel(
             parent_scene, bind_tetMesh, hyperelastic_model, constrainmodel, collisionmodel);
+        }
+
+        if (strcmp(modelnode.attribute("method").as_string(),
+                   "KineticModel") == 0)
+        {
+            kinetic_model = new Lobo::KineticModel(
+                parent_scene, bind_tetMesh, hyperelastic_model, constrainmodel, collisionmodel);
+        }
+
+        if (strcmp(modelnode.attribute("method").as_string(),
+                   "LinearKineticModel") == 0)
+        {
+            kinetic_model = new Lobo::LinearKineticModel(
+                parent_scene, bind_tetMesh, hyperelastic_model, constrainmodel, collisionmodel);
+        }
+
         kinetic_model->runXMLscript(modelnode);
         models.push_back(kinetic_model);
     }
@@ -138,8 +157,11 @@ void Lobo::FullspaceSolver::precompute()
 
 void Lobo::FullspaceSolver::stepForward()
 {
+
     time_integraion->stepFoward();
+
     bind_tetMesh->updateTetVertices(&(time_integraion->q));
+
 }
 
 int Lobo::FullspaceSolver::getCurStep()

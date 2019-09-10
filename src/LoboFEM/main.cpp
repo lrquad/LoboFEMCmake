@@ -52,7 +52,7 @@ int main()
 {
     omp_set_dynamic(0); // Explicitly disable dynamic teams
     omp_set_num_threads(
-        1); // Use 4 threads for all consecutive parallel regions
+        12); // Use 4 threads for all consecutive parallel regions
 
     // Setup window
     glfwSetErrorCallback(glfw_error_callback);
@@ -133,7 +133,7 @@ int main()
     fem_main.makeContext();
     fem_main.setCurrentContext();
     fem_main.initScreenBuffer(); // init screen buffer objects
-    fem_main.loadXMLfile("./config/FEM_firstdemo.xml");
+    fem_main.loadXMLfile("./config/FEM_modalwarping.xml");
 
     fem_main_p = &fem_main;
     //fem_main.initialGL();
