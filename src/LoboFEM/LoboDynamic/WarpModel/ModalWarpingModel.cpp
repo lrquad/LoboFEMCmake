@@ -16,8 +16,6 @@ Lobo::ModalWarpingModel::~ModalWarpingModel()
 void Lobo::ModalWarpingModel::precompute()
 {
     modalrotationmatrix->computeModalRotationSparseMatrix_W(modalrotationmatrix->w_operator);
-
-
 }
 void Lobo::ModalWarpingModel::warp(Eigen::VectorXd &fullq)
 {

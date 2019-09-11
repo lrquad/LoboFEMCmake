@@ -3,13 +3,19 @@
 
 namespace Lobo
 {
+
+class ModalWarpingModel;
+
 class ModalWarpingSovler : public FullspaceSolver
 {
 public:
-    ModalWarpingSovler(Lobo::LoboDynamicScene* parent_scene);
+    ModalWarpingSovler(Lobo::LoboDynamicScene *parent_scene);
     ~ModalWarpingSovler();
 
     virtual void precompute();
     virtual void stepForward();
+
+protected:
+    ModalWarpingModel* modal_warping_model;
 };
 } // namespace Lobo

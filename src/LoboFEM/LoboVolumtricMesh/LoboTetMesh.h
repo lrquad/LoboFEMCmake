@@ -62,6 +62,7 @@ public:
     virtual void drawImGui(bool *p_open = NULL);
     virtual void mouseClicked();
     virtual void mouseRectSelect();
+    virtual void mouseDrag();
 
     virtual void paintGL(LoboShader *shader);
     virtual void initialGL();
@@ -131,6 +132,7 @@ public:
     Eigen::VectorXf tet_vertice_attri; //#numVertices*3 X1
     Eigen::VectorXi tet_indices;       //#numTet*4 X 1
     Eigen::VectorXi tet_faces;         //#numface*3 // for rendering X 1
+    Eigen::VectorXd tet_vertice_force;
 
     Eigen::MatrixXd tet_vertice_col;
     Eigen::MatrixXi tet_faces_col;
@@ -186,6 +188,7 @@ protected:
     
 
     double mesh_total_volume;
+    int clicked_face;
 
 };
 } // namespace Lobo

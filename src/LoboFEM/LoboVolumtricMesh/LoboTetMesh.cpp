@@ -39,6 +39,8 @@ Lobo::LoboTetMesh::LoboTetMesh()
 
     mesh_total_volume = 0.0;
     numElementVertices = 4;
+
+    clicked_face = 0;
 }
 
 Lobo::LoboTetMesh::~LoboTetMesh() {}
@@ -141,6 +143,16 @@ void Lobo::LoboTetMesh::drawImGui(bool *p_open)
     {
         mouseRectSelect();
     }
+
+    if (ImGui::IsMouseDragging(1) && io.KeysDownDuration[341] >= 0.0f)
+    {
+        mouseDrag();
+    }
+
+    if(ImGui::IsMouseReleased(1))
+    {
+        tet_vertice_force.setZero();
+    }
 }
 
 void Lobo::LoboTetMesh::mouseRectSelect()
@@ -192,6 +204,7 @@ void Lobo::LoboTetMesh::mouseClicked()
         // Cast a ray in the view direction starting from the mouse position
         double x = io.MousePos.x;
         double y = view_port.data()[3] - io.MousePos.y;
+
         if (igl::unproject_onto_mesh(Eigen::Vector2f(x, y), view_m, project_m,
                                      view_port, tet_vertice_col, tet_faces_col,
                                      fid, bc))
@@ -200,6 +213,59 @@ void Lobo::LoboTetMesh::mouseClicked()
             {
                 int vid = tet_faces.data()[fid * 3 + i];
                 setTetVetAttriColor(vid, 1.0, 0.0, 0.0);
+            }
+            clicked_face = fid;
+        }
+    }
+}
+
+void Lobo::LoboTetMesh::mouseDrag()
+{
+    if (status_flags &
+        (TetMeshStatusFlags_tetgened | TetMeshStatusFlags_loadtet))
+    {
+        ImGuiIO &io = ImGui::GetIO();
+        Lobo::Camera *current_camera = Lobo::getCurrentCamera();
+        Eigen::Vector4f view_port =
+            Lobo::GLM_2_E<float, 4>(current_camera->view_port);
+        Eigen::Matrix4f view_m =
+            Lobo::GLM_2_E<float, 4>(current_camera->view_matrix);
+        Eigen::Matrix4f project_m =
+            Lobo::GLM_2_E<float, 4>(current_camera->projection_matrix);
+
+        Eigen::Vector3f bc;
+        int fid;
+
+        double x = io.MousePos.x;
+        double y = view_port.data()[3] - io.MousePos.y;
+
+        Eigen::Vector3f face_center = Eigen::Vector3f::Zero();
+        for (int i = 0; i < 3; i++)
+        {
+            int vid = tet_faces.data()[clicked_face * 3 + i];
+            for (int j = 0; j < 3; j++)
+            {
+                face_center.data()[j] += tet_vertice.data()[vid * 3 + j];
+            }
+        }
+
+        face_center /= 3.0;
+        Eigen::Vector3f screen_pose;
+        screen_pose = igl::project(face_center, view_m, project_m, view_port);
+
+        Eigen::Vector3f cur_screen_pose = screen_pose;
+        cur_screen_pose.data()[0] = x;
+        cur_screen_pose.data()[1] = y;
+        Eigen::Vector3f cur_scene_pose;
+        igl::unproject(cur_screen_pose, view_m, project_m, view_port, cur_scene_pose);
+
+        tet_vertice_force.setZero();
+        for (int i = 0; i < 3; i++)
+        {
+            int vid = tet_faces.data()[clicked_face * 3 + i];
+            for (int j = 0; j < 3; j++)
+            {
+                tet_vertice_force.data()[vid * 3 + j] += cur_scene_pose.data()[j] - face_center.data()[j];
             }
         }
     }
@@ -284,6 +350,10 @@ void Lobo::LoboTetMesh::reinitialTetMesh()
 
     tet_vertice_attri.resize(tet_vertice.size() / 3 * 11);
     tet_vertice_attri.setZero();
+
+    tet_vertice_force.resize(tet_vertice.size());
+    tet_vertice_force.setZero();
+
     setTetAttriColor(0.8, 0.8, 0.8);
     tet_faces_glint.resize(tet_faces.size());
     for (int i = 0; i < tet_faces.size(); i++)
@@ -814,11 +884,11 @@ void Lobo::LoboTetMesh::getNodeElements(std::vector<std::vector<int>> &node_elem
 {
     node_elements.resize(getNumVertex());
     int num_elements = getNumElements();
-    for(int i=0;i<num_elements;i++)
+    for (int i = 0; i < num_elements; i++)
     {
-        for(int j=0;j<numElementVertices;j++)
+        for (int j = 0; j < numElementVertices; j++)
         {
-            int nodeid = tet_indices.data()[i*4+j];
+            int nodeid = tet_indices.data()[i * 4 + j];
             node_elements[nodeid].push_back(i);
         }
     }

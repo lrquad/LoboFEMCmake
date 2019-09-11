@@ -5,17 +5,17 @@
 
 namespace Lobo
 {
-    class ModalWarpingModel:public WarpModel
-    {
-        ModalWarpingModel(LoboTetMesh* tetmesh_,std::vector<int>& warplist);
-        ~ModalWarpingModel();
+class ModalWarpingModel : public WarpModel
+{
+public:
+    ModalWarpingModel(LoboTetMesh *tetmesh_, std::vector<int> &warplist);
+    ~ModalWarpingModel();
 
-        virtual void precompute();
-        virtual void warp(Eigen::VectorXd & fullq);
-        virtual void warpForce(Eigen::VectorXd & force,Eigen::VectorXd & q, bool T = true);
+    virtual void precompute();
+    virtual void warp(Eigen::VectorXd &fullq);
+    virtual void warpForce(Eigen::VectorXd &force, Eigen::VectorXd &q, bool T = true);
 
-
-        ModalRotationMatrix* modalrotationmatrix;
-        Eigen::SparseMatrix<double>* modal_rotation_sparsematrix;
-    };
-}
+    ModalRotationMatrix *modalrotationmatrix;
+    Eigen::SparseMatrix<double> *modal_rotation_sparsematrix;
+};
+} // namespace Lobo

@@ -62,8 +62,8 @@ void Lobo::LinearKineticModel::computeEnergySparse(Eigen::VectorXd *free_variabl
     {
         Eigen::VectorXd q_buffer = (*free_variables - q_1 - timestep * q_vel);
 
-        external_forces.setZero();
-        external_forces += gravity_force;
+        //external_forces.setZero();
+        //external_forces += gravity_force;
 
         elastic_force = stiffness_matrix**free_variables;
         *jacobi = elastic_force;
