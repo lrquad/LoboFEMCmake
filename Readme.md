@@ -3,10 +3,14 @@
 
 ## Todo
 
+09/11/2019
+- [ ] Export AE data
+- [ ] Train AE
+
 09/10/2019
-- [ ] Linear elastic
-- [ ] Modal warping
-- [ ] Mouse force
+- [x] Linear elastic
+- [x] Modal warping
+- [x] Mouse force
 
 08/27/2019
 - [x] Collision
