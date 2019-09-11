@@ -1,5 +1,6 @@
 #include "LoboDynamic.h"
 #include "LoboDynamicScene.h"
+#include "Demos/LoboDemos.h"
 #include "LoboVolumtricMesh/LoboTetMesh.h"
 #include "OpenGLutils/LoboScene.h"
 #include "Shaders/LoboShader.h"
@@ -99,9 +100,9 @@ void Lobo::LoboDynamicScene::runXMLscript(pugi::xml_node &scene_node)
             {
                 dynamic_solver = new Lobo::ModalWarpingSovler(this);
                 //other type of solver
-            }else
+            }else if(strcmp(solver_node.attribute("type").as_string(), "DemoDinosaurAE") == 0)
             {
-
+                dynamic_solver = new Lobo::DemoDinosaurAE(this);
             }
             
         }

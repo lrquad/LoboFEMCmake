@@ -48,8 +48,14 @@ static void glfw_error_callback(int error, const char *description)
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
-int main()
+int main(int argc, char *argv[])
 {
+    const char* xml_file_path = NULL;
+    if(argc>3)
+    {
+        xml_file_path = argv[3];
+    }
+
     omp_set_dynamic(0); // Explicitly disable dynamic teams
     omp_set_num_threads(
         12); // Use 4 threads for all consecutive parallel regions
@@ -133,7 +139,10 @@ int main()
     fem_main.makeContext();
     fem_main.setCurrentContext();
     fem_main.initScreenBuffer(); // init screen buffer objects
-    fem_main.loadXMLfile("./config/FEM_modalwarping.xml");
+    
+    if(xml_file_path!=NULL)
+    fem_main.loadXMLfile(xml_file_path);
+
 
     fem_main_p = &fem_main;
     //fem_main.initialGL();

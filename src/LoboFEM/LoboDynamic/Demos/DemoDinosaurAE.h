@@ -1,5 +1,6 @@
 #pragma once
 #include "LoboDynamic/LoboDynamic.h"
+#include "npy.h"
 
 namespace Lobo
 {
@@ -10,7 +11,7 @@ public:
     {
         save_record_result = true;
         start_frame = 0;
-        end_frame = 200000;
+        end_frame = 800;
         skip_frame = 10;
     }
 
@@ -18,7 +19,7 @@ public:
     {
         ModalWarpingSovler::stepForward();
         //store the result
-        int time_step = his->time_integraion->step;
+        int time_step = this->time_integraion->step;
         if (time_step >= start_frame && time_step < end_frame)
         {
 
@@ -29,7 +30,7 @@ public:
             }
         }
 
-        if (this->time_integraion->step == end_frame)
+        if (time_step == end_frame)
         {
             exportData();
         }
@@ -37,7 +38,21 @@ public:
 
     void exportData()
     {
-        
+        int num_data = data.size();
+        int num_dofs =  bind_tetMesh->tet_vertice.size();
+        std::vector<double> export_data(num_data*num_dofs);
+        for(int i=0;i<num_data;i++)
+        {
+            for(int j=0;j<num_dofs;j++)
+            {
+                export_data.data()[i*num_dofs+j] = data[i].data()[j];
+            }
+        }
+        std::string filepaht = Lobo::getPath("data.npy");
+        std::cout<<filepaht<<std::endl;
+        const long unsigned leshape [] = {num_data,num_dofs};
+        npy::SaveArrayAsNumpy(filepaht.c_str(), false, 2, leshape, export_data);
+
     }
 
     std::vector<Eigen::VectorXd> data;
