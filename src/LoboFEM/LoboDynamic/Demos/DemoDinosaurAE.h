@@ -11,7 +11,7 @@ public:
     {
         save_record_result = true;
         start_frame = 0;
-        end_frame = 800;
+        end_frame = 100000;
         skip_frame = 10;
     }
 
