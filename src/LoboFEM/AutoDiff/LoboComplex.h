@@ -556,7 +556,8 @@ namespace lobo
 	TemplateHead
 	inline LoboComplexType operator+(const Scalar& lhs, const LoboComplexType& rhs)
 	{
-		LoboComplexType r = lhs;
+		LoboComplexType r;
+		r = lhs;
 		return r+rhs;
 	}
 

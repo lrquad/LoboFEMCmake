@@ -53,6 +53,8 @@ demo/default/*.mp4
 demo/default/screen/**
 
 !models/**
+*.npy
+
 
 #models/*
 # !/models/cornell_box.obj

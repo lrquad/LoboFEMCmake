@@ -100,9 +100,9 @@ void Lobo::LoboDynamicScene::runXMLscript(pugi::xml_node &scene_node)
             {
                 dynamic_solver = new Lobo::ModalWarpingSovler(this);
                 //other type of solver
-            }else if(strcmp(solver_node.attribute("type").as_string(), "DemoDinosaurAE") == 0)
+            }else if(strcmp(solver_node.attribute("type").as_string(), "DemoDinosaurAEGen") == 0)
             {
-                dynamic_solver = new Lobo::DemoDinosaurAE(this);
+                dynamic_solver = new Lobo::DemoDinosaurAEGen(this);
             }
             
         }

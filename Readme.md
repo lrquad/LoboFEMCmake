@@ -3,9 +3,13 @@
 
 ## Todo
 
+09/12/2019
+- [ ] Dense model
+
 09/11/2019
-- [ ] Export AE data
-- [ ] Train AE
+- [x] Export AE data
+- [x] Train AE
+- [ ] Dense model
 
 09/10/2019
 - [x] Linear elastic

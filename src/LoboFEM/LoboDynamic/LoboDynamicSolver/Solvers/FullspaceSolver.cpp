@@ -23,9 +23,6 @@ void Lobo::FullspaceSolver::drawImGui()
 {
     ImGui::Text("Fullspace solver");
     DynamicSolver::drawImGui();
-
-    
-
     if (hyperelastic_model)
     {
         ImGui::Text("Material %s", hyperelastic_model->materialtype.c_str());

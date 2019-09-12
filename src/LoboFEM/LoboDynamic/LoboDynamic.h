@@ -19,6 +19,7 @@
 #include "LoboDynamic/LoboDynamicSolver/LoboOptimizationSolver/LoboOptimizationSolver.h"
 #include "LoboDynamic/LoboDynamicSolver/LoboOptimizationSolver/Sparse/NewtonLineSearch.h"
 #include "LoboDynamic/LoboDynamicSolver/LoboOptimizationSolver/Sparse/LinearStaticSolver.h"
+#include "LoboDynamic/LoboDynamicSolver/LoboOptimizationSolver/Dense/NewtonDense.h"
 
 
 #include "LoboDynamic/LoboDynamicSolver/LoboTimeIntegration/LoboTimeIntegration.h"

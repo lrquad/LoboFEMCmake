@@ -1,1 +1,1 @@
-#include "DemoDinosaurAE.h"
+#include "Autoencoder/DemoDinosaurAEGen.h"
