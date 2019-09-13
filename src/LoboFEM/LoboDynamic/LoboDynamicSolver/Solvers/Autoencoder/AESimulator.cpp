@@ -157,7 +157,7 @@ void Lobo::AESimulator::stepForward()
 
     kinetic_model->external_forces = kinetic_model->gravity_force;
     kinetic_model->external_forces.setZero();
-    kinetic_model->external_forces+=bind_tetMesh->tet_vertice_force*0.5;
+    kinetic_model->external_forces+=bind_tetMesh->tet_vertice_force*0.1;
 
     time_integraion->stepFoward();
 
