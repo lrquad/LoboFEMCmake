@@ -1,48 +1,42 @@
-#include "FullspaceSolver.h"
-#include "LoboDynamic/LoboDynamic.h"
+#include "AESimulator.h"
 #include "imgui.h"
+#include "LoboDynamic/LoboDynamic.h"
+#include "AEKineticModel.h"
+#include "AEAutoDiffModel.h"
+#include "AETimeIntegration.h"
+#include "LoboDynamic/LoboKeras/LoboKerasModel.h"
 
-Lobo::FullspaceSolver::FullspaceSolver(Lobo::LoboDynamicScene *parent_scene_)
-    : DynamicSolver(parent_scene_)
+
+Lobo::AESimulator::AESimulator(Lobo::LoboDynamicScene *parent_scene_)
+    : DynamicSimulator(parent_scene_)
 {
-    hyperelastic_model = NULL;
-    time_integraion = NULL;
     constrainmodel = NULL;
     collisionmodel = NULL;
+    hyperelastic_model = NULL;
+    kinetic_model = NULL;
+    time_integraion = NULL;
+    ae_ad_model = NULL;
 }
 
-Lobo::FullspaceSolver::~FullspaceSolver()
+Lobo::AESimulator::~AESimulator()
 {
-    delete hyperelastic_model;
-    delete time_integraion;
     delete constrainmodel;
     delete collisionmodel;
+    delete hyperelastic_model;
+    delete kinetic_model;
+    delete time_integraion;
+    delete ae_ad_model;
 }
 
-void Lobo::FullspaceSolver::drawImGui()
+void Lobo::AESimulator::drawImGui()
 {
-    ImGui::Text("Fullspace solver");
-    DynamicSolver::drawImGui();
-    if (hyperelastic_model)
-    {
-        ImGui::Text("Material %s", hyperelastic_model->materialtype.c_str());
-        ImGui::Text("isinvertible %s", hyperelastic_model->isinvertible ? "true" : "false");
-        ImGui::Text("useMCSFD %s", hyperelastic_model->useMCSFD ? "true" : "false");
-        ImGui::Text("Youngsmodulues %.4f", bind_tetMesh->getElementMaterial(0)->getE());
-    }
-    ImGui::Separator();
-    if (time_integraion)
-    {
-        ImGui::Text("Timestep %.4f", time_integraion->timestep);
-        ImGui::Text("Damping_ratio %.4f", time_integraion->damping_ratio);
-        ImGui::Text("Step %d", time_integraion->step);
-        ImGui::Text("Skip steps %d", time_integraion->skip_steps);
-    }
+    ImGui::Text("AESimulator solver");
+    DynamicSimulator::drawImGui();
 }
 
-void Lobo::FullspaceSolver::runXMLscript(pugi::xml_node &solver_node)
+void Lobo::AESimulator::runXMLscript(pugi::xml_node &solver_node)
 {
-    DynamicSolver::runXMLscript(solver_node);
+    DynamicSimulator::runXMLscript(solver_node);
 
     if (solver_node.child("ConstraintModel"))
     {
@@ -71,40 +65,26 @@ void Lobo::FullspaceSolver::runXMLscript(pugi::xml_node &solver_node)
         models.push_back(hyperelastic_model);
     }
 
+    if (solver_node.child("AEAutoDiffModel"))
+    {
+        pugi::xml_node modelnode = solver_node.child("AEAutoDiffModel");
+        std::string path = modelnode.attribute("path").as_string();
+        path = Lobo::getPath(path.c_str());
+        double min = modelnode.attribute("min").as_double();
+        double scale = modelnode.attribute("scale").as_double();
+        ae_ad_model = new AEAutoDiffModel<double>(path.c_str(), min, scale);
+        ae_ad_model->initModel();
+    }
+
     if (solver_node.child("KineticModel"))
     {
         pugi::xml_node modelnode = solver_node.child("KineticModel");
-        
-        if(!modelnode.attribute("method"))
-        {
-            kinetic_model = new Lobo::KineticModel(
-            parent_scene, bind_tetMesh, hyperelastic_model, constrainmodel, collisionmodel);
-        }
-
-        if (strcmp(modelnode.attribute("method").as_string(),
-                   "KineticModel") == 0)
-        {
-            kinetic_model = new Lobo::KineticModel(
-                parent_scene, bind_tetMesh, hyperelastic_model, constrainmodel, collisionmodel);
-        }
-
-        if (strcmp(modelnode.attribute("method").as_string(),
-                   "LinearKineticModel") == 0)
-        {
-            kinetic_model = new Lobo::LinearKineticModel(
-                parent_scene, bind_tetMesh, hyperelastic_model, constrainmodel, collisionmodel);
-        }
-
-        kinetic_model->runXMLscript(modelnode);
-        models.push_back(kinetic_model);
+        kinetic_model = new Lobo::AEKineticModel(parent_scene, bind_tetMesh, ae_ad_model, hyperelastic_model, constrainmodel, collisionmodel);
     }
-
-    //create time integration
 
     if (solver_node.child("TimeIntegration"))
     {
         pugi::xml_node modelnode = solver_node.child("TimeIntegration");
-
         if (strcmp(modelnode.attribute("method").as_string(),
                    "ImplicitSparse") == 0)
         {
@@ -128,8 +108,9 @@ void Lobo::FullspaceSolver::runXMLscript(pugi::xml_node &solver_node)
                     flags |= IntegratorFlags_recordq;
                 }
 
-            time_integraion = new Lobo::ImplicitSparseIntegration(
-                kinetic_model, kinetic_model->num_DOFs, damping_ratio,
+            int full_DOFs = bind_tetMesh->getNumVertex()*3;
+            time_integraion = new Lobo::AETimeIntegration(
+                kinetic_model, full_DOFs, damping_ratio,
                 time_step, skip_step, flags);
             time_integraion->runXMLscript(modelnode);
         }
@@ -141,27 +122,51 @@ void Lobo::FullspaceSolver::runXMLscript(pugi::xml_node &solver_node)
     }
 }
 
-void Lobo::FullspaceSolver::precompute()
+void Lobo::AESimulator::precompute()
 {
-    DynamicSolver::precompute();
+    DynamicSimulator::precompute();
 
     kinetic_model->precompute(); // will also precompute and update
                                  // tetmesh
-
     //hyperelastic_model->precompute();
     time_integraion->precompute();
-}
 
-void Lobo::FullspaceSolver::stepForward()
+
+    int R = bind_tetMesh->getNumVertex()*3;
+    Eigen::VectorXd rest_shape(R);
+	rest_shape.setZero();
+
+    double mesh_min = ae_ad_model->keras_model_complex->getData_min().real_.real_;
+    double mesh_scale = ae_ad_model->keras_model_complex->getData_scale().real_.real_;
+
+	for (int i = 0;i < R;i++)
+	{
+		rest_shape.data()[i] = (rest_shape.data()[i] - mesh_min) / mesh_scale;
+	}
+
+    std::string encoder_path = Lobo::getPath("NN/encoder.txt");
+	keras_encoder = new LoboKerasModel<double>();
+	keras_encoder->loadNN(encoder_path.c_str());
+    Eigen::VectorXd rest_latents(keras_encoder->getOutput());
+	keras_encoder->predict(rest_shape.data(),rest_latents.data());
+
+    time_integraion->setInitLatentsq(rest_latents);
+
+
+}
+void Lobo::AESimulator::stepForward()
 {
+
+    kinetic_model->external_forces = kinetic_model->gravity_force;
+    kinetic_model->external_forces.setZero();
+    kinetic_model->external_forces+=bind_tetMesh->tet_vertice_force*0.5;
 
     time_integraion->stepFoward();
 
     bind_tetMesh->updateTetVertices(&(time_integraion->q));
-
 }
 
-int Lobo::FullspaceSolver::getCurStep()
+int Lobo::AESimulator::getCurStep()
 {
     int tmp = 0;
     if (time_integraion)

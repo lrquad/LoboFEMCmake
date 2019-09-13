@@ -1,20 +1,26 @@
 #pragma once
-#include "LoboDynamic/LoboDynamicSolver/DynamicSolver.h"
+#include "LoboDynamic/LoboDynamicSolver/DynamicSimulator.h"
+
+template <class TYPE>
+class AEAutoDiffModel;
+
+template <class TYPE>
+class LoboKerasModel;
 
 namespace Lobo
 {
 
-class AEElasticModel;
 class HyperelasticModel;
-class LoboTimeIntegration;
+class AETimeIntegration;
 class LoboTetMesh;
 class AEKineticModel;
 
-class DemoDinosaurAE : public DynamicSolver
+
+class AESimulator : public DynamicSimulator
 {
 public:
-    DemoDinosaurAE(Lobo::LoboDynamicScene *parent_scene);
-    ~DemoDinosaurAE();
+    AESimulator(Lobo::LoboDynamicScene *parent_scene);
+    ~AESimulator();
 
     virtual void drawImGui();
 
@@ -28,7 +34,11 @@ public:
     CollisionModel *collisionmodel;
     HyperelasticModel *hyperelastic_model;
     AEKineticModel *kinetic_model;
-    LoboTimeIntegration *time_integraion;
+    AETimeIntegration *time_integraion;
+    AEAutoDiffModel<double> *ae_ad_model;
+    LoboKerasModel<double>* keras_encoder;
+
+
 };
 
 } // namespace Lobo

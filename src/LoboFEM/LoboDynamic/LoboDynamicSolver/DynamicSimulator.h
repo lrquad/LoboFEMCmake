@@ -13,11 +13,11 @@ class LoboTetMesh;
 class ConstrainModel;
 class CollisionModel;
 
-class DynamicSolver
+class DynamicSimulator
 {
 public:
-    DynamicSolver(LoboDynamicScene *parent_scene);
-    ~DynamicSolver();
+    DynamicSimulator(LoboDynamicScene *parent_scene);
+    ~DynamicSimulator();
 
     virtual void drawImGui();
 

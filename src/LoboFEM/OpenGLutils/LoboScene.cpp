@@ -45,6 +45,12 @@ void Lobo::LoboScene::runXMLscript(pugi::xml_node &scene_node)
                 this->mesh_list.back()->setPosition(position);
             }
 
+            if (tri_mesh_node.child("Scale"))
+            {
+                std::vector<float> scales = Lobo::parseString<float>(tri_mesh_node.child("Scale").text().as_string());
+                this->mesh_list.back()->setScale(scales);
+            }
+
             this->mesh_list.back()->shader_config.flat_mode = !smooth;
 
             if(tri_mesh_node.child("Collision"))

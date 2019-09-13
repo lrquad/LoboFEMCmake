@@ -1,6 +1,6 @@
 #pragma once
 #include "LoboDynamic/LoboDynamicScene.h"
-#include "LoboDynamic/LoboDynamicSolver/DynamicSolver.h"
+#include "LoboDynamic/LoboDynamicSolver/DynamicSimulator.h"
 #include "LoboDynamic/LoboDynamicSolver/Solvers/solvers.h"
 
 #include "LoboDynamic/LoboDynamicSolver/LoboDynamicModel/DynamicModel.h"
@@ -24,3 +24,4 @@
 
 #include "LoboDynamic/LoboDynamicSolver/LoboTimeIntegration/LoboTimeIntegration.h"
 #include "LoboDynamic/LoboDynamicSolver/LoboTimeIntegration/Sparse/ImplicitSparseIntegration.h"
+#include "LoboDynamic/LoboDynamicSolver/LoboTimeIntegration/Dense/implicitDenseIntegration.h"

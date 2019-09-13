@@ -6,7 +6,7 @@
 
 namespace Lobo
 {
-class DemoDinosaurAEGen : public ModalWarpingSovler
+class AESimulatorGen : public ModalWarpingSimulator
 {
 public:
     AEAutoDiffModel<double> *ae_diff_model;
@@ -17,7 +17,7 @@ public:
     int end_frame;
     int skip_frame;
 
-    DemoDinosaurAEGen(Lobo::LoboDynamicScene *parent_scene) : ModalWarpingSovler(parent_scene)
+    AESimulatorGen(Lobo::LoboDynamicScene *parent_scene) : ModalWarpingSimulator(parent_scene)
     {
         save_record_result = true;
         start_frame = 0;

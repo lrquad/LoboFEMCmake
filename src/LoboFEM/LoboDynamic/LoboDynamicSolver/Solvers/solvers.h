@@ -1,3 +1,5 @@
 #pragma once
-#include "FullspaceSolver.h"
-#include "ModalWarpingSolver.h"
+#include "FullspaceSimulator.h"
+#include "ModalWarpingSimulator.h"
+#include "Autoencoder/AESimulatorGen.h"
+#include "Autoencoder/AESimulator.h"

@@ -8,7 +8,8 @@
 		</TriMesh>
 		<TriMesh name="dragon" uniform = "true" smooth="false">
 			<Path>./models/dinosaur/dinosaurlow2.obj</Path>
-			<Position>0.0 0.5 0.0</Position>
+			<Position>0.0 0.75 0.0</Position>
+			<Scale>2.0 2.0 2.0</Scale>
 			<Collision static="false"></Collision>
 		</TriMesh>
 		
@@ -23,7 +24,7 @@
 			<TetFileBase>tetmesh/tet</TetFileBase>
 		</BindTetMesh>
 
-		<DynamicSolver type="modalwarpingfullspace" name ="fullspace" precompute="true">
+		<DynamicSimulator type="modalwarpingfullspace" name ="fullspace" precompute="true">
 			<!-- the output will be saved in folder <SceneDataFolder>/<DataFolder> -->
 			<SolverFolder>solveroutput/</SolverFolder>
 
@@ -50,7 +51,7 @@
 				<Optimization method="linear" maxiter="10" tol="0.001"></Optimization>
 			</TimeIntegration>
 
-		</DynamicSolver>
+		</DynamicSimulator>
 
 	</LoboDynamicScene>
 

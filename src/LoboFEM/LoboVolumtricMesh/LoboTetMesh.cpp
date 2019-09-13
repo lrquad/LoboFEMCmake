@@ -216,6 +216,7 @@ void Lobo::LoboTetMesh::mouseClicked()
             }
             clicked_face = fid;
         }
+        std::cout<<clicked_face<<std::endl;
     }
 }
 

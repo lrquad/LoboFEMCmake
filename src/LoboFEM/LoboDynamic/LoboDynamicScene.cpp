@@ -87,22 +87,25 @@ void Lobo::LoboDynamicScene::runXMLscript(pugi::xml_node &scene_node)
         }
     }
 
-    for (pugi::xml_node solver_node : scene_node.children("DynamicSolver"))
+    for (pugi::xml_node solver_node : scene_node.children("DynamicSimulator"))
     {
         // we only have on type here
-        Lobo::DynamicSolver *dynamic_solver = NULL;
+        Lobo::DynamicSimulator *dynamic_solver = NULL;
 
         if (solver_node.attribute("type"))
         {
             if (strcmp(solver_node.attribute("type").as_string(), "fullspace") == 0)
-                dynamic_solver = new Lobo::FullspaceSolver(this);
+                dynamic_solver = new Lobo::FullspaceSimulator(this);
             else if(strcmp(solver_node.attribute("type").as_string(), "modalwarpingfullspace") == 0)
             {
-                dynamic_solver = new Lobo::ModalWarpingSovler(this);
+                dynamic_solver = new Lobo::ModalWarpingSimulator(this);
                 //other type of solver
-            }else if(strcmp(solver_node.attribute("type").as_string(), "DemoDinosaurAEGen") == 0)
+            }else if(strcmp(solver_node.attribute("type").as_string(), "AESimulatorGen") == 0)
             {
-                dynamic_solver = new Lobo::DemoDinosaurAEGen(this);
+                dynamic_solver = new Lobo::AESimulatorGen(this);
+            }else if(strcmp(solver_node.attribute("type").as_string(),"AESimulator")==0)
+            {
+                dynamic_solver = new Lobo::AESimulator(this);
             }
             
         }

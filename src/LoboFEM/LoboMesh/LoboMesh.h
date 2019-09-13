@@ -102,10 +102,12 @@ class LoboMesh {
 
     virtual void setPosition(std::vector<float> position_);
     virtual void setAngle(std::vector<float> angle_);
+    virtual void setScale(std::vector<float> scale);
+
 
 
     virtual void updateRigidTransformation(glm::vec3 position,
-                                           glm::vec3 eular_angle);
+                                           glm::vec3 eular_angle,glm::vec3 scale);
 
     virtual void updateVertices(float* newPosition);
     virtual void updateVertices(double* newPosition);
@@ -132,6 +134,8 @@ class LoboMesh {
     // mesh rigid configure;
     glm::vec3 position;
     glm::vec3 eular_angle;  //"xyz"
+    glm::vec3 scale;  //"xyz"
+    
 
     virtual void defaultValue();
 };

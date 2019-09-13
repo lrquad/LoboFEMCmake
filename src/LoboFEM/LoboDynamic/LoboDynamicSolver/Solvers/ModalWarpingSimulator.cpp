@@ -1,21 +1,21 @@
-#include "ModalWarpingSolver.h"
+#include "ModalWarpingSimulator.h"
 #include "LoboDynamic/LoboDynamic.h"
 #include "LoboDynamic/WarpModel/ModalWarpingModel.h"
 #include "imgui.h"
 
-Lobo::ModalWarpingSovler::ModalWarpingSovler(Lobo::LoboDynamicScene *parent_scene):FullspaceSolver(parent_scene)
+Lobo::ModalWarpingSimulator::ModalWarpingSimulator(Lobo::LoboDynamicScene *parent_scene):FullspaceSimulator(parent_scene)
 {
     modal_warping_model = NULL;
 }
 
-Lobo::ModalWarpingSovler::~ModalWarpingSovler()
+Lobo::ModalWarpingSimulator::~ModalWarpingSimulator()
 {
     delete modal_warping_model;
 }
 
-void Lobo::ModalWarpingSovler::precompute()
+void Lobo::ModalWarpingSimulator::precompute()
 {
-    Lobo::FullspaceSolver::precompute();
+    Lobo::FullspaceSimulator::precompute();
     //precompute modal warping matrices 
     std::vector<int> node_list;
     node_list.resize(bind_tetMesh->getNumVertex());
@@ -27,7 +27,7 @@ void Lobo::ModalWarpingSovler::precompute()
     modal_warping_model->precompute();
 
 }
-void Lobo::ModalWarpingSovler::stepForward()
+void Lobo::ModalWarpingSimulator::stepForward()
 {
     kinetic_model->external_forces = kinetic_model->gravity_force;
     kinetic_model->external_forces.setZero();

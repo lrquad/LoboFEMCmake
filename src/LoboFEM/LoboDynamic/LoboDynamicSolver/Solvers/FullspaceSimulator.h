@@ -1,5 +1,5 @@
 #pragma once
-#include "LoboDynamic/LoboDynamicSolver/DynamicSolver.h"
+#include "LoboDynamic/LoboDynamicSolver/DynamicSimulator.h"
 
 namespace Lobo
 {
@@ -8,11 +8,11 @@ class KineticModel;
 class LoboTimeIntegration;
 class LoboTetMesh;
 
-class FullspaceSolver : public DynamicSolver
+class FullspaceSimulator : public DynamicSimulator
 {
 public:
-    FullspaceSolver(Lobo::LoboDynamicScene *parent_scene);
-    ~FullspaceSolver();
+    FullspaceSimulator(Lobo::LoboDynamicScene *parent_scene);
+    ~FullspaceSimulator();
 
     virtual void drawImGui();
 

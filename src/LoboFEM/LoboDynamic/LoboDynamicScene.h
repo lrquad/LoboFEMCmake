@@ -16,7 +16,7 @@ class LoboScene;
 class LoboTetMesh;
 class LoboShader;
 
-class DynamicSolver;
+class DynamicSimulator;
 
 std::string getPath(const char* filename);
 
@@ -46,7 +46,7 @@ class LoboDynamicScene {
                              bool loadfile, bool binary = true);
 
     std::vector<LoboTetMesh*> tetmesh_in_scene;
-    std::vector<DynamicSolver*> dynamic_solvers;
+    std::vector<DynamicSimulator*> dynamic_solvers;
     
     std::vector<int> tetmesh_triId;
     LoboScene* scene;

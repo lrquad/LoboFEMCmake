@@ -1,8 +1,8 @@
-#include "DemoDinosaurAEGen.h"
+#include "AESimulatorGen.h"
 
-void Lobo::DemoDinosaurAEGen::drawImGui()
+void Lobo::AESimulatorGen::drawImGui()
 {
-    Lobo::ModalWarpingSovler::drawImGui();
+    Lobo::ModalWarpingSimulator::drawImGui();
 
     ImGui::Separator();
 
@@ -39,9 +39,9 @@ void Lobo::DemoDinosaurAEGen::drawImGui()
     }
 }
 
-void Lobo::DemoDinosaurAEGen::stepForward()
+void Lobo::AESimulatorGen::stepForward()
 {
-    ModalWarpingSovler::stepForward();
+    ModalWarpingSimulator::stepForward();
     //store the result
     int time_step = this->time_integraion->step;
     if (time_step >= start_frame && time_step < end_frame)
@@ -60,7 +60,7 @@ void Lobo::DemoDinosaurAEGen::stepForward()
     }
 }
 
-void Lobo::DemoDinosaurAEGen::exportData()
+void Lobo::AESimulatorGen::exportData()
 {
     int num_data = data.size();
     int num_dofs = bind_tetMesh->tet_vertice.size();
@@ -78,7 +78,7 @@ void Lobo::DemoDinosaurAEGen::exportData()
     npy::SaveArrayAsNumpy(filepaht.c_str(), false, 2, leshape, export_data);
 }
 
-void Lobo::DemoDinosaurAEGen::updateByLatents()
+void Lobo::AESimulatorGen::updateByLatents()
 {
     if(ae_diff_model==NULL)
     {

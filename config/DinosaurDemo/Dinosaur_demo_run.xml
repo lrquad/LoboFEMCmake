@@ -23,9 +23,12 @@
 			<TetFileBase>tetmesh/tet</TetFileBase>
 		</BindTetMesh>
 
-		<DynamicSolver type="DemoDinosaurAEGen" name ="fullspace" precompute="true">
+		<DynamicSimulator type="AESimulator" name ="fullspace" precompute="true">
 			<!-- the output will be saved in folder <SceneDataFolder>/<DataFolder> -->
 			<SolverFolder>solveroutput/</SolverFolder>
+
+
+			<AEAutoDiffModel path="NN/decoder.txt" min="-0.794608789503259" scale="1.5678641116341878"></AEAutoDiffModel>
 
 			<KineticModel method="LinearKineticModel">
 			</KineticModel>
@@ -47,10 +50,10 @@
 			</CollisionModel>
 
 			<TimeIntegration method="ImplicitSparse" timestep="0.01" damping="0.9995" skipsteps="1" recordq="false">
-				<Optimization method="linear" maxiter="10" tol="0.001"></Optimization>
+				<Optimization method="newton" maxiter="10" tol="0.001"></Optimization>
 			</TimeIntegration>
 
-		</DynamicSolver>
+		</DynamicSimulator>
 
 	</LoboDynamicScene>
 

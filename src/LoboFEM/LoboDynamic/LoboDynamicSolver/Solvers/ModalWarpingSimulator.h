@@ -1,16 +1,16 @@
 #pragma once
-#include "FullspaceSolver.h"
+#include "FullspaceSimulator.h"
 
 namespace Lobo
 {
 
 class ModalWarpingModel;
 
-class ModalWarpingSovler : public FullspaceSolver
+class ModalWarpingSimulator : public FullspaceSimulator
 {
 public:
-    ModalWarpingSovler(Lobo::LoboDynamicScene *parent_scene);
-    ~ModalWarpingSovler();
+    ModalWarpingSimulator(Lobo::LoboDynamicScene *parent_scene);
+    ~ModalWarpingSimulator();
 
     virtual void precompute();
     virtual void stepForward();

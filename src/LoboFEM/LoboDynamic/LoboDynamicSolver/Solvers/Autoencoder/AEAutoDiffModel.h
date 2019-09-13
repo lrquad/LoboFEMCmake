@@ -37,12 +37,12 @@ public:
 
 	std::vector<VectorX> du_dl_i; // store the first order derivatives
 	std::vector<VectorX> du_dl_ii; // store the second order diagnal entry
+	LoboKerasModel<LoboComplexDualt>* keras_model_complex;
 
 protected:
 
 	int num_latents;
 
-	LoboKerasModel<LoboComplexDualt>* keras_model_complex;
 
 	
 

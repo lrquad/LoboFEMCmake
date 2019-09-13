@@ -1,10 +1,10 @@
-#include "DynamicSolver.h"
+#include "DynamicSimulator.h"
 #include "LoboDynamic/LoboDynamicScene.h"
 #include "imgui.h"
 #include "LoboVolumtricMesh/LoboTetMesh.h"
 #include "LoboDynamic/LoboDynamic.h"
 
-Lobo::DynamicSolver::DynamicSolver(LoboDynamicScene *parent_scene_)
+Lobo::DynamicSimulator::DynamicSimulator(LoboDynamicScene *parent_scene_)
     : parent_scene(parent_scene_)
 {
     bind_tetMesh = NULL;
@@ -12,11 +12,11 @@ Lobo::DynamicSolver::DynamicSolver(LoboDynamicScene *parent_scene_)
     
 }
 
-Lobo::DynamicSolver::~DynamicSolver() {
+Lobo::DynamicSimulator::~DynamicSimulator() {
     
 }
 
-void Lobo::DynamicSolver::drawImGui()
+void Lobo::DynamicSimulator::drawImGui()
 {
     ImGui::Text("num dynamic models: %d", models.size());
 
@@ -32,12 +32,12 @@ void Lobo::DynamicSolver::drawImGui()
 }
 
 
-void Lobo::DynamicSolver::setBindTetmeshFromScene(int tetmesh_id)
+void Lobo::DynamicSimulator::setBindTetmeshFromScene(int tetmesh_id)
 {   
     bind_tetMesh = this->parent_scene->tetmesh_in_scene[tetmesh_id];
 }
 
-void Lobo::DynamicSolver::runXMLscript(pugi::xml_node &solver_node)
+void Lobo::DynamicSimulator::runXMLscript(pugi::xml_node &solver_node)
 {
     if (solver_node.child("TargetTetMesh"))
     {
@@ -49,7 +49,7 @@ void Lobo::DynamicSolver::runXMLscript(pugi::xml_node &solver_node)
 
 }
 
-void Lobo::DynamicSolver::precompute()
+void Lobo::DynamicSimulator::precompute()
 {
     
 }
