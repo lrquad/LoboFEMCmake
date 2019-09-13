@@ -7,7 +7,7 @@
 			<Collision static="true"></Collision>
 		</TriMesh>
 		<TriMesh name="dragon" uniform = "true" smooth="false">
-			<Path>./models/bar/bar.obj</Path>
+			<Path>./models/dinosaur/dinosaurlow3.obj</Path>
 			<Position>0.0 0.5 0.0</Position>
 			<Collision static="false"></Collision>
 		</TriMesh>
@@ -15,7 +15,7 @@
 	</LoboScene>
 
 	<LoboDynamicScene>
-		<SceneFolder>./demo/Siggraph2020/bar/</SceneFolder>
+		<SceneFolder>./demo/Siggraph2020/dinosaur/</SceneFolder>
 
 		<BindTetMesh UseBinary="true" tetgen="true" loadmesh="false" savemesh="false" tetgen_comd="p">
 			<TrimeshId>1</TrimeshId>
@@ -23,7 +23,7 @@
 			<TetFileBase>tetmesh/tet</TetFileBase>
 		</BindTetMesh>
 
-		<DynamicSimulator type="AESimulatorGen" name ="fullspace" precompute="true">
+		<DynamicSimulator type="AESimulatorGen" name ="fullspace" precompute="true" min="-0.24779660640168932" scale="0.6003894547362322">
 			<!-- the output will be saved in folder <SceneDataFolder>/<DataFolder> -->
 			<SolverFolder>solveroutput/</SolverFolder>
 

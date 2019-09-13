@@ -149,11 +149,9 @@ void Lobo::AESimulator::precompute()
 	keras_encoder->loadNN(encoder_path.c_str());
     Eigen::VectorXd rest_latents(keras_encoder->getOutput());
 	keras_encoder->predict(rest_shape.data(),rest_latents.data());
-
     time_integraion->setInitLatentsq(rest_latents);
-
-
 }
+
 void Lobo::AESimulator::stepForward()
 {
 

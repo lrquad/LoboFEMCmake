@@ -26,11 +26,14 @@ public:
         ae_diff_model = NULL;
     }
 
+    virtual void runXMLscript(pugi::xml_node &solver_node);
+
     void updateByLatents();
     virtual void drawImGui();
     virtual void stepForward();
     void exportData();
 
-    
+    double mesh_min;
+    double mesh_scale;
 };
 } // namespace Lobo

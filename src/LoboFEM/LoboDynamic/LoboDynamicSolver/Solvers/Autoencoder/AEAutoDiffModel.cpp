@@ -88,6 +88,46 @@ void AEAutoDiffModel<TYPE>::computeDerivatives(TYPE *L, TYPE h)
 }
 
 template <class TYPE>
+void AEAutoDiffModel<TYPE>::computeDerivativesAndQ(TYPE *L, TYPE h, TYPE *output)
+{
+	int n_input = keras_model_complex->getInput();
+	int n_output = keras_model_complex->getOutput();
+	for (int i = 0; i < num_latents; i++)
+	{
+		for (int k = 0; k < num_latents; k++)
+		{
+			memset(input_complex, 0, sizeof(LoboComplexDualt) * n_input);
+			for (int j = 0; j < num_latents; j++)
+			{
+				input_complex[j].real_.real_ = L[j];
+			}
+
+			input_complex[k].real_.image_ = h;
+			input_complex[i].image_.real_ = h;
+
+			keras_model_complex->predict(input_complex, output_complex);
+
+			for (int j = 0; j < n_output; j++)
+			{
+				if (i == k)
+				{
+					du_dl_i[i].data()[j] = output_complex[j].real_.image_ / h;
+				}
+
+				if(i==0&&k==0)
+				{
+					output[j] = output_complex[j].real_.real_;
+				}
+
+				du_dl_ii[k * num_latents + i].data()[j] = output_complex[j].image_.image_ / h / h;
+			}
+
+			
+		}
+	}
+}
+
+template <class TYPE>
 void AEAutoDiffModel<TYPE>::decoder(double *latents, TYPE *output)
 {
 	int n_input = keras_model_complex->getInput();

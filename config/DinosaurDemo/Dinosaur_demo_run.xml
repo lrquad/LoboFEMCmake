@@ -7,7 +7,7 @@
 			<Collision static="true"></Collision>
 		</TriMesh>
 		<TriMesh name="dragon" uniform = "true" smooth="false">
-			<Path>./models/bar/bar.obj</Path>
+			<Path>./models/dinosaur/dinosaurlow3.obj</Path>
 			<Position>0.0 0.5 0.0</Position>
 			<Collision static="false"></Collision>
 		</TriMesh>
@@ -15,7 +15,7 @@
 	</LoboScene>
 
 	<LoboDynamicScene>
-		<SceneFolder>./demo/Siggraph2020/bar/</SceneFolder>
+		<SceneFolder>./demo/Siggraph2020/dinosaur/</SceneFolder>
 
 		<BindTetMesh UseBinary="true" tetgen="true" loadmesh="false" savemesh="false" tetgen_comd="p">
 			<TrimeshId>1</TrimeshId>
@@ -28,7 +28,7 @@
 			<SolverFolder>solveroutput/</SolverFolder>
 
 
-			<AEAutoDiffModel path="NN/decoder.txt" min="-0.794608789503259" scale="1.5678641116341878"></AEAutoDiffModel>
+			<AEAutoDiffModel path="NN/decoder.txt" min="-0.24779660640168932" scale="0.6003894547362322"></AEAutoDiffModel>
 
 			<KineticModel method="LinearKineticModel">
 			</KineticModel>
@@ -50,7 +50,7 @@
 			</CollisionModel>
 
 			<TimeIntegration method="ImplicitSparse" timestep="0.01" damping="0.9995" skipsteps="1" recordq="false">
-				<Optimization method="newton" maxiter="10" tol="0.001"></Optimization>
+				<Optimization method="newton" maxiter="2" tol="0.001"></Optimization>
 			</TimeIntegration>
 
 		</DynamicSimulator>

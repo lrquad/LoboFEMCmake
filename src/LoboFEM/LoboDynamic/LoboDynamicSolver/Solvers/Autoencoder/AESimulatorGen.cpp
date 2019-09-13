@@ -1,5 +1,19 @@
 #include "AESimulatorGen.h"
 
+void Lobo::AESimulatorGen::runXMLscript(pugi::xml_node &solver_node)
+{
+    Lobo::ModalWarpingSimulator::runXMLscript(solver_node);
+
+    if(solver_node.attribute("min"))
+    {
+        mesh_min = solver_node.attribute("min").as_double();
+    }
+     if(solver_node.attribute("scale"))
+    {
+        mesh_scale = solver_node.attribute("scale").as_double();
+    }
+}
+
 void Lobo::AESimulatorGen::drawImGui()
 {
     Lobo::ModalWarpingSimulator::drawImGui();
@@ -11,7 +25,7 @@ void Lobo::AESimulatorGen::drawImGui()
         delete ae_diff_model;
         std::string filepaht = Lobo::getPath("NN/decoder.txt");
         std::cout << filepaht << std::endl;
-        ae_diff_model = new AEAutoDiffModel<double>(filepaht.c_str(), -0.794608789503259, 1.5678641116341878);
+        ae_diff_model = new AEAutoDiffModel<double>(filepaht.c_str(), mesh_min, mesh_scale);
         ae_diff_model->initModel();
         latents.resize(ae_diff_model->getNum_latents());
         latents.setZero();

@@ -25,6 +25,7 @@ public:
 	virtual void initModel();
 
 	virtual void computeDerivatives(TYPE* L, TYPE h);
+	virtual void computeDerivativesAndQ(TYPE* L, TYPE h,TYPE*output);
 
 	virtual void decoder(double* latents, TYPE* output);
 	virtual void decoder(float* latents, TYPE* output);

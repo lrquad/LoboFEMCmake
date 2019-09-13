@@ -55,8 +55,9 @@ void Lobo::AEKineticModel::computeEnergyDense(Eigen::VectorXd *free_variables, d
 
     if (computationflags & (Computeflags_fisrt | Computeflags_second))
     {
-        ae_ad_model->computeDerivatives(free_variables->data(), 1e-30);
-        ae_ad_model->decoder(free_variables->data(), q.data());
+        //ae_ad_model->computeDerivatives(free_variables->data(), 1e-30);
+        //ae_ad_model->decoder(free_variables->data(), q.data());
+        ae_ad_model->computeDerivativesAndQ(free_variables->data(), 1e-30, q.data());
     }
 
     if (computationflags & (Computeflags_fisrt))
