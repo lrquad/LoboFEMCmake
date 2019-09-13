@@ -54,7 +54,6 @@ protected:
     Eigen::VectorXd q_1;
     double timestep;
 
-private:
     Eigen::SparseMatrix<double> mass_matrix;
     Eigen::SparseMatrix<double> stiffness_matrix_topology;
     Eigen::SparseMatrix<double> stiffness_matrix;

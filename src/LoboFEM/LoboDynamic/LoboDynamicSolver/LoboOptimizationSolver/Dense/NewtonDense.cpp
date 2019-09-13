@@ -44,7 +44,7 @@ void Lobo::NewtonDense::solve(Eigen::VectorXd* initialGuessq)
             pre_energy = energy;
         }
     
-        Eigen::VectorXd result_ = hessian.ldlt().solve();
+        Eigen::VectorXd result_ = hessian.ldlt().solve(jacobi);
 
         //wolfe condition
         newton_stepping = 1.0;

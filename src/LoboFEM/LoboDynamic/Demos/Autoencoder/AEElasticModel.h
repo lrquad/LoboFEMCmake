@@ -15,5 +15,5 @@ public:
     LoboTetMesh *tetmesh;
     HyperelasticModel *elastic_model;
     AEAutoDiffModel<double> *ae_ad_model;
-}
+};
 } // namespace Lobo

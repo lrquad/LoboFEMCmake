@@ -10,3 +10,7 @@ Lobo::AEKineticModel::~AEKineticModel()
 
 }
 
+void Lobo::AEKineticModel::precompute()
+{
+
+}
