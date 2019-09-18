@@ -321,12 +321,12 @@ namespace lobo
 
 	TemplateHead
 		void add_a(LoboComplexType&a, const LoboComplexType&b);
-
-
+	
 	inline void add_a( double& a, const double& b)
 	{
 		a += b;
 	}
+	
 	inline void add(const double& a, const double& b, double&c)
 	{
 		c = a + b;
@@ -437,6 +437,12 @@ namespace lobo
 		r.real_ = lobo::multi(a.real_, b.real_);
 		r.image_ = lobo::multi(a.real_, b.image_) + lobo::multi(a.image_, b.real_);
 		return r;
+	}
+
+	TemplateHead
+	void multi(const double& a, const double& b, double&c)
+	{
+		c = a*b;
 	}
 
 	TemplateHead

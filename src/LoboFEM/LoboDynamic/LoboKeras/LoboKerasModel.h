@@ -4,6 +4,7 @@
 #include <map>
 #include <string>
 #include "AutoDiff/AutoDiffCore.h"
+
 template <class TYPE> class BaseLayer;
 
 template <class TYPE>

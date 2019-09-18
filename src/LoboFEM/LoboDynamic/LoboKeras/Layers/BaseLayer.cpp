@@ -11,5 +11,11 @@ BaseLayer<TYPE>::BaseLayer()
 template <class TYPE>
 BaseLayer<TYPE>::~BaseLayer()
 {
+    free(output_vector);
+}
 
+template <class TYPE>
+void BaseLayer<TYPE>::allocBuffer()
+{
+    output_vector = (TYPE*)malloc(sizeof(TYPE)*n_output);
 }

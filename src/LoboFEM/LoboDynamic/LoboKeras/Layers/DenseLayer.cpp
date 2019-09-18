@@ -30,19 +30,22 @@ DenseLayer<TYPE>::~DenseLayer()
 template<class TYPE>
 void DenseLayer<TYPE>::layerRun(TYPE* input, TYPE* output)
 {
+	TYPE tmp;
 	for (int i = 0;i < m;i++)
 	{
 		output[i] = 0.0;
-		
 	}
+
 	for (int i = 0;i < m;i++)
 	{
 		for (int j = 0;j < n;j++)
 		{
-			output[i] += input[j] * weights[i*n + j];
+			lobo::multi<TYPE,double>(input[j],weights[i*n + j],tmp);
+			//lobo::add_a<TYPE,double>(output[i],tmp);
+			output[i] += tmp;
 		}
 		output[i] += bias[i];
+		//lobo::add_a<TYPE,double>(output[i],bias[i]);
 	}
-
 }
 

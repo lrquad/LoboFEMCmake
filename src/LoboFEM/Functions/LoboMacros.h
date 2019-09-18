@@ -5,7 +5,7 @@
 
 #define LOBO_TEMPLATE_INSTANT_NN(MyClass) \
     template class MyClass<double>;       \
-    template class MyClass<LoboComplexDualt>;
+    template class MyClass<LoboComplexDualt>; \
 
 #define TYPE_MAX 999999;
 

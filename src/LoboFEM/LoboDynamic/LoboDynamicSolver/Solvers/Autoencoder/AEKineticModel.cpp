@@ -3,6 +3,9 @@
 #include "LoboDynamic/LoboDynamicSolver/LoboDynamicModel/ElasticModel/HyperelasticModel.h"
 #include "LoboDynamic/LoboDynamicSolver/LoboDynamicModel/ConstrainModel/ConstrainModel.h"
 #include "LoboDynamic/LoboDynamicSolver/LoboDynamicModel/CollisionModel/CollisionModel.h"
+
+#include <time.h>
+
 Lobo::AEKineticModel::AEKineticModel(LoboDynamicScene *scene_, LoboTetMesh *tetmesh_, AEAutoDiffModel<double> *ae_ad_model_, HyperelasticModel *elastic_model_, ConstrainModel *constrain_model_, CollisionModel *collisionmodel_) : KineticModel(scene_, tetmesh_, elastic_model_, constrain_model_, collisionmodel_)
 {
     this->ae_ad_model = ae_ad_model_;
@@ -62,13 +65,19 @@ void Lobo::AEKineticModel::computeEnergyDense(Eigen::VectorXd *free_variables, d
 
     if (computationflags & (Computeflags_fisrt | Computeflags_second))
     {
+        clock_t t1 = clock();
         //ae_ad_model->computeDerivatives(free_variables->data(), 1e-30);
         //ae_ad_model->decoder(free_variables->data(), q.data());
         ae_ad_model->computeDerivativesAndQ(free_variables->data(), 1e-30, q.data());
+        clock_t t2 = clock();
+        double seconds = (double)(t2 - t1) / CLOCKS_PER_SEC;
+        std::cout << "computeDerivativesAndQ " << seconds << "s" << std::endl;
     }
 
     if (computationflags & (Computeflags_fisrt))
     {
+        clock_t t1 = clock();
+
         //comptue gradient
         for (int j = 0; j < n_latents; j++)
         {
@@ -77,10 +86,14 @@ void Lobo::AEKineticModel::computeEnergyDense(Eigen::VectorXd *free_variables, d
             jacobi->data()[j] += internalforce.dot(ae_ad_model->du_dl_i[j]);
             jacobi->data()[j] -= external_forces.dot(ae_ad_model->du_dl_i[j]);
         }
+        clock_t t2 = clock();
+        double seconds = (double)(t2 - t1) / CLOCKS_PER_SEC;
+        std::cout << "compute f " << seconds << "s" << std::endl;
     }
 
     if (computationflags & (Computeflags_second))
     {
+        clock_t t1 = clock();
         //comptue hessian
         for (int j = 0; j < n_latents; j++)
         {
@@ -109,5 +122,8 @@ void Lobo::AEKineticModel::computeEnergyDense(Eigen::VectorXd *free_variables, d
                 hessian->data()[v * n_latents + u] = hessian->data()[u * n_latents + v];
             }
         }
+        clock_t t2 = clock();
+        double seconds = (double)(t2 - t1) / CLOCKS_PER_SEC;
+        std::cout << "compute H " << seconds << "s" << std::endl;
     }
 }

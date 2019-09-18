@@ -101,6 +101,7 @@ template <class TYPE>
 void LoboKerasModel<TYPE>::addLayers(BaseLayer<TYPE>* layer)
 {
 	NN_layers.push_back(layer);
+	layer->allocBuffer();
 }
 
 template <class TYPE>
@@ -113,17 +114,18 @@ void LoboKerasModel<TYPE>::predict(TYPE* input, TYPE* output)
 		hidden_vecotr[i] = input[i];
 	}
 
-
 	for (int i = 0;i < NN_layers.size();i++)
 	{
 		int num_output = NN_layers[i]->getOutput();
-		TYPE* output_vector = (TYPE*)malloc(sizeof(TYPE)*num_output);
-		memset(output_vector, 0, sizeof(TYPE)*num_output);
-		NN_layers[i]->layerRun(hidden_vecotr, output_vector);
+		//TYPE* output_vector = (TYPE*)malloc(sizeof(TYPE)*num_output);
+		memset(NN_layers[i]->output_vector, 0, sizeof(TYPE)*num_output);
+
+		NN_layers[i]->layerRun(hidden_vecotr, NN_layers[i]->output_vector);
+
 		free(hidden_vecotr);
 		hidden_vecotr = (TYPE*)malloc(sizeof(TYPE)*num_output);
-		memcpy(hidden_vecotr, output_vector, sizeof(TYPE)*num_output);
-		free(output_vector);
+		memcpy(hidden_vecotr, NN_layers[i]->output_vector, sizeof(TYPE)*num_output);
+		//free(output_vector);
 	}
 
 	for (int i = 0;i < n_output;i++)
