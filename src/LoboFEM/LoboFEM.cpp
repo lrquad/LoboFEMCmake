@@ -16,6 +16,7 @@ Lobo::LoboFEM::LoboFEM()
     use_screen_buffer = false;
     export_screen_buffer = false;
     multisamples = 16;
+    enablevsync = true;
 }
 
 Lobo::LoboFEM::~LoboFEM()
@@ -298,6 +299,8 @@ void Lobo::LoboFEM::showMainWindow(ImGui::FileBrowser *fileDialog, bool *p_open)
        system("mkdir -p ./demo/default/screen/");
     }
 
+    ImGui::Checkbox("Enable vsync", &enablevsync);
+
     ImGui::End();
 }
 
@@ -413,6 +416,10 @@ void Lobo::LoboFEM::saveCurScreenImagePNG(const char *imagename)
 
 void Lobo::LoboFEM::saveCurScreenImagePNGAnimaition(const char *imagebase)
 {
+    if(this->dynamic_scene->getStep()>2000)
+    {
+        return;
+    }
     std::ostringstream stringStream;
     stringStream << imagebase << std::setfill('0') << std::setw(5) << this->dynamic_scene->getStep() << ".png";
     std::string pngfile = stringStream.str();

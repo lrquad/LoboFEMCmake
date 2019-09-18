@@ -32,6 +32,9 @@ public:
     void loadXMLfile(const char *filename);
     void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
+    bool enablevsync;
+
+
 protected:
 
 

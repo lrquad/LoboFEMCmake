@@ -18,8 +18,6 @@ include_directories(
     ${MKL_INCLUDE_DIR}
     )
 
-message(STATUS "=====>" ${MKL_INCLUDE_DIR})
-
 target_link_libraries(${PROJECT}
     ${OPENGL_LIBRARIES}
     ${GLFW_LIBRARIES}
@@ -30,7 +28,3 @@ target_link_libraries(${PROJECT}
     ${MKL_LIBRARIES}
     "stdc++fs"
     )
-message(STATUS "=====>" ${MKL_LIBRARIES})
-
-
-message(STATUS "=====>" ${CMAKE_CXX_FLAGS})

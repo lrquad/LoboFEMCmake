@@ -17,14 +17,7 @@ public:
     int end_frame;
     int skip_frame;
 
-    AESimulatorGen(Lobo::LoboDynamicScene *parent_scene) : ModalWarpingSimulator(parent_scene)
-    {
-        save_record_result = true;
-        start_frame = 0;
-        end_frame = 10000;
-        skip_frame = 2;
-        ae_diff_model = NULL;
-    }
+    AESimulatorGen(Lobo::LoboDynamicScene *parent_scene);
 
     virtual void runXMLscript(pugi::xml_node &solver_node);
 

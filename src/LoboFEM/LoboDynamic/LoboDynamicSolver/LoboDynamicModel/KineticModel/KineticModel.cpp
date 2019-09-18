@@ -58,6 +58,7 @@ void Lobo::KineticModel::precompute()
 
     //precomptue gravity force
     gravity_force.resize(num_DOFs);
+    gravity_force.setZero();
     for (int i = 0; i < num_DOFs / 3; i++)
     {
         gravity_force.data()[i * 3 + 1] = -9.8;
@@ -65,6 +66,20 @@ void Lobo::KineticModel::precompute()
     gravity_force = mass_matrix * gravity_force;
 
     //test
+}
+
+void Lobo::KineticModel::computeFiledForce(Eigen::Vector3d &force)
+{
+    gravity_force.resize(num_DOFs);
+    gravity_force.setZero();
+
+    for (int i = 0; i < num_DOFs / 3; i++)
+    {
+        gravity_force.data()[i * 3 + 0] = force.data()[0];
+        gravity_force.data()[i * 3 + 1] = force.data()[1];
+        gravity_force.data()[i * 3 + 2] = force.data()[2];
+    }
+    gravity_force = mass_matrix * gravity_force;
 }
 
 void Lobo::KineticModel::computeEnergySparse(

@@ -170,7 +170,8 @@ int main(int argc, char *argv[])
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-        glfwSwapInterval(1); // Enable vsync
+
+        glfwSwapInterval(fem_main.enablevsync); // Enable vsync
 
         glfwSwapBuffers(window);
     }

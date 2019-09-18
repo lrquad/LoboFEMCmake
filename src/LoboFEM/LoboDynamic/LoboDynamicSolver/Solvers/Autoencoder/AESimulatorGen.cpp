@@ -1,14 +1,24 @@
 #include "AESimulatorGen.h"
+#include "LoboDynamic/WarpModel/ModalWarpingModel.h"
+
+Lobo::AESimulatorGen::AESimulatorGen(Lobo::LoboDynamicScene *parent_scene) : ModalWarpingSimulator(parent_scene)
+{
+    save_record_result = true;
+    start_frame = 0;
+    end_frame = 100000;
+    skip_frame = 2;
+    ae_diff_model = NULL;
+}
 
 void Lobo::AESimulatorGen::runXMLscript(pugi::xml_node &solver_node)
 {
     Lobo::ModalWarpingSimulator::runXMLscript(solver_node);
 
-    if(solver_node.attribute("min"))
+    if (solver_node.attribute("min"))
     {
         mesh_min = solver_node.attribute("min").as_double();
     }
-     if(solver_node.attribute("scale"))
+    if (solver_node.attribute("scale"))
     {
         mesh_scale = solver_node.attribute("scale").as_double();
     }
@@ -55,9 +65,24 @@ void Lobo::AESimulatorGen::drawImGui()
 
 void Lobo::AESimulatorGen::stepForward()
 {
-    ModalWarpingSimulator::stepForward();
+    int step = time_integraion->step;
+    double scale = std::sin(step * 0.1) * 0.2;
+    if (step % 400 > 200)
+    {
+        scale = 0.0;
+    }
+
+    kinetic_model->external_forces = kinetic_model->gravity_force * scale;
+    kinetic_model->external_forces += bind_tetMesh->tet_vertice_force * 0.01;
+    modal_warping_model->warpForce(kinetic_model->external_forces, time_integraion->q, true);
+    time_integraion->stepFoward();
+
+    Eigen::VectorXd warped_q = time_integraion->q;
+    modal_warping_model->warp(warped_q);
+    bind_tetMesh->updateTetVertices(&(warped_q));
     //store the result
     int time_step = this->time_integraion->step;
+
     if (time_step >= start_frame && time_step < end_frame)
     {
 
@@ -94,13 +119,12 @@ void Lobo::AESimulatorGen::exportData()
 
 void Lobo::AESimulatorGen::updateByLatents()
 {
-    if(ae_diff_model==NULL)
+    if (ae_diff_model == NULL)
     {
         return;
     }
-    int numDoFs = bind_tetMesh->getNumVertex()*3;
+    int numDoFs = bind_tetMesh->getNumVertex() * 3;
     Eigen::VectorXd q(numDoFs);
     ae_diff_model->decoder(latents.data(), q.data());
     bind_tetMesh->updateTetVertices(&q);
-
 }

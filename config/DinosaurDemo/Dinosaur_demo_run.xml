@@ -28,7 +28,7 @@
 			<SolverFolder>solveroutput/</SolverFolder>
 
 
-			<AEAutoDiffModel path="NN/decoder.txt" min="-0.24779660640168932" scale="0.6003894547362322"></AEAutoDiffModel>
+			<AEAutoDiffModel path="NN/decoder.txt" min="-0.4555883567315363" scale="0.9040783919251645"></AEAutoDiffModel>
 
 			<KineticModel method="LinearKineticModel">
 			</KineticModel>
@@ -36,9 +36,9 @@
 			<TargetTetMesh id="0"></TargetTetMesh>
 			<HyperelasticModel invertible="true" useMCSFD="false" trigger="true">
 				<Material type="NeoHookean">
-					<YoungsModulus value = "100.0"></YoungsModulus>
+					<YoungsModulus value = "500.0"></YoungsModulus>
 					<PossionRatio value = "0.3"></PossionRatio>
-					<Density value = "4.0"></Density>
+					<Density value = "100.0"></Density>
 				</Material>
 			</HyperelasticModel>
 
@@ -49,8 +49,8 @@
 			<CollisionModel weight="0.0" friction="1.0" trigger="false">
 			</CollisionModel>
 
-			<TimeIntegration method="ImplicitSparse" timestep="0.01" damping="0.9995" skipsteps="1" recordq="false">
-				<Optimization method="newton" maxiter="2" tol="0.001"></Optimization>
+			<TimeIntegration method="ImplicitSparse" timestep="0.01" damping="1.0" skipsteps="1" recordq="false">
+				<Optimization method="newton" maxiter="20" tol="0.001"></Optimization>
 			</TimeIntegration>
 
 		</DynamicSimulator>

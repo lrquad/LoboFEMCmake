@@ -26,6 +26,13 @@ Lobo::AEKineticModel::~AEKineticModel()
 void Lobo::AEKineticModel::precompute()
 {
     Lobo::KineticModel::precompute();
+    gravity_force.resize(full_DoFs);
+    gravity_force.setZero();
+    for (int i = 0; i < full_DoFs / 3; i++)
+    {
+        gravity_force.data()[i * 3 + 1] = -9.8;
+    }
+    gravity_force = mass_matrix * gravity_force;
 }
 
 void Lobo::AEKineticModel::computeEnergyDense(Eigen::VectorXd *free_variables, double *energy, Eigen::VectorXd *jacobi, Eigen::MatrixXd *hessian, int computationflags)

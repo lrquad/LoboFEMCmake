@@ -23,7 +23,7 @@
 			<TetFileBase>tetmesh/tet</TetFileBase>
 		</BindTetMesh>
 
-		<DynamicSimulator type="AESimulatorGen" name ="fullspace" precompute="true" min="-0.24779660640168932" scale="0.6003894547362322">
+		<DynamicSimulator type="AESimulatorGen" name ="fullspace" precompute="true" min="-0.7463901851647088" scale="1.3575212255366595">
 			<!-- the output will be saved in folder <SceneDataFolder>/<DataFolder> -->
 			<SolverFolder>solveroutput/</SolverFolder>
 
@@ -33,9 +33,9 @@
 			<TargetTetMesh id="0"></TargetTetMesh>
 			<HyperelasticModel invertible="true" useMCSFD="false" trigger="true">
 				<Material type="NeoHookean">
-					<YoungsModulus value = "100.0"></YoungsModulus>
+					<YoungsModulus value = "1000.0"></YoungsModulus>
 					<PossionRatio value = "0.3"></PossionRatio>
-					<Density value = "1.0"></Density>
+					<Density value = "100.0"></Density>
 				</Material>
 			</HyperelasticModel>
 

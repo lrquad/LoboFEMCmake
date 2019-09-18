@@ -29,6 +29,8 @@ void Lobo::ModalWarpingSimulator::precompute()
 }
 void Lobo::ModalWarpingSimulator::stepForward()
 {
+    
+    //kinetic_model->external_forces = kinetic_model->gravity_force*scale;
     kinetic_model->external_forces = kinetic_model->gravity_force;
     kinetic_model->external_forces.setZero();
     kinetic_model->external_forces+=bind_tetMesh->tet_vertice_force*0.01;

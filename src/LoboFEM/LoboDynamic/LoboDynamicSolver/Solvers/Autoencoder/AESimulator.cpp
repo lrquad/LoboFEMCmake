@@ -154,14 +154,23 @@ void Lobo::AESimulator::precompute()
 
 void Lobo::AESimulator::stepForward()
 {
+    int step = time_integraion->step;
+    double scale = std::sin(step * 0.1) * 0.4;
 
-    kinetic_model->external_forces = kinetic_model->gravity_force;
-    kinetic_model->external_forces.setZero();
+    if (step % 400 > 200)
+    {
+        scale = 0.0;
+    }
+    
+    kinetic_model->external_forces = kinetic_model->gravity_force * scale;
+
+    //kinetic_model->external_forces.setZero();
     kinetic_model->external_forces+=bind_tetMesh->tet_vertice_force*0.1;
 
     time_integraion->stepFoward();
 
     bind_tetMesh->updateTetVertices(&(time_integraion->q));
+
 }
 
 int Lobo::AESimulator::getCurStep()

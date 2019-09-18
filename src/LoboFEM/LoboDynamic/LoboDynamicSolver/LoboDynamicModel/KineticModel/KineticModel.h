@@ -25,6 +25,8 @@ public:
     //precomptue final sparse matrix topology
     virtual void precompute();
 
+    virtual void computeFiledForce(Eigen::Vector3d &force);
+
     virtual void runXMLscript(pugi::xml_node &xml_node);
 
     virtual void setKineticStatus(Eigen::VectorXd &q_vel_,Eigen::VectorXd &q_1_);
