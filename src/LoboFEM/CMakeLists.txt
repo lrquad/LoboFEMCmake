@@ -16,6 +16,7 @@ include_directories(
     ${EIGEN3_INCLUDE_DIR}
     ${TETGEN_INCLUDE_DIR}
     ${MKL_INCLUDE_DIR}
+    ${CUDA_INCLUDE_DIRS}
     )
 
 target_link_libraries(${PROJECT}
@@ -26,5 +27,9 @@ target_link_libraries(${PROJECT}
     ${OpenMP_CXX_LIBRARIES}
     ${TETGEN_LIBRARIES}
     ${MKL_LIBRARIES}
+    ${CUDA_CUBLAS_LIBRARIES}
     "stdc++fs"
     )
+
+
+

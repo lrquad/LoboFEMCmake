@@ -3,8 +3,8 @@
 
 ## Todo
 
-09/12/2019
-- [ ] Dense model
+09/19/2019
+- [ ] cublas
 
 09/11/2019
 - [x] Export AE data
@@ -120,7 +120,7 @@ Only call glBufferSubData
 OpenMP 12 threads
 19 FPS
 
-
+To support cuda 10.0 need cmake version 3.12 or later
 
 https://stackoverflow.com/questions/993352/when-should-i-make-explicit-use-of-the-this-pointer
 https://stackoverflow.com/questions/2812470/why-does-gcc-need-extra-declarations-in-templates-when-vs-does-not/2812501#2812501
