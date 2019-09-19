@@ -10,8 +10,10 @@ if (CMAKE_SYSTEM_NAME STREQUAL Linux)
 endif ()
 
 find_package(OpenMP REQUIRED)
-find_package(CUDA REQUIRED)
 
+find_package(CUDA REQUIRED)
+set(CUDA_SEPARABLE_COMPILATION ON)
+set(CUDA_PROPAGATE_HOST_FLAGS OFF)
 
 find_package(MKL REQUIRED)
 

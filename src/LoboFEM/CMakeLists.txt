@@ -1,4 +1,4 @@
-make_executable()
+make_cuda_executable()
 
 add_definitions(-DIMGUI_IMPL_OPENGL_LOADER_GLAD)
 
@@ -17,6 +17,7 @@ include_directories(
     ${TETGEN_INCLUDE_DIR}
     ${MKL_INCLUDE_DIR}
     ${CUDA_INCLUDE_DIRS}
+    ${CUDA_TOOLKIT_ROOT_DIR}/samples/common/inc/
     )
 
 target_link_libraries(${PROJECT}
@@ -27,8 +28,9 @@ target_link_libraries(${PROJECT}
     ${OpenMP_CXX_LIBRARIES}
     ${TETGEN_LIBRARIES}
     ${MKL_LIBRARIES}
-    ${CUDA_CUBLAS_LIBRARIES}
     "stdc++fs"
+    ${CUDA_CUDART_LIBRARY}
+    ${CUDA_CUBLAS_LIBRARIES}
     )
 
 

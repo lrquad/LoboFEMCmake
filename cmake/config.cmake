@@ -36,8 +36,6 @@ macro(make_project_)
     source_group("Source Files" FILES ${SOURCES} ${CSOURCES})
 endmacro ()
 
-
-
 macro(make_executable)
     make_project_()
     
@@ -77,5 +75,64 @@ function(add_all_subdirectories)
         endif ()
     endforeach ()
 endfunction()
+
+
+macro(make_cuda_project_)
+    if (NOT DEFINED PROJECT)
+        get_filename_component(PROJECT ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+    endif ()
+
+    project(${PROJECT} CXX)
+
+    if(MSVC)
+        # Ignore 4055 for glad
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /IGNORE:4055")
+    else ()
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -std=c++14 -w -fopenmp ")
+        
+    endif ()
+
+    if(MSVC)
+        add_definitions(
+            -D_USE_MATH_DEFINES
+            )
+    endif()
+    
+    if (NOT DEFINED HEADERS)
+        file(GLOB_RECURSE HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
+    endif ()
+
+    if (NOT DEFINED SOURCES)
+        file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+        file(GLOB_RECURSE CSOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.c)
+    endif ()
+
+    if (NOT DEFINED CUDASOURCES)
+        file(GLOB_RECURSE CUDASOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.cu)
+    endif ()
+
+    source_group("Header Files" FILES ${HEADERS})
+    source_group("Source Files" FILES ${SOURCES} ${CSOURCES})
+    source_group("CUDA FILEs" FILES ${CUDASOURCES})
+
+endmacro ()
+
+
+macro(make_cuda_executable)
+    make_cuda_project_()
+    
+    cuda_add_executable(${PROJECT} ${HEADERS}
+                                      ${SOURCES}
+                                      ${CUDASOURCES})
+
+    #add_executable(${PROJECT} ${HEADERS} ${SOURCES})
+
+    add_definitions(${GLFW_DEFINITIONS})
+    
+    set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/bundle/${PROJECT}")
+    install(
+        TARGETS ${PROJECT}
+        DESTINATION ${CMAKE_INSTALL_PREFIX})
+endmacro()
 
 
