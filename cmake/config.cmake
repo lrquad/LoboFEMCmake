@@ -36,6 +36,8 @@ macro(make_project_)
     source_group("Source Files" FILES ${SOURCES} ${CSOURCES})
 endmacro ()
 
+
+
 macro(make_executable)
     make_project_()
     
@@ -75,3 +77,5 @@ function(add_all_subdirectories)
         endif ()
     endforeach ()
 endfunction()
+
+
