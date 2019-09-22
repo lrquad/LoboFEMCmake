@@ -3,42 +3,9 @@
 
 ## Todo
 
-09/19/2019
+09/22/2019
 - [ ] cublas
-
-09/11/2019
-- [x] Export AE data
-- [x] Train AE
-- [ ] Dense model
-
-09/10/2019
-- [x] Linear elastic
-- [x] Modal warping
-- [x] Mouse force
-
-08/27/2019
-- [x] Collision
-- [x] Constraints
-- [x] Tri mesh and Tet mesh adapter
-
-08/26/2019
-- [x] Fullspace simulation
-  - [x] Hyperelastic model
-    - [x] K and f
-  - [x] Optimization solver
-- [x] Eigen MKL test on ubuntu
-- [x] Analytical stvk
-
-08/25/2019
-- [x] Fullspace simulation
-  - [x] Fullspace sovler
-  - [x] Dynamic model
-  - [x] Constraints model
-  - [x] Hyperelastic model
-    - [x] multi thread stiffness and internal forces
-  - [x] Time integration
-  - [x] Kinetic model
-  - [x] Precomptue tetmesh
+- [ ] optimize NN 
 
 ## Introduction
 - Imgui

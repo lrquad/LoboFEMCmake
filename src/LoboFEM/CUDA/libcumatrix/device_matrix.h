@@ -206,6 +206,9 @@ public:
       T beta,
       T *y, int incy);
 
+  static void cublas_dot(int n,const T *X, int incx,
+      const T *Y, int incy,T* C);
+
   static void cublas_iamax(int n, const T* x, int incx, int* result);
 
   static void cublas_nrm2(int n, const T *x, int incx, T *result);

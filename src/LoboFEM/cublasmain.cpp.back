@@ -18,24 +18,26 @@ void randomInit(device_matrix<T> &m)
 
 int main()
 {
-    int size = 10;
-    Eigen::MatrixXf test(size, size);
-    Eigen::MatrixXf test2(size, size);
+    int size = 1000000;
+    Eigen::VectorXf test(size, 1);
+    Eigen::VectorXf test2(size, 1);
     Eigen::MatrixXf result;
+    float dotresult;
     test.setRandom();
     test2.setRandom();
 
     clock_t t1 = clock();
-    result = test * test2;
+    dotresult = test.dot(test2);
+
     clock_t t2 = clock();
 
     std::cout << "hello world" << std::endl;
     double seconds = (double)(t2 - t1) / CLOCKS_PER_SEC;
     std::cout << "seconds " << seconds << "s" << std::endl;
-    std::cout << result.data()[0] << std::endl;
+    std::cout << dotresult << std::endl;
 
-    device_matrix<float> A(size, size);
-    device_matrix<float> B(size, size);
+    device_matrix<float> A(size, 1);
+    device_matrix<float> B(size, 1);
     device_matrix<float> C;
 
     cudaMemcpy(A.getData(), test.data(), A.size() * sizeof(float), cudaMemcpyHostToDevice);
@@ -46,8 +48,6 @@ int main()
 
     size_t k = B.getRows();
     size_t l = B.getCols();
-
-    assert(n == k);
 
     C.resize(m, l);
 
@@ -61,15 +61,16 @@ int main()
     // Fill A with 0
     t1 = clock();
 
-    device_matrix<float>::cublas_gemm(opA, opB, m, l, k, 1.0, A.getData(), lda, B.getData(), ldb, 0.0, C.getData(), ldc);
-    
+    //device_matrix<float>::cublas_gemm(opA, opB, m, l, k, 1.0, A.getData(), lda, B.getData(), ldb, 0.0, C.getData(), ldc);
+    device_matrix<float>::cublas_dot(m, A.getData(), 1, B.getData(), 1, &dotresult);
+
     //gemm(A, B, C);
     t2 = clock();
     seconds = (double)(t2 - t1) / CLOCKS_PER_SEC;
     std::cout << "seconds " << seconds << "s" << std::endl;
     float *data = new float[C.size()];
     CCE(cudaMemcpy(data, C.getData(), sizeof(float) * C.size(), cudaMemcpyDeviceToHost));
-    std::cout << data[0] << std::endl;
+    std::cout << dotresult << std::endl;
 
     return 0;
 }

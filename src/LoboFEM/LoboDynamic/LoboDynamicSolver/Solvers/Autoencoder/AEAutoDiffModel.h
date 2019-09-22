@@ -8,7 +8,6 @@ template<class TYPE> class LoboKerasModel;
 template  <class TYPE>
 class AEAutoDiffModel
 {
-
 public:
 
 	typedef Eigen::Matrix<TYPE, Eigen::Dynamic, 1> VectorX;
@@ -43,9 +42,6 @@ public:
 protected:
 
 	int num_latents;
-
-
-	
 
 	LoboComplexDualt* input_complex;
 	LoboComplexDualt* output_complex;

@@ -1,7 +1,4 @@
 #include "CUDABaseLayer.h"
-#include <cuda.h>
-#include <cuda_runtime.h>
-
 
 Lobo::CUDABaseLayer::CUDABaseLayer()
 {
@@ -23,4 +20,15 @@ void Lobo::CUDABaseLayer::allocBuffer()
 
     cudaMalloc((void**)&cuda_input, sizeof(float) * n_input);
     cudaMalloc((void**)&cuda_output, sizeof(float) * n_output);
+
+    input_r_r.resize(n_input);
+    input_r_i.resize(n_input);
+    input_i_r.resize(n_input);
+    input_i_i.resize(n_input);
+
+    output_r_r.resize(n_output);
+    output_r_i.resize(n_output);
+    output_i_r.resize(n_output);
+    output_i_i.resize(n_output);
+
 }

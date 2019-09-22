@@ -27,6 +27,7 @@ LoboKerasModel<TYPE>::~LoboKerasModel()
 template <class TYPE>
 void LoboKerasModel<TYPE>::loadNN(const char* filename)
 {
+	std::cout<<"load keras model " << filename<<std::endl;
 	std::ifstream instream(filename);
 	int number_of_layers;
 	instream >> number_of_layers;
