@@ -15,12 +15,14 @@ namespace Lobo
 
         virtual void layerRun(CUDABaseLayer* inputlayer);
 
+        virtual void layerRunValue(CUDABaseLayer* inputlayer);
+
     protected:
 
         ActivationType activation_type;
 
 
-        Eigen::VectorXf weights;
+        Eigen::MatrixXf weights;
         Eigen::VectorXf bias;
 
         float* cpu_weights;

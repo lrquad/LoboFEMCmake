@@ -16,6 +16,7 @@ class CUDABaseLayer {
 
     virtual void layerRun(float* input, float* output) = 0;
     virtual void layerRun(CUDABaseLayer* inputlayer) = 0;
+    virtual void layerRunValue(CUDABaseLayer* inputlayer) = 0;
 
 
     virtual void allocBuffer();

@@ -59,10 +59,13 @@ void Lobo::KineticModel::precompute()
     //precomptue gravity force
     gravity_force.resize(num_DOFs);
     gravity_force.setZero();
+    
     for (int i = 0; i < num_DOFs / 3; i++)
     {
         gravity_force.data()[i * 3 + 1] = -9.8;
     }
+
+    if(mass_matrix.cols()==gravity_force.rows())
     gravity_force = mass_matrix * gravity_force;
 
     //test

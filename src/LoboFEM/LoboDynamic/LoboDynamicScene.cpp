@@ -8,6 +8,9 @@
 #include "Functions/deleteSTDvector.h"
 #include "Collision/CollisionDector/CollisionWorld.h"
 
+#include <iostream>
+
+
 std::string demo_path = "./demo/default/";
 
 std::string Lobo::getPath(const char *filename)
@@ -105,7 +108,7 @@ void Lobo::LoboDynamicScene::runXMLscript(pugi::xml_node &scene_node)
                 dynamic_solver = new Lobo::AESimulatorGen(this);
             }else if(strcmp(solver_node.attribute("type").as_string(),"AESimulator")==0)
             {
-                dynamic_solver = new Lobo::AESimulator(this);
+                dynamic_solver = new Lobo::CUDAAESimulator(this);
             }
             
         }

@@ -5,8 +5,8 @@ Lobo::AESimulatorGen::AESimulatorGen(Lobo::LoboDynamicScene *parent_scene) : Mod
 {
     save_record_result = true;
     start_frame = 0;
-    end_frame = 100000;
-    skip_frame = 2;
+    end_frame = 1000000;
+    skip_frame = 5;
     ae_diff_model = NULL;
 }
 
@@ -71,9 +71,20 @@ void Lobo::AESimulatorGen::stepForward()
     {
         scale = 0.0;
     }
+    
+    if(step%400==399)
+    {
+        Eigen::Vector3d newdireciont;
+        newdireciont.setRandom();
+        newdireciont.normalize();
+        newdireciont*=5.0;
+        kinetic_model->computeFiledForce(newdireciont);
+    }
 
     kinetic_model->external_forces = kinetic_model->gravity_force * scale;
+
     kinetic_model->external_forces += bind_tetMesh->tet_vertice_force * 0.01;
+    
     modal_warping_model->warpForce(kinetic_model->external_forces, time_integraion->q, true);
     time_integraion->stepFoward();
 

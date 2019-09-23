@@ -33,8 +33,10 @@ public:
     ConstrainModel *constrainmodel;
     CollisionModel *collisionmodel;
     HyperelasticModel *hyperelastic_model;
+    
     AEKineticModel *kinetic_model;
     AETimeIntegration *time_integraion;
+
     AEAutoDiffModel<double> *ae_ad_model;
     LoboKerasModel<double>* keras_encoder;
 

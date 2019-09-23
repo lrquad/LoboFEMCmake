@@ -5,7 +5,7 @@
 #include "Layers/CUDAInputLayer.h"
 #include <fstream>
 #include <iostream>
-
+#include <time.h>
 Lobo::CUDAKerasModel::CUDAKerasModel()
 {
     s_map_type["InputLayer"] = input_layer;
@@ -22,6 +22,8 @@ Lobo::CUDAKerasModel::~CUDAKerasModel()
 
 void Lobo::CUDAKerasModel::loadNN(const char *filename)
 {
+    std::cout<<"load NN " << filename << std::endl;
+
     std::ifstream instream(filename);
     int number_of_layers;
     instream >> number_of_layers;
@@ -85,12 +87,24 @@ void Lobo::CUDAKerasModel::loadNN(const char *filename)
 
     n_input = NN_layers[0]->getInput();
     n_output = NN_layers[NN_layers.size() - 1]->getOutput();
-
 }
 
 void Lobo::CUDAKerasModel::predict(double *input, double *output)
 {
+    for(int i=0;i<n_input;i++)
+    {
+        NN_layers[0]->output_r_r[i] = input[i];
+    } 
 
+    for(int i=1;i<NN_layers.size();i++)
+    {
+        NN_layers[i]->layerRunValue(NN_layers[i-1]);
+    }
+
+    for(int i=0;i<n_output;i++)
+    {
+        output[i] = NN_layers[NN_layers.size()-1]->output_r_r.data()[i]*data_scale+data_min;
+    }
 }
 
 void Lobo::CUDAKerasModel::predict(double *input_r_r,double *input_r_i,double *input_i_r,double *input_i_i, double *output_r_r,double *output_r_i,double *output_i_r,double *output_i_i)
@@ -106,14 +120,15 @@ void Lobo::CUDAKerasModel::predict(double *input_r_r,double *input_r_i,double *i
     for(int i=1;i<NN_layers.size();i++)
     {
         NN_layers[i]->layerRun(NN_layers[i-1]);
+        //std::cout<<NN_layers[i]->output_i_i.sum()<<std::endl;
     }
-    
-    for(int i=0;i<n_input;i++)
+
+    for(int i=0;i<n_output;i++)
     {
-        output_r_r[i] = NN_layers[NN_layers.size()-1]->output_r_r[i];
-        output_r_i[i] = NN_layers[NN_layers.size()-1]->output_r_i[i];
-        output_i_r[i] = NN_layers[NN_layers.size()-1]->output_i_r[i];
-        output_i_i[i] = NN_layers[NN_layers.size()-1]->output_i_i[i];
+        output_r_r[i] = NN_layers[NN_layers.size()-1]->output_r_r.data()[i]*data_scale+data_min;
+        output_r_i[i] = NN_layers[NN_layers.size()-1]->output_r_i.data()[i]*data_scale;
+        output_i_r[i] = NN_layers[NN_layers.size()-1]->output_i_r.data()[i]*data_scale;
+        output_i_i[i] = NN_layers[NN_layers.size()-1]->output_i_i.data()[i]*data_scale;
     }   
 }
 

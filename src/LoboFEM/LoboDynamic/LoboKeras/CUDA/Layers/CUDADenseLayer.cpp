@@ -14,6 +14,9 @@ Lobo::CUDADenseLayer::CUDADenseLayer(float *weights_, float *bias_, int n_, int 
     cpu_bias = (float *)malloc(sizeof(float) * m);
     memcpy(cpu_bias, bias_, sizeof(float) * m);
 
+    
+    std::cout<<"weight matrix size: " <<m<<" " << n << std::endl;
+
     weights.resize(m, n);
     memcpy(weights.data(), weights_, sizeof(float) * n * m);
     bias.resize(m);
@@ -86,16 +89,40 @@ void Lobo::CUDADenseLayer::layerRun(Lobo::CUDABaseLayer *inputlayer)
     {
         for (int i = 0; i < m; i++)
         {
-            double expx = std::exp(output_r_r[i]);
-            double expnx = std::exp(-output_r_r[i]);
-            double tmp = (1.0+expnx);
+            float expx = std::exp(output_r_r[i]);
+            float expnx = std::exp(-output_r_r[i]);
+            float tmp = (1.0+expnx);
             output_r_r[i] = 1.0/tmp;
-            double first = expnx/tmp/tmp;
+            float first = expnx/tmp/tmp;
             tmp = expx+1;
-            double second = expx*(expx-1)/(tmp*tmp*tmp);
+            float second = expx*(expx-1)/(tmp*tmp*tmp);
             output_i_i[i] = second*output_r_i[i]*output_i_r[i]+first*output_i_i[i];
             output_r_i[i] = first*output_r_i[i];
             output_i_r[i] = first*output_i_r[i];
+        }
+    }
+}
+
+void Lobo::CUDADenseLayer::layerRunValue(CUDABaseLayer* inputlayer)
+{
+    output_r_r = weights * inputlayer->output_r_r + bias;
+    if (activation_type == ActivationType::relu)
+    {
+        for (int i = 0; i < m; i++)
+        {
+            if (output_r_r.data()[i] < 0)
+            {
+                output_r_r.data()[i] = 0;
+            }
+        }
+    }
+    else if (activation_type == ActivationType::sigmoid)
+    {
+        for (int i = 0; i < m; i++)
+        {
+            double expnx = std::exp(-output_r_r[i]);
+            double tmp = (1.0+expnx);
+            output_r_r[i] = 1.0/tmp;
         }
     }
 }

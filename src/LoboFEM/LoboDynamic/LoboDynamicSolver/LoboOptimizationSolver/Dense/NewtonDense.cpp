@@ -1,6 +1,7 @@
 #include "NewtonDense.h"
 #include "LoboDynamic/LoboDynamic.h"
 #include <fstream>
+#include <iostream>
 
 Lobo::NewtonDense::NewtonDense(DynamicModel *model_, int maxiter, double tol) : LoboOptimizationSolver(model_, maxiter, tol)
 {
@@ -29,14 +30,16 @@ void Lobo::NewtonDense::solve(Eigen::VectorXd* initialGuessq)
     int flags_energy = 0;
     flags_energy |= Computeflags_energy|Computeflags_reset;
 
-     double pre_energy = DBL_MAX;
+    double pre_energy = DBL_MAX;
 
     for(int i=0;i<maxiteration;i++)
     {
         model->computeEnergyDense(&q,&energy,&jacobi,&hessian,flags_all);
         jacobi*=-1;
 
-        if(std::abs(pre_energy-energy)/std::abs(energy+1e-15) < tolerance)
+        double tmp = std::abs(pre_energy-energy)/std::abs(energy+1e-15);
+        //std::cout<<tmp<<std::endl;
+        if(tmp < tolerance)
         {
             break;
         }else

@@ -1022,7 +1022,11 @@ void Lobo::LoboTetMesh::generateBarycentricCoordinate()
 
     Eigen::VectorXd sqrD;
     Eigen::MatrixXd C;
-    tree.squared_distance(tet_vertice_col, tet_indices_col, Q_trivertices, sqrD, tri_ele_idl, C);
+    //std::cout<<tet_vertice_col.cols()<< " " << tet_indices_col.cols()<<std::endl;
+    Eigen::MatrixXi test_tet_faces(tet_indices_col.rows(),3);
+    test_tet_faces = tet_indices_col.block(0,0,tet_indices_col.rows(),3);
+
+    tree.squared_distance(tet_vertice_col, test_tet_faces, Q_trivertices, sqrD, tri_ele_idl, C);
 
     // igl::in_element(tet_vertice_col, tet_indices_col, Q_trivertices, tree,
     //                 tri_ele_idl);
