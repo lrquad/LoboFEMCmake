@@ -166,12 +166,14 @@ public:
     Eigen::VectorXi tri_vertices_idl; //tri vertex to tet node
     Eigen::VectorXd tri_ele_weights;
 
-protected:
 
     virtual void updateTetAttri(Eigen::VectorXd &inputattri, int offset, int attrisize, int totalsize);
+    virtual void updateTetAttri(const double* inputattri,int size, int offset, int attrisize, int totalsize);
+
     virtual void setTetAttriColor(double r, double g, double b, int offset = 8, int totalsize = 11);
     virtual void setTetVetAttriColor(int vid, double r, double g, double b, int offset = 8, int totalsize = 11);
 
+protected:
 
     //tetmesh precompute function
     virtual void correctElementNodeOrder(int elementid);

@@ -5,7 +5,7 @@ Lobo::AESimulatorGen::AESimulatorGen(Lobo::LoboDynamicScene *parent_scene) : Mod
 {
     save_record_result = true;
     start_frame = 0;
-    end_frame = 1000000;
+    end_frame = 100000;
     skip_frame = 5;
     ae_diff_model = NULL;
 }
@@ -41,11 +41,76 @@ void Lobo::AESimulatorGen::drawImGui()
         latents.setZero();
     }
 
+    if (ImGui::Button("load Data"))
+    {
+        //load error to tetmesh
+        int R = bind_tetMesh->getNumVertex() * 3;
+        std::string filepath = Lobo::getPath("NN/error.npy");
+        std::string filepath2 = Lobo::getPath("NN/x_test.npy");
+        std::string filepath3 = Lobo::getPath("NN/x_test_decoded.npy");
+
+        vertex_data_shape.clear();
+        vertex_error_data.clear();
+
+        vertex_deform_shape.clear();
+        vertex_deform_data.clear();
+
+        vertex_decoded_shape.clear();
+        vertex_decoed_data.clear();
+
+
+        std::cout << filepath << std::endl;
+        npy::LoadArrayFromNumpy(filepath.c_str(), vertex_data_shape, vertex_error_data);
+
+        npy::LoadArrayFromNumpy(filepath2.c_str(), vertex_deform_shape, vertex_deform_data);
+
+        npy::LoadArrayFromNumpy(filepath3.c_str(), vertex_decoded_shape, vertex_decoed_data);
+
+        //bind_tetMesh->updateTetAttri(vertex_data.data(),R,8,3,11);
+        v_color.resize(R);
+        v_position.resize(R);
+        show_data_index = 0;
+        show_decoded = false;
+    }
+
     if (ImGui::Button("reset latenst"))
     {
         latents.setZero();
         updateByLatents();
     }
+
+    if (vertex_data_shape.size() > 0)
+    {
+        if (ImGui::DragInt("ShowIndex", &show_data_index, 1.0, 0, vertex_data_shape[0])||ImGui::Checkbox("Decoded:",&show_decoded))
+        {
+            int R = bind_tetMesh->getNumVertex() * 3;
+            v_color.setZero();
+            for (int i = 0; i < R / 3; i++)
+            {
+                int nodeid = i;
+                double mean = vertex_error_data.data()[R * show_data_index + nodeid * 3 + 0] + vertex_error_data.data()[R * show_data_index + nodeid * 3 + 1] + vertex_error_data.data()[R * show_data_index + nodeid * 3 + 2];
+                mean /= 3.0;
+                v_color.data()[nodeid * 3 + 0] = mean / 0.1;
+
+                if (!show_decoded)
+                {
+                    v_position.data()[nodeid * 3 + 0] = vertex_deform_data.data()[R * show_data_index + nodeid * 3 + 0];
+                    v_position.data()[nodeid * 3 + 1] = vertex_deform_data.data()[R * show_data_index + nodeid * 3 + 1];
+                    v_position.data()[nodeid * 3 + 2] = vertex_deform_data.data()[R * show_data_index + nodeid * 3 + 2];
+                }else
+                {
+                    v_position.data()[nodeid * 3 + 0] = vertex_decoed_data.data()[R * show_data_index + nodeid * 3 + 0];
+                    v_position.data()[nodeid * 3 + 1] = vertex_decoed_data.data()[R * show_data_index + nodeid * 3 + 1];
+                    v_position.data()[nodeid * 3 + 2] = vertex_decoed_data.data()[R * show_data_index + nodeid * 3 + 2];
+                }
+                
+            }
+            bind_tetMesh->updateTetAttri(v_color.data(), R, 8, 3, 11);
+            bind_tetMesh->updateTetVertices(&v_position);
+        }
+    }
+
+    ImGui::Separator();
 
     if (ae_diff_model != NULL)
     {
@@ -67,24 +132,25 @@ void Lobo::AESimulatorGen::stepForward()
 {
     int step = time_integraion->step;
     double scale = std::sin(step * 0.1) * 0.2;
-    if (step % 400 > 200)
+    if (step % 600 > 200)
     {
         scale = 0.0;
     }
-    
-    if(step%400==399)
+
+    if (step % 600 == 599)
     {
         Eigen::Vector3d newdireciont;
         newdireciont.setRandom();
+        newdireciont.data()[1] -= 1.0;
         newdireciont.normalize();
-        newdireciont*=5.0;
+        newdireciont *= 11.0;
         kinetic_model->computeFiledForce(newdireciont);
     }
 
     kinetic_model->external_forces = kinetic_model->gravity_force * scale;
 
     kinetic_model->external_forces += bind_tetMesh->tet_vertice_force * 0.01;
-    
+
     modal_warping_model->warpForce(kinetic_model->external_forces, time_integraion->q, true);
     time_integraion->stepFoward();
 

@@ -149,7 +149,7 @@ void Lobo::LoboTetMesh::drawImGui(bool *p_open)
         mouseDrag();
     }
 
-    if(ImGui::IsMouseReleased(1))
+    if (ImGui::IsMouseReleased(1))
     {
         tet_vertice_force.setZero();
     }
@@ -216,7 +216,7 @@ void Lobo::LoboTetMesh::mouseClicked()
             }
             clicked_face = fid;
         }
-        std::cout<<clicked_face<<std::endl;
+        std::cout << clicked_face << std::endl;
     }
 }
 
@@ -782,6 +782,16 @@ void Lobo::LoboTetMesh::updateTetAttri(Eigen::VectorXd &inputattri, int offset,
     }
 }
 
+void Lobo::LoboTetMesh::updateTetAttri(const double *inputattri, int size, int offset, int attrisize, int totalsize)
+{
+    for (int i = 0; i < size / attrisize; i++)
+    {
+        for (int j = 0; j < attrisize; j++)
+            tet_vertice_attri.data()[i * totalsize + offset + j] =
+                inputattri[i * attrisize + j];
+    }
+}
+
 void Lobo::LoboTetMesh::setTetAttriColor(double r, double g, double b,
                                          int offset, int totalsize)
 {
@@ -1023,8 +1033,8 @@ void Lobo::LoboTetMesh::generateBarycentricCoordinate()
     Eigen::VectorXd sqrD;
     Eigen::MatrixXd C;
     //std::cout<<tet_vertice_col.cols()<< " " << tet_indices_col.cols()<<std::endl;
-    Eigen::MatrixXi test_tet_faces(tet_indices_col.rows(),3);
-    test_tet_faces = tet_indices_col.block(0,0,tet_indices_col.rows(),3);
+    Eigen::MatrixXi test_tet_faces(tet_indices_col.rows(), 3);
+    test_tet_faces = tet_indices_col.block(0, 0, tet_indices_col.rows(), 3);
 
     tree.squared_distance(tet_vertice_col, test_tet_faces, Q_trivertices, sqrD, tri_ele_idl, C);
 

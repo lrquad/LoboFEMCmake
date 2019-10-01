@@ -111,6 +111,7 @@ class LoboMesh {
 
     virtual void updateVertices(float* newPosition);
     virtual void updateVertices(double* newPosition);
+    virtual void updateVerticesColor(double* newColor);
 
     virtual void getCurVertices(float* outPosition);
     virtual void getCurVertices(double* outPosition);

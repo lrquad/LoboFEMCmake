@@ -10,6 +10,7 @@ Lobo::LinearStaticSolver::LinearStaticSolver(Lobo::DynamicModel *model_):Lobo::L
 
 void Lobo::LinearStaticSolver::precompute()
 {
+    std::cout<<"LinearStaticSolver::precompute"<<std::endl;
     model->getSparseTopoloty(hessian);
     jacobi.resize(model->num_DOFs);
     jacobi.setZero();
@@ -18,6 +19,7 @@ void Lobo::LinearStaticSolver::precompute()
     flags_all |= Computeflags_second|Computeflags_reset;
     this->model->computeEnergySparse(&q,&energy,&jacobi,&hessian,flags_all);
     eigen_linearsolver.compute(hessian);
+    std::cout<<"LinearStaticSolver::precompute end"<<std::endl;
 }
 
 void Lobo::LinearStaticSolver::solve(Eigen::VectorXd *initialGuessq)

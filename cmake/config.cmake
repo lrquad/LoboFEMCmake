@@ -1,5 +1,5 @@
 if (NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose build type: Debug  Release" FORCE)
+    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose build type: Debug  Release" FORCE)
 endif ()
 
 macro(make_project_)

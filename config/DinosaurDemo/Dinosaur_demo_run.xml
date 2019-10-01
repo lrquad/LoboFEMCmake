@@ -28,7 +28,7 @@
 			<SolverFolder>solveroutput/</SolverFolder>
 
 
-			<AEAutoDiffModel path="NN/decoder.txt" min="-0.4555883567315363" scale="0.9040783919251645"></AEAutoDiffModel>
+			<AEAutoDiffModel path="NN/decoder.txt" min="-1.087483946502628" scale="2.0339405709711444"></AEAutoDiffModel>
 
 			<KineticModel method="LinearKineticModel">
 			</KineticModel>

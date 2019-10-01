@@ -6,7 +6,7 @@ Lobo::KineticModel::KineticModel(LoboDynamicScene *scene_,
                                  LoboTetMesh *tetmesh_,
                                  HyperelasticModel *elastic_model_,
                                  ConstrainModel *constrain_model_,
-                                 CollisionModel* collisionmodel_)
+                                 CollisionModel *collisionmodel_)
     : scene(scene_),
       tetmesh(tetmesh_),
       hyperelasticmodel(elastic_model_),
@@ -20,6 +20,10 @@ Lobo::KineticModel::KineticModel(LoboDynamicScene *scene_,
     column_ = NULL;
     external_forces.resize(num_DOFs);
     external_forces.setZero();
+    q_1.resize(num_DOFs);
+    q_1.setZero();
+    q_vel.resize(num_DOFs);
+    q_vel.setZero();
 }
 
 Lobo::KineticModel::~KineticModel()
@@ -39,7 +43,6 @@ Lobo::KineticModel::~KineticModel()
 // precomptue final sparse matrix topology
 void Lobo::KineticModel::precompute()
 {
-    std::cout << "KineticModel precompute" << std::endl;
     tetmesh->computeDiagMassMatrix(&mass_matrix);
     hyperelasticmodel->computeStiffnessMatrixTopology(
         &stiffness_matrix_topology);
@@ -59,14 +62,14 @@ void Lobo::KineticModel::precompute()
     //precomptue gravity force
     gravity_force.resize(num_DOFs);
     gravity_force.setZero();
-    
+
     for (int i = 0; i < num_DOFs / 3; i++)
     {
         gravity_force.data()[i * 3 + 1] = -9.8;
     }
 
-    if(mass_matrix.cols()==gravity_force.rows())
-    gravity_force = mass_matrix * gravity_force;
+    if (mass_matrix.cols() == gravity_force.rows())
+        gravity_force = mass_matrix * gravity_force;
 
     //test
 }
@@ -95,6 +98,7 @@ void Lobo::KineticModel::computeEnergySparse(
     hyperelasticmodel->computeEnergySparse(free_variables, energy,
                                            jacobi, hessian,
                                            computationflags);
+
     //test elastic first
     double elastic_energy = *energy;
     //just add value to stiffness_matrix
@@ -107,8 +111,9 @@ void Lobo::KineticModel::computeEnergySparse(
                                             jacobi, hessian,
                                             computationflags);
     }
+
     // double constrain_energy = *energy-elastic_energy;
-    if(collisionmodel->trigger)
+    if (collisionmodel->trigger)
     {
         collisionmodel->q_1 = q_1;
         collisionmodel->computeEnergySparse(free_variables, energy,
@@ -118,6 +123,7 @@ void Lobo::KineticModel::computeEnergySparse(
 
     //kinetic parts
     Eigen::VectorXd q_buffer = (*free_variables - q_1 - timestep * q_vel);
+
     //
     external_forces.setZero();
     external_forces += gravity_force;

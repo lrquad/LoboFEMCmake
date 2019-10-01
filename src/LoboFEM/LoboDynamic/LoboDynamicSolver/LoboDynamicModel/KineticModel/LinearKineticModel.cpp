@@ -26,10 +26,11 @@ void Lobo::LinearKineticModel::precompute()
     
     zeroq.setZero();
     double energy = 0;
+
     Lobo::KineticModel::getSparseTopoloty(hessian_matrix);
     Lobo::KineticModel::computeEnergySparse(&zeroq,&energy,&zerof,&hessian_matrix,flags_all);
-    hyperelasticmodel->computeEnergySparse(&zeroq,&energy,&zerof,&stiffness_matrix,flags_all);
 
+    hyperelasticmodel->computeEnergySparse(&zeroq,&energy,&zerof,&stiffness_matrix,flags_all);
 }
 
 void Lobo::LinearKineticModel::computeEnergySparse(Eigen::VectorXd *free_variables, double *energy, Eigen::VectorXd *jacobi, Eigen::SparseMatrix<double> *hessian, int computationflags)

@@ -145,10 +145,13 @@ void Lobo::FullspaceSimulator::precompute()
 {
     DynamicSimulator::precompute();
 
+
     kinetic_model->precompute(); // will also precompute and update
                                  // tetmesh
+    std::cout<<"kinetic_model->precompute() end"<<std::endl;
 
     //hyperelastic_model->precompute();
+
     time_integraion->precompute();
 }
 

@@ -531,6 +531,11 @@ void Lobo::LoboMesh::updateVertices(double *newPosition)
     updateGeometryInfo();
 }
 
+void Lobo::LoboMesh::updateVerticesColor(double *newColor)
+{
+    
+}
+
 void Lobo::LoboMesh::getCurVertices(float *outPosition)
 {
     memcpy(outPosition, attrib.vertices.data(),
