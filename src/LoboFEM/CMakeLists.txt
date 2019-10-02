@@ -18,6 +18,7 @@ include_directories(
     ${MKL_INCLUDE_DIR}
     ${CUDA_INCLUDE_DIRS}
     ${CUDA_TOOLKIT_ROOT_DIR}/samples/common/inc/
+    ${Boost_INCLUDE_DIR}
     )
 
 target_link_libraries(${PROJECT}
@@ -31,6 +32,7 @@ target_link_libraries(${PROJECT}
     "stdc++fs"
     ${CUDA_CUDART_LIBRARY}
     ${CUDA_CUBLAS_LIBRARIES}
+    ${Boost_LIBRARIES} 
     )
 
 

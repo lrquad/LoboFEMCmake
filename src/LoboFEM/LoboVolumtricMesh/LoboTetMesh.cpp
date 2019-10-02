@@ -6,6 +6,9 @@
 #include <igl/in_element.h>
 #include <igl/AABB.h>
 
+//boost headers
+
+
 #include "Functions/EigenMatrixIO.h"
 #include "Functions/computeTriangle.h"
 
@@ -1079,6 +1082,13 @@ void Lobo::LoboTetMesh::generateBarycentricCoordinate()
     }
 
     std::cout << "generateBarycentricCoordinate" << std::endl;
+}
+
+void Lobo::LoboTetMesh::getGeodesicDistance(Eigen::VectorXd & distance)
+{
+    
+
+
 }
 
 void Lobo::LoboTetMesh::computeBarycentricWeights(int eleid,

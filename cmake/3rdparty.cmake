@@ -17,6 +17,9 @@ set(CUDA_PROPAGATE_HOST_FLAGS OFF)
 
 find_package(MKL REQUIRED)
 
+
+find_package( Boost 1.40 COMPONENTS program_options REQUIRED )
+
 include(cmake/glad.cmake)
 include(cmake/glfw.cmake)
 include(cmake/imgui.cmake)

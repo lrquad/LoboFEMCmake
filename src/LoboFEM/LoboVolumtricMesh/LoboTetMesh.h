@@ -105,6 +105,10 @@ public:
 
     //adapter for trimesh
     virtual void generateBarycentricCoordinate();
+
+    //igl api
+    virtual void getGeodesicDistance(Eigen::VectorXd & distance);
+
     virtual void computeBarycentricWeights(int eleid,Eigen::Vector3d&position,Eigen::Vector4d& weights);
     virtual int getContainedElement(Eigen::Vector3d &position);
     virtual int getCloesetElement(Eigen::Vector3d &position);
@@ -129,10 +133,10 @@ public:
     Eigen::VectorXd tet_vertice;       //#numVertices*3 X 1
     Eigen::VectorXd ori_tet_vertice;       //#numVertices*3 X 1
 
-    Eigen::VectorXf tet_vertice_attri; //#numVertices*3 X1
-    Eigen::VectorXi tet_indices;       //#numTet*4 X 1
-    Eigen::VectorXi tet_faces;         //#numface*3 // for rendering X 1
-    Eigen::VectorXd tet_vertice_force;
+    Eigen::VectorXf tet_vertice_attri; // #numVertices*11
+    Eigen::VectorXi tet_indices;       // #numTet*4 X 1
+    Eigen::VectorXi tet_faces;         // #numface*3 // for rendering X 1
+    Eigen::VectorXd tet_vertice_force; 
 
     Eigen::MatrixXd tet_vertice_col;
     Eigen::MatrixXi tet_faces_col;
