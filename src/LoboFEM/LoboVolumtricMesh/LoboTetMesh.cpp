@@ -1098,9 +1098,6 @@ void Lobo::LoboTetMesh::generateBarycentricCoordinate()
     std::cout << "generateBarycentricCoordinate" << std::endl;
 }
 
-void Lobo::LoboTetMesh::getGeodesicDistance(Eigen::VectorXd &distance)
-{
-}
 
 void Lobo::LoboTetMesh::computeBarycentricWeights(int eleid,
                                                   Eigen::Vector3d &pos,

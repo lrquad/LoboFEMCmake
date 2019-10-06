@@ -23,6 +23,8 @@ public:
     virtual void runXMLscript(pugi::xml_node &solver_node);
 
     void updateByLatents();
+
+    virtual void precompute();
     virtual void drawImGui();
     virtual void stepForward();
     void exportData();

@@ -19,6 +19,10 @@ namespace Lobo
 
         virtual void loadConstraints(const char* filename);
 
+        //get
+        virtual int getNumConstraints(){return num_constraints;}
+        virtual int* getConstraintsData(){return constrained_DoFs;}
+
         double weight_stiffness;
 
         protected:

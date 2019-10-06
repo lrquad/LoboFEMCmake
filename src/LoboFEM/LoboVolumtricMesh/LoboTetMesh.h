@@ -114,7 +114,6 @@ public:
     virtual void generateBarycentricCoordinate();
 
     //igl api
-    virtual void getGeodesicDistance(Eigen::VectorXd & distance);
 
     virtual void computeBarycentricWeights(int eleid,Eigen::Vector3d&position,Eigen::Vector4d& weights);
     virtual int getContainedElement(Eigen::Vector3d &position);

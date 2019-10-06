@@ -1,5 +1,6 @@
 #include "AESimulatorGen.h"
 #include "LoboDynamic/WarpModel/ModalWarpingModel.h"
+#include "LoboVolumtricMesh/Graph/LoboTetMeshGraph.h"
 
 Lobo::AESimulatorGen::AESimulatorGen(Lobo::LoboDynamicScene *parent_scene) : ModalWarpingSimulator(parent_scene)
 {
@@ -126,6 +127,23 @@ void Lobo::AESimulatorGen::drawImGui()
             ImGui::PopID();
         }
     }
+}
+
+void Lobo::AESimulatorGen::precompute()
+{
+    Lobo::ModalWarpingSimulator::precompute();
+    
+    //compute weight
+    LoboTetMeshGraph* graph = new LoboTetMeshGraph(bind_tetMesh);
+    graph->init();
+
+    this->constrainmodel;
+    
+    
+    
+    delete graph;
+
+
 }
 
 void Lobo::AESimulatorGen::stepForward()
