@@ -53,6 +53,12 @@ struct TetElementData
     /* data */
 };
 
+struct NodeData
+{
+    std::vector<int> neighbor;
+    std::vector<int> element_list;
+};
+
 class LoboTetMesh
 {
 public:
@@ -101,6 +107,7 @@ public:
     virtual void computeDiagMassMatrix(Eigen::SparseMatrix<double>* mass);
 
     virtual void precomputeElementData();
+    virtual void precomputeNodeData();
 
 
     //adapter for trimesh
@@ -159,6 +166,8 @@ public:
     Material *getElementMaterial(int elementid) { return &materials[materialid[elementid]]; }
     TetElementData* getTetElement(int elementid){return &elements_data[elementid];};
 
+    NodeData* getTetNode(int nodeid){return &nodes_data[nodeid];}
+
     //Eigen interface
     void getNodeRestPosition(int nodeid,Eigen::Vector3d &p);
     Eigen::Vector3d getNodeRestPosition(int nodeid);
@@ -183,6 +192,7 @@ protected:
     virtual void correctElementNodeOrder(int elementid);
     virtual void computeElementVolume(int elementid);
     virtual void computeElementShapeFunctionDerivate(int elementid);
+    virtual void searchNeighborNodes();
 
     tinyobj::material_t default_material;
     LoboMesh *lobomesh_binding;
@@ -190,6 +200,7 @@ protected:
     std::vector<Material> materials;
     std::vector<int> materialid;
     std::vector<TetElementData> elements_data;
+    std::vector<NodeData> nodes_data;
 
     
 

@@ -8,9 +8,9 @@
 
 //boost headers
 
-
 #include "Functions/EigenMatrixIO.h"
 #include "Functions/computeTriangle.h"
+#include "Functions/findElementInVector.h"
 
 #include "LoboDynamic/LoboDynamicScene.h"
 #include "LoboMesh/LoboMesh.h"
@@ -372,7 +372,9 @@ void Lobo::LoboTetMesh::reinitialTetMesh()
     ori_tet_vertice = tet_vertice;
 
     status_flags &= ~TetMeshStatusFlags_precomputed;
+
     precomputeElementData();
+    precomputeNodeData();
 }
 
 void Lobo::LoboTetMesh::updateGL()
@@ -856,6 +858,18 @@ void Lobo::LoboTetMesh::computeDiagMassMatrix(
     mass->setFromTriplets(coefficients.begin(), coefficients.end());
 }
 
+void Lobo::LoboTetMesh::precomputeNodeData()
+{
+    if (status_flags & TetMeshStatusFlags_precomputed)
+    {
+        // already precomputed
+        return;
+    }
+    int numNodes = getNumVertex();
+    nodes_data.resize(numNodes);
+    searchNeighborNodes();
+}
+
 void Lobo::LoboTetMesh::precomputeElementData()
 {
     if (status_flags & TetMeshStatusFlags_precomputed)
@@ -1084,11 +1098,8 @@ void Lobo::LoboTetMesh::generateBarycentricCoordinate()
     std::cout << "generateBarycentricCoordinate" << std::endl;
 }
 
-void Lobo::LoboTetMesh::getGeodesicDistance(Eigen::VectorXd & distance)
+void Lobo::LoboTetMesh::getGeodesicDistance(Eigen::VectorXd &distance)
 {
-    
-
-
 }
 
 void Lobo::LoboTetMesh::computeBarycentricWeights(int eleid,
@@ -1145,4 +1156,35 @@ bool Lobo::LoboTetMesh::containsVertex(int eleid, Eigen::Vector3d &pos)
 
     return ((weight.data()[0] >= -1e-2) && (weight.data()[1] >= -1e-2) &&
             (weight.data()[2] >= -1e-2) && (weight.data()[3] >= -1e-2));
+}
+
+void Lobo::LoboTetMesh::searchNeighborNodes()
+{
+    for (int i = 0; i < nodes_data.size(); i++)
+    {
+        nodes_data[i].neighbor.clear();
+    }
+
+    int numElements = getNumElements();
+    for (int i = 0; i < numElements; i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            int nodeidj = tet_indices.data()[i * 4 + j];
+
+            for (int m = j + 1; m < 4; m++)
+            {
+                int nodeidm = tet_indices.data()[i * 4 + m];
+                if (!findElement(nodes_data[nodeidj].neighbor, nodeidm))
+                {
+                    nodes_data[nodeidj].neighbor.push_back(nodeidm);
+                }
+
+                if (!findElement(nodes_data[nodeidm].neighbor, nodeidj))
+				{
+					nodes_data[nodeidm].neighbor.push_back(nodeidj);
+				}
+            }
+        }
+    }
 }

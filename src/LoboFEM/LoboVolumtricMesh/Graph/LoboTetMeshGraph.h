@@ -33,7 +33,7 @@ protected:
     virtual void initEdgeList();
 
     LoboTetMesh* tetmesh;
-    Graph* bosst_graph;
+    Graph* boost_graph;
     std::vector<Edge> edge_list;
     std::vector<double> edge_weights;
 };
