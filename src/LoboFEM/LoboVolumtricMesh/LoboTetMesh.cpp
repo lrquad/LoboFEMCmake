@@ -374,7 +374,7 @@ void Lobo::LoboTetMesh::reinitialTetMesh()
     status_flags &= ~TetMeshStatusFlags_precomputed;
 
     precomputeElementData();
-    precomputeNodeData();
+    
 }
 
 void Lobo::LoboTetMesh::updateGL()
@@ -904,6 +904,8 @@ void Lobo::LoboTetMesh::precomputeElementData()
     }
 
     generateBarycentricCoordinate();
+
+    precomputeNodeData();
 
     status_flags |= TetMeshStatusFlags_precomputed;
 }

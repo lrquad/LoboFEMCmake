@@ -34,6 +34,7 @@ public:
 
     std::vector<double> vertex_error_data;
     std::vector<double> vertex_deform_data;
+    std::vector<double> vertex_PCA_data;
     std::vector<double> vertex_decoed_data;
 
     std::vector<unsigned long> vertex_data_shape;
@@ -43,10 +44,17 @@ public:
 
 
     int show_data_index;
+    int show_PCA_index;
     bool show_decoded;
     //buffer
     Eigen::VectorXd v_color;
     Eigen::VectorXd v_position;
+    float data_scale;
+
+
+    protected:
+    void showPCAData();
+    void showVAEData();
 
 };
 } // namespace Lobo

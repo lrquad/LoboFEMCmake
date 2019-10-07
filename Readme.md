@@ -13,6 +13,8 @@
 - libigl 
 - c++14 (for imfilebrowser)
 - hyperelastic material based FEM simulator
+- boost
+
 
 Multi objects
 

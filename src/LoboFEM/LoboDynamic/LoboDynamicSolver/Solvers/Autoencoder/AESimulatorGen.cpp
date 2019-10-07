@@ -1,6 +1,7 @@
 #include "AESimulatorGen.h"
 #include "LoboDynamic/WarpModel/ModalWarpingModel.h"
 #include "LoboVolumtricMesh/Graph/LoboTetMeshGraph.h"
+#include "Functions/EigenMatrixIO.h"
 
 Lobo::AESimulatorGen::AESimulatorGen(Lobo::LoboDynamicScene *parent_scene) : ModalWarpingSimulator(parent_scene)
 {
@@ -59,7 +60,6 @@ void Lobo::AESimulatorGen::drawImGui()
         vertex_decoded_shape.clear();
         vertex_decoed_data.clear();
 
-
         std::cout << filepath << std::endl;
         npy::LoadArrayFromNumpy(filepath.c_str(), vertex_data_shape, vertex_error_data);
 
@@ -74,42 +74,31 @@ void Lobo::AESimulatorGen::drawImGui()
         show_decoded = false;
     }
 
+    if (ImGui::Button("load PCA Data"))
+    {
+        //load error to tetmesh
+        int R = bind_tetMesh->getNumVertex() * 3;
+        std::string filepath = Lobo::getPath("NN/Eigenvectors.npy");
+        vertex_deform_shape.clear();
+        vertex_PCA_data.clear();
+
+        npy::LoadArrayFromNumpy(filepath.c_str(), vertex_deform_shape, vertex_PCA_data);
+
+        v_position.resize(R);
+        show_PCA_index = 0;
+        show_decoded = false;
+        data_scale = 1.0;
+    }
+
     if (ImGui::Button("reset latenst"))
     {
         latents.setZero();
         updateByLatents();
     }
 
-    if (vertex_data_shape.size() > 0)
-    {
-        if (ImGui::DragInt("ShowIndex", &show_data_index, 1.0, 0, vertex_data_shape[0])||ImGui::Checkbox("Decoded:",&show_decoded))
-        {
-            int R = bind_tetMesh->getNumVertex() * 3;
-            v_color.setZero();
-            for (int i = 0; i < R / 3; i++)
-            {
-                int nodeid = i;
-                double mean = vertex_error_data.data()[R * show_data_index + nodeid * 3 + 0] + vertex_error_data.data()[R * show_data_index + nodeid * 3 + 1] + vertex_error_data.data()[R * show_data_index + nodeid * 3 + 2];
-                mean /= 3.0;
-                v_color.data()[nodeid * 3 + 0] = mean / 0.1;
+    showPCAData();
 
-                if (!show_decoded)
-                {
-                    v_position.data()[nodeid * 3 + 0] = vertex_deform_data.data()[R * show_data_index + nodeid * 3 + 0];
-                    v_position.data()[nodeid * 3 + 1] = vertex_deform_data.data()[R * show_data_index + nodeid * 3 + 1];
-                    v_position.data()[nodeid * 3 + 2] = vertex_deform_data.data()[R * show_data_index + nodeid * 3 + 2];
-                }else
-                {
-                    v_position.data()[nodeid * 3 + 0] = vertex_decoed_data.data()[R * show_data_index + nodeid * 3 + 0];
-                    v_position.data()[nodeid * 3 + 1] = vertex_decoed_data.data()[R * show_data_index + nodeid * 3 + 1];
-                    v_position.data()[nodeid * 3 + 2] = vertex_decoed_data.data()[R * show_data_index + nodeid * 3 + 2];
-                }
-                
-            }
-            bind_tetMesh->updateTetAttri(v_color.data(), R, 8, 3, 11);
-            bind_tetMesh->updateTetVertices(&v_position);
-        }
-    }
+    showVAEData();
 
     ImGui::Separator();
 
@@ -129,21 +118,143 @@ void Lobo::AESimulatorGen::drawImGui()
     }
 }
 
+void Lobo::AESimulatorGen::showPCAData()
+{
+    if (vertex_PCA_data.size() > 0)
+    {
+        if (ImGui::DragFloat("Scale", &data_scale, 0.1, -10, 10))
+        {
+            int R = bind_tetMesh->getNumVertex() * 3;
+            for (int i = 0; i < R / 3; i++)
+            {
+                int nodeid = i;
+                v_position.data()[nodeid * 3 + 0] = vertex_PCA_data.data()[R * show_PCA_index + nodeid * 3 + 0] * data_scale;
+                v_position.data()[nodeid * 3 + 1] = vertex_PCA_data.data()[R * show_PCA_index + nodeid * 3 + 1] * data_scale;
+                v_position.data()[nodeid * 3 + 2] = vertex_PCA_data.data()[R * show_PCA_index + nodeid * 3 + 2] * data_scale;
+            }
+            bind_tetMesh->updateTetVertices(&v_position);
+        }
+
+        if (ImGui::DragInt("ShowPCAIndex", &show_PCA_index, 1.0, 0, vertex_deform_shape[0]))
+        {
+            int R = bind_tetMesh->getNumVertex() * 3;
+            for (int i = 0; i < R / 3; i++)
+            {
+                int nodeid = i;
+                v_position.data()[nodeid * 3 + 0] = vertex_PCA_data.data()[R * show_PCA_index + nodeid * 3 + 0] * data_scale;
+                v_position.data()[nodeid * 3 + 1] = vertex_PCA_data.data()[R * show_PCA_index + nodeid * 3 + 1] * data_scale;
+                v_position.data()[nodeid * 3 + 2] = vertex_PCA_data.data()[R * show_PCA_index + nodeid * 3 + 2] * data_scale;
+            }
+            bind_tetMesh->updateTetVertices(&v_position);
+        }
+
+        if (ImGui::Button("reprojected"))
+        {
+            if (vertex_deform_data.size() > 0)
+            {
+                int R = bind_tetMesh->getNumVertex() * 3;
+                Eigen::MatrixXd phi(R, show_PCA_index);
+                for(int i=0;i<R;i++)
+                {
+                    for(int j=0;j<show_PCA_index;j++)
+                    {
+                        phi.data()[j*R+i] = vertex_PCA_data.data()[R * j + i];
+                    }
+                    v_position.data()[i] = vertex_deform_data.data()[R * show_data_index + i];
+                }
+                Eigen::VectorXd reconstructed = phi*phi.transpose()*v_position;
+                bind_tetMesh->updateTetVertices(&reconstructed);
+                std::string filepath = Lobo::getPath("Subspace/pca.data");
+                EigenMatrixIO::write_binary(filepath.c_str(),phi);                
+            }
+        }
+    }
+}
+
+void Lobo::AESimulatorGen::showVAEData()
+{
+    if (vertex_data_shape.size() > 0)
+    {
+        if (ImGui::DragInt("ShowIndex", &show_data_index, 1.0, 0, vertex_data_shape[0]) || ImGui::Checkbox("Decoded:", &show_decoded))
+        {
+            int R = bind_tetMesh->getNumVertex() * 3;
+            v_color.setZero();
+            for (int i = 0; i < R / 3; i++)
+            {
+                int nodeid = i;
+                double mean = vertex_error_data.data()[R * show_data_index + nodeid * 3 + 0] + vertex_error_data.data()[R * show_data_index + nodeid * 3 + 1] + vertex_error_data.data()[R * show_data_index + nodeid * 3 + 2];
+                mean /= 3.0;
+                v_color.data()[nodeid * 3 + 0] = mean / 0.1;
+
+                if (!show_decoded)
+                {
+                    v_position.data()[nodeid * 3 + 0] = vertex_deform_data.data()[R * show_data_index + nodeid * 3 + 0];
+                    v_position.data()[nodeid * 3 + 1] = vertex_deform_data.data()[R * show_data_index + nodeid * 3 + 1];
+                    v_position.data()[nodeid * 3 + 2] = vertex_deform_data.data()[R * show_data_index + nodeid * 3 + 2];
+                }
+                else
+                {
+                    v_position.data()[nodeid * 3 + 0] = vertex_decoed_data.data()[R * show_data_index + nodeid * 3 + 0];
+                    v_position.data()[nodeid * 3 + 1] = vertex_decoed_data.data()[R * show_data_index + nodeid * 3 + 1];
+                    v_position.data()[nodeid * 3 + 2] = vertex_decoed_data.data()[R * show_data_index + nodeid * 3 + 2];
+                }
+            }
+            bind_tetMesh->updateTetAttri(v_color.data(), R, 8, 3, 11);
+            bind_tetMesh->updateTetVertices(&v_position);
+        }
+    }
+}
+
 void Lobo::AESimulatorGen::precompute()
 {
     Lobo::ModalWarpingSimulator::precompute();
-    
+
     //compute weight
-    LoboTetMeshGraph* graph = new LoboTetMeshGraph(bind_tetMesh);
+    LoboTetMeshGraph *graph = new LoboTetMeshGraph(bind_tetMesh);
     graph->init();
 
-    this->constrainmodel;
-    
-    
-    
+    int numConstraints = this->constrainmodel->getNumConstraints();
+    int *constraints = this->constrainmodel->getConstraintsData();
+    int numVertex = bind_tetMesh->getNumVertex();
+
+    int numconstrainedvertex = numConstraints / 3;
+
+    std::vector<std::vector<double>> shortestdistance;
+    shortestdistance.resize(numconstrainedvertex);
+    for (int i = 0; i < numconstrainedvertex; i++)
+    {
+        int nodeid = constraints[i * 3] / 3;
+        graph->compute_dijkstra_shortest_paths(nodeid, shortestdistance[i]);
+    }
     delete graph;
 
+    std::vector<double> python_data;
+    python_data.resize(3 * numVertex * numconstrainedvertex);
+    for (int i = 0; i < numVertex; i++)
+    {
+        for (int j = 0; j < numconstrainedvertex; j++)
+        {
+            python_data[(i * 3 + 0) * numconstrainedvertex + j] = shortestdistance[j][i];
+            python_data[(i * 3 + 1) * numconstrainedvertex + j] = shortestdistance[j][i];
+            python_data[(i * 3 + 2) * numconstrainedvertex + j] = shortestdistance[j][i];
+        }
+    }
+    std::string filepaht = Lobo::getPath("shortestdis.npy");
+    std::string filepaht2 = Lobo::getPath("constrainedids.npy");
 
+    std::cout << filepaht << std::endl;
+    const long unsigned leshape[] = {numVertex * 3, numconstrainedvertex};
+    npy::SaveArrayAsNumpy(filepaht.c_str(), false, 2, leshape, python_data);
+
+    std::vector<int> constrained_dofs;
+    constrained_dofs.resize(numConstraints);
+
+    for (int i = 0; i < numConstraints; i++)
+    {
+        constrained_dofs[i] = constraints[i];
+    }
+    const long unsigned leshape2[] = {numConstraints, 1};
+    npy::SaveArrayAsNumpy(filepaht2.c_str(), false, 2, leshape2, constrained_dofs);
 }
 
 void Lobo::AESimulatorGen::stepForward()
