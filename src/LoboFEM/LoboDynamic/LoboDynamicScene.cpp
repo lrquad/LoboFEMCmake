@@ -109,8 +109,10 @@ void Lobo::LoboDynamicScene::runXMLscript(pugi::xml_node &scene_node)
             }else if(strcmp(solver_node.attribute("type").as_string(),"AESimulator")==0)
             {
                 dynamic_solver = new Lobo::CUDAAESimulator(this);
+            }else if(strcmp(solver_node.attribute("type").as_string(),"ReducedSimulator")==0)
+            {
+                dynamic_solver = new Lobo::ReducedSimulator(this);
             }
-            
         }
 
         if (dynamic_solver != NULL)

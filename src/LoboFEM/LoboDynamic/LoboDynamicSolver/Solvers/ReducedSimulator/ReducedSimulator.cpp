@@ -2,14 +2,18 @@
 #include "imgui.h"
 #include "LoboDynamic/LoboDynamic.h"
 
+#include "ReducedKineticModel.h"
+#include "ReducedTimeIntegration.h"
+
+#include "Functions/EigenMatrixIO.h"
+
 Lobo::ReducedSimulator::ReducedSimulator(Lobo::LoboDynamicScene *parent_scene_)
     : DynamicSimulator(parent_scene_)
 {
-      constrainmodel = NULL;
+    constrainmodel = NULL;
     collisionmodel = NULL;
     hyperelastic_model = NULL;
 }
-
 
 Lobo::ReducedSimulator::~ReducedSimulator()
 {
@@ -54,21 +58,92 @@ void Lobo::ReducedSimulator::runXMLscript(pugi::xml_node &solver_node)
         hyperelastic_model->runXMLscript(modelnode);
         models.push_back(hyperelastic_model);
     }
+
+    if (solver_node.child("KineticModel"))
+    {
+        pugi::xml_node modelnode = solver_node.child("KineticModel");
+
+        std::string filepath = solver_node.child("phi_path").text().as_string();
+        std::string global_path = Lobo::getPath(filepath.c_str());
+        Eigen::MatrixXd phi;
+        EigenMatrixIO::read_binary(global_path.c_str(), phi);
+        reduced_kinetic_model = new Lobo::ReducedKineticModel(parent_scene, &phi, bind_tetMesh, hyperelastic_model, constrainmodel, collisionmodel);
+    }
+
+    if (solver_node.child("TimeIntegration"))
+    {
+        pugi::xml_node modelnode = solver_node.child("TimeIntegration");
+        if (strcmp(modelnode.attribute("method").as_string(),
+                   "ImplicitSparse") == 0)
+        {
+            double damping_ratio = 0.99;
+            double time_step = 0.01;
+            int skip_step = 1;
+            int flags = 0;
+
+            if (modelnode.attribute("damping"))
+                damping_ratio = modelnode.attribute("damping").as_double();
+
+            if (modelnode.attribute("timestep"))
+                time_step = modelnode.attribute("timestep").as_double();
+
+            if (modelnode.attribute("skipsteps"))
+                skip_step = modelnode.attribute("skipsteps").as_int();
+
+            if (modelnode.attribute("recordq"))
+                if (modelnode.attribute("recordq").as_bool())
+                {
+                    flags |= IntegratorFlags_recordq;
+                }
+
+            int full_DOFs = bind_tetMesh->getNumVertex() * 3;
+            reduced_time_integration = new Lobo::ReducedTimeIntegration(
+                reduced_kinetic_model, full_DOFs, damping_ratio,
+                time_step, skip_step, flags);
+            reduced_time_integration->runXMLscript(modelnode);
+        }
+    }
+
+    if (solver_node.attribute("precompute").as_bool())
+    {
+        precompute();
+    }
 }
 
 void Lobo::ReducedSimulator::precompute()
 {
     DynamicSimulator::precompute();
 
+    reduced_kinetic_model->precompute();
+    reduced_time_integration->precompute();
 }
 
 void Lobo::ReducedSimulator::stepForward()
 {
+    int step = reduced_time_integration->step;
+    double scale = std::sin(step * 0.1) * 0.4;
 
+    if (step % 400 > 200)
+    {
+        scale = 0.0;
+    }
+
+    reduced_kinetic_model->external_forces = reduced_kinetic_model->gravity_force * scale;
+
+    //kinetic_model->external_forces.setZero();
+    reduced_kinetic_model->external_forces += bind_tetMesh->tet_vertice_force * 5.0;
+
+    reduced_time_integration->stepFoward();
+
+    bind_tetMesh->updateTetVertices(&(reduced_time_integration->q));
 }
 
 int Lobo::ReducedSimulator::getCurStep()
 {
     int tmp = 0;
+    if (reduced_time_integration)
+    {
+        tmp = reduced_time_integration->step;
+    }
     return tmp;
 }

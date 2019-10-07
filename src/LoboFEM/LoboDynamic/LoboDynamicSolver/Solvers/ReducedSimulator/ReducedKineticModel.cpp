@@ -17,7 +17,7 @@ Lobo::ReducedKineticModel::ReducedKineticModel(LoboDynamicScene *scene_, Eigen::
     q.resize(full_DoFs);
     q.setZero();
 
-     internalforce.resize(full_DoFs);
+    internalforce.resize(full_DoFs);
     internalforce.setZero();
 }
 
@@ -28,6 +28,8 @@ Lobo::ReducedKineticModel::~ReducedKineticModel()
 
 void Lobo::ReducedKineticModel::precompute()
 {
+    std::cout<<"ReducedKineticModel::precompute() start" << std::endl;
+
     Lobo::KineticModel::precompute();
     gravity_force.resize(full_DoFs);
     gravity_force.setZero();
@@ -36,6 +38,7 @@ void Lobo::ReducedKineticModel::precompute()
         gravity_force.data()[i * 3 + 1] = -9.8;
     }
     gravity_force = mass_matrix * gravity_force;
+    std::cout<<"ReducedKineticModel::precompute()" << std::endl;
 }
 
 

@@ -5,12 +5,12 @@ namespace Lobo
 {
 class ReducedKineticModel;
 
-class RedcuedTimeIntegration : public ImplicitDenseIntegration
+class ReducedTimeIntegration : public ImplicitDenseIntegration
 {
     public:
 
-    RedcuedTimeIntegration(ReducedKineticModel* kineticmodel_,int full_DoFs_, int reduced_DoFs_, double damping_ratio_, double timestep_, int skip_steps_, int flags_);
-    ~RedcuedTimeIntegration();
+    ReducedTimeIntegration(ReducedKineticModel* kineticmodel_,int full_DoFs_, double damping_ratio_, double timestep_, int skip_steps_, int flags_);
+    ~ReducedTimeIntegration();
 
     virtual void precompute();
     virtual void setInitLatentsq(Eigen::VectorXd &latents_q_);

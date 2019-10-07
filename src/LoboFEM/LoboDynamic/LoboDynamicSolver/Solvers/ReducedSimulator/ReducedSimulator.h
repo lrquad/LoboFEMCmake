@@ -3,8 +3,10 @@
 
 namespace Lobo
 {
-    
+
 class HyperelasticModel;
+class ReducedTimeIntegration;
+class ReducedKineticModel;
 
 class ReducedSimulator : public DynamicSimulator
 {
@@ -23,6 +25,8 @@ public:
     ConstrainModel *constrainmodel;
     CollisionModel *collisionmodel;
     HyperelasticModel *hyperelastic_model;
+    ReducedTimeIntegration* reduced_time_integration;
+    ReducedKineticModel* reduced_kinetic_model;
 
 
 };

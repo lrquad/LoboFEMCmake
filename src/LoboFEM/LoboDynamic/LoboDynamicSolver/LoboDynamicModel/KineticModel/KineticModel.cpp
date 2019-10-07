@@ -72,6 +72,7 @@ void Lobo::KineticModel::precompute()
         gravity_force = mass_matrix * gravity_force;
 
     //test
+    
 }
 
 void Lobo::KineticModel::computeFiledForce(Eigen::Vector3d &force)
