@@ -70,6 +70,5 @@ void Lobo::ReducedSimulator::stepForward()
 int Lobo::ReducedSimulator::getCurStep()
 {
     int tmp = 0;
-    
     return tmp;
 }
