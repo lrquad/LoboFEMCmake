@@ -3,7 +3,7 @@
 	<LoboScene>
 		<TriMesh name="floor" uniform = "false">
 			<Path>./models/floor_wood.obj</Path>
-			<Position>0.0 -1.0 -1.0</Position>
+			<Position>0.0 -0.2 -1.0</Position>
 			<Collision static="true"></Collision>
 		</TriMesh>
 		<TriMesh name="bunny" uniform = "true">

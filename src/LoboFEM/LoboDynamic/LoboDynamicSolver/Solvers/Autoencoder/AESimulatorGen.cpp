@@ -241,6 +241,7 @@ void Lobo::AESimulatorGen::precompute()
     }
     std::string filepaht = Lobo::getPath("shortestdis.npy");
     std::string filepaht2 = Lobo::getPath("constrainedids.npy");
+    std::string filepath_elementindex = Lobo::getPath("element_indices.npy");
 
     std::cout << filepaht << std::endl;
     const long unsigned leshape[] = {numVertex * 3, numconstrainedvertex};
@@ -255,6 +256,9 @@ void Lobo::AESimulatorGen::precompute()
     }
     const long unsigned leshape2[] = {numConstraints, 1};
     npy::SaveArrayAsNumpy(filepaht2.c_str(), false, 2, leshape2, constrained_dofs);
+
+    std::cout<<filepath_elementindex<<std::endl;
+
 }
 
 void Lobo::AESimulatorGen::stepForward()

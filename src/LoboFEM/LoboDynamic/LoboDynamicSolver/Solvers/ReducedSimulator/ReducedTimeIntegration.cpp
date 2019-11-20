@@ -3,8 +3,10 @@
 
 Lobo::ReducedTimeIntegration::ReducedTimeIntegration(ReducedKineticModel* kineticmodel_,int full_DoFs_, double damping_ratio_, double timestep_, int skip_steps_, int flags_):ImplicitDenseIntegration(kineticmodel_, full_DoFs_, damping_ratio_, timestep_, skip_steps_, flags_)
 {
-    reduced_DOFs = reduced_model->phi.cols();
     reduced_model = kineticmodel_;
+
+    reduced_DOFs = reduced_model->phi.cols();
+
 
     q_reduced.resize(reduced_DOFs);
     q_reduced.setZero();

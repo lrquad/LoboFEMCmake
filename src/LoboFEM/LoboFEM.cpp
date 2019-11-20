@@ -229,7 +229,7 @@ void Lobo::LoboFEM::windowLoop(GLFWwindow *window)
 
 void Lobo::LoboFEM::drawImGui()
 {
-    bool show_demo_window = true;
+    bool show_demo_window = false;
 
     showMainWindow(&fileDialog);
 

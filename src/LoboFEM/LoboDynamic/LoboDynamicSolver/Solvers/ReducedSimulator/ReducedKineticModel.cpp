@@ -4,10 +4,12 @@
 #include "LoboDynamic/LoboDynamicSolver/LoboDynamicModel/ConstrainModel/ConstrainModel.h"
 #include "LoboDynamic/LoboDynamicSolver/LoboDynamicModel/CollisionModel/CollisionModel.h"
 
-Lobo::ReducedKineticModel::ReducedKineticModel(LoboDynamicScene *scene_, Eigen::MatrixXd *phi_, LoboTetMesh *tetmesh_,HyperelasticModel *elastic_model_, ConstrainModel *constrain_model_, CollisionModel *collisionmodel_): KineticModel(scene_, tetmesh_, elastic_model_, constrain_model_, collisionmodel_)
+#include <time.h>
+
+Lobo::ReducedKineticModel::ReducedKineticModel(LoboDynamicScene *scene_, Eigen::MatrixXd *phi_, LoboTetMesh *tetmesh_, HyperelasticModel *elastic_model_, ConstrainModel *constrain_model_, CollisionModel *collisionmodel_) : KineticModel(scene_, tetmesh_, elastic_model_, constrain_model_, collisionmodel_)
 {
     phi = *phi_;
-    
+
     num_DOFs = phi.cols();
     full_DoFs = phi.rows();
 
@@ -23,29 +25,29 @@ Lobo::ReducedKineticModel::ReducedKineticModel(LoboDynamicScene *scene_, Eigen::
 
 Lobo::ReducedKineticModel::~ReducedKineticModel()
 {
-
 }
 
 void Lobo::ReducedKineticModel::precompute()
 {
-    std::cout<<"ReducedKineticModel::precompute() start" << std::endl;
 
     Lobo::KineticModel::precompute();
+
     gravity_force.resize(full_DoFs);
     gravity_force.setZero();
     for (int i = 0; i < full_DoFs / 3; i++)
     {
         gravity_force.data()[i * 3 + 1] = -9.8;
     }
-    gravity_force = mass_matrix * gravity_force;
-    std::cout<<"ReducedKineticModel::precompute()" << std::endl;
-}
 
+    gravity_force = mass_matrix * gravity_force;
+}
 
 void Lobo::ReducedKineticModel::computeEnergyDense(Eigen::VectorXd *free_variables, double *energy, Eigen::VectorXd *jacobi, Eigen::MatrixXd *hessian, int computationflags)
 {
+
     double elastic_energy = 0;
-    q = phi.transpose()**free_variables;
+    q = phi * *free_variables;
+
     hyperelasticmodel->computeEnergySparse(&q, &elastic_energy, &internalforce, &stiffness_matrix, computationflags);
 
     double kinetic_energy;
@@ -67,16 +69,17 @@ void Lobo::ReducedKineticModel::computeEnergyDense(Eigen::VectorXd *free_variabl
     {
 
         //comptue gradient
-        *jacobi = phi.transpose()*M_sn/(timestep * timestep);
+        *jacobi = phi.transpose() * M_sn / (timestep * timestep);
 
-        *jacobi+=phi.transpose()*internalforce;
-        *jacobi-=phi.transpose()*external_forces;
+        *jacobi += phi.transpose() * internalforce;
+        *jacobi -= phi.transpose() * external_forces;
         //std::cout << "compute f " << seconds << "s" << std::endl;
     }
 
     if (computationflags & (Computeflags_second))
     {
-        *hessian = phi.transpose()*mass_matrix*phi/(timestep * timestep);
-        *hessian += phi.transpose()*(stiffness_matrix)*phi;
+
+        *hessian = phi.transpose() * mass_matrix * phi / (timestep * timestep);
+        *hessian += phi.transpose() * (stiffness_matrix)*phi;
     }
 }

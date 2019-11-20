@@ -63,10 +63,12 @@ void Lobo::ReducedSimulator::runXMLscript(pugi::xml_node &solver_node)
     {
         pugi::xml_node modelnode = solver_node.child("KineticModel");
 
-        std::string filepath = solver_node.child("phi_path").text().as_string();
+        std::string filepath = modelnode.child("phi_path").text().as_string();
         std::string global_path = Lobo::getPath(filepath.c_str());
         Eigen::MatrixXd phi;
+        std::cout<<filepath<<std::endl;
         EigenMatrixIO::read_binary(global_path.c_str(), phi);
+        std::cout<<phi.rows()<<" " << phi.cols()<<std::endl;
         reduced_kinetic_model = new Lobo::ReducedKineticModel(parent_scene, &phi, bind_tetMesh, hyperelastic_model, constrainmodel, collisionmodel);
     }
 
@@ -74,7 +76,7 @@ void Lobo::ReducedSimulator::runXMLscript(pugi::xml_node &solver_node)
     {
         pugi::xml_node modelnode = solver_node.child("TimeIntegration");
         if (strcmp(modelnode.attribute("method").as_string(),
-                   "ImplicitSparse") == 0)
+                   "ImplicitDense") == 0)
         {
             double damping_ratio = 0.99;
             double time_step = 0.01;
@@ -121,7 +123,7 @@ void Lobo::ReducedSimulator::precompute()
 void Lobo::ReducedSimulator::stepForward()
 {
     int step = reduced_time_integration->step;
-    double scale = std::sin(step * 0.1) * 0.4;
+    double scale = std::sin(step * 0.1) * 0.2;
 
     if (step % 400 > 200)
     {
