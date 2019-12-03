@@ -242,6 +242,8 @@ void Lobo::AESimulatorGen::precompute()
     std::string filepaht = Lobo::getPath("shortestdis.npy");
     std::string filepaht2 = Lobo::getPath("constrainedids.npy");
     std::string filepath_elementindex = Lobo::getPath("element_indices.npy");
+    std::string filepath_elementDm_inverse = Lobo::getPath("element_Dm_inverse.npy");
+
 
     std::cout << filepaht << std::endl;
     const long unsigned leshape[] = {numVertex * 3, numconstrainedvertex};
@@ -257,7 +259,38 @@ void Lobo::AESimulatorGen::precompute()
     const long unsigned leshape2[] = {numConstraints, 1};
     npy::SaveArrayAsNumpy(filepaht2.c_str(), false, 2, leshape2, constrained_dofs);
 
+
     std::cout<<filepath_elementindex<<std::endl;
+    int num_elements = bind_tetMesh->getNumElements();
+    const long unsigned leshape3[] = {bind_tetMesh->tet_indices.size(),1};
+    std::vector<int> element_indices;
+    element_indices.resize(bind_tetMesh->tet_indices.size());
+    for (int i = 0; i < bind_tetMesh->tet_indices.size(); i++)
+    {
+        element_indices[i] = bind_tetMesh->tet_indices.data()[i];
+    }
+    npy::SaveArrayAsNumpy(filepath_elementindex.c_str(),false,2,leshape3,element_indices);
+
+
+    std::cout<<filepath_elementDm_inverse<<std::endl;
+    const long unsigned leshape4[] = {num_elements,18};
+    std::vector<double> element_Dm_inverse_data;
+    element_Dm_inverse_data.resize(num_elements*18);
+    for(int i=0;i<num_elements;i++)
+    {
+        for(int j=0;j<9;j++)
+        {
+            element_Dm_inverse_data[i*18+j] = bind_tetMesh->getTetElement(i)->Dm_inverse.data()[j];
+        }
+        for(int j=0;j<9;j++)
+        {
+            element_Dm_inverse_data[i*18+j+9] = bind_tetMesh->getTetElement(i)->Dm.data()[j];
+        }
+    }
+    npy::SaveArrayAsNumpy(filepath_elementDm_inverse.c_str(),false,2,leshape4,element_Dm_inverse_data);
+
+
+
 
 }
 
