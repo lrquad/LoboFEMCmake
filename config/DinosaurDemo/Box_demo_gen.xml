@@ -7,7 +7,7 @@
 			<Collision static="true"></Collision>
 		</TriMesh>
 		<TriMesh name="dragon" uniform = "true" smooth="false">
-			<Path>./models/dinosaur/dinosaurlow3.obj</Path>
+			<Path>./models/bar/box.obj</Path>
 			<Position>0.0 0.5 0.0</Position>
 			<Collision static="false"></Collision>
 		</TriMesh>
@@ -15,7 +15,7 @@
 	</LoboScene>
 
 	<LoboDynamicScene>
-		<SceneFolder>./demo/Siggraph2020/dinosaur/</SceneFolder>
+		<SceneFolder>./demo/Siggraph2020/box/</SceneFolder>
 
 		<BindTetMesh UseBinary="true" tetgen="true" loadmesh="false" savemesh="true" tetgen_comd="p">
 			<TrimeshId>1</TrimeshId>
@@ -33,13 +33,13 @@
 			<TargetTetMesh id="0"></TargetTetMesh>
 			<HyperelasticModel invertible="true" useMCSFD="false" trigger="true">
 				<Material type="NeoHookean">
-					<YoungsModulus value = "1000.0"></YoungsModulus>
+					<YoungsModulus value = "300.0"></YoungsModulus>
 					<PossionRatio value = "0.3"></PossionRatio>
 					<Density value = "100.0"></Density>
 				</Material>
 			</HyperelasticModel>
 
-			<ConstraintModel weight ="10000.0" trigger="true">
+			<ConstraintModel weight ="100000.0" trigger="true">
 				<ConstraintsFile>constraints/constrainedDoFs.txt</ConstraintsFile>
 			</ConstraintModel>
 

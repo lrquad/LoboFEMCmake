@@ -95,3 +95,4 @@ https://stackoverflow.com/questions/993352/when-should-i-make-explicit-use-of-th
 https://stackoverflow.com/questions/2812470/why-does-gcc-need-extra-declarations-in-templates-when-vs-does-not/2812501#2812501
 
 
+./run.sh c x ./config/DinosaurDemo/Dinosaur_demo_gen.xml

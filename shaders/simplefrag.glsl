@@ -223,7 +223,8 @@ float ShadowCalculation(Lights light,vec4 fragPosLightSpace,sampler2D shadowMap)
     {
         for(int y = -3; y <= 3; ++y)
         {
-            float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
+            vec2 offset = vec2(x, y);
+            float pcfDepth = texture(shadowMap, projCoords.xy + offset * texelSize).r; 
             float contri_shadow = currentDepth - bias > pcfDepth  ? 1.0 : 0.0; 
             shadow += contri_shadow;        
         }    
