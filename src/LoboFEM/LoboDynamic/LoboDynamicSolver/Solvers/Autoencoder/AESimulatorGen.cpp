@@ -7,7 +7,7 @@ Lobo::AESimulatorGen::AESimulatorGen(Lobo::LoboDynamicScene *parent_scene) : Mod
 {
     save_record_result = true;
     start_frame = 0;
-    end_frame = 10000;
+    end_frame = 1000;
     skip_frame = 5;
     ae_diff_model = NULL;
 }

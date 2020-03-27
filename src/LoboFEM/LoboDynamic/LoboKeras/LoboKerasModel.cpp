@@ -95,7 +95,6 @@ void LoboKerasModel<TYPE>::loadNN(const char* filename)
 
 	n_input = NN_layers[0]->getInput();
 	n_output = NN_layers[NN_layers.size() - 1]->getOutput();
-
 }
 
 template <class TYPE>
