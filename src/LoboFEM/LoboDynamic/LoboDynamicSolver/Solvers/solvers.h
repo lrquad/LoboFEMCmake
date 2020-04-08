@@ -5,3 +5,4 @@
 #include "Autoencoder/AESimulator.h"
 #include "Autoencoder/CUDA/CUDAAESimulator.h"
 #include "ReducedSimulator/ReducedSimulator.h"
+#include "GraspSimulator/GraspSimulator.h"
