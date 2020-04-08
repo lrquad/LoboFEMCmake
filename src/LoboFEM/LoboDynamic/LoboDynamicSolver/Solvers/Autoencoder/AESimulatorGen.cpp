@@ -7,8 +7,8 @@ Lobo::AESimulatorGen::AESimulatorGen(Lobo::LoboDynamicScene *parent_scene) : Mod
 {
     save_record_result = true;
     start_frame = 0;
-    end_frame = 1000;
-    skip_frame = 5;
+    end_frame = 1000000;
+    skip_frame = 100;
     ae_diff_model = NULL;
 }
 
@@ -344,6 +344,7 @@ void Lobo::AESimulatorGen::stepForward()
 
 void Lobo::AESimulatorGen::exportData()
 {
+    std::cout<<"export ..." << std::endl;
     int num_data = data.size();
     int num_dofs = bind_tetMesh->tet_vertice.size();
     std::vector<double> export_data(num_data * num_dofs);

@@ -23,7 +23,9 @@
 			<TetFileBase>tetmesh/tet</TetFileBase>
 		</BindTetMesh>
 
-		<DynamicSimulator type="AESimulatorGen" name ="fullspace" precompute="true" min="-0.7463901851647088" scale="1.3575212255366595">
+		<!-- <DynamicSimulator type="AESimulatorGen" name ="fullspace" precompute="true" min="-0.7463901851647088" scale="1.3575212255366595"> -->
+		<DynamicSimulator type="AESimulatorGen" name ="fullspace" precompute="true" min="-1.1635013603395583" scale="2.2165289818577953">
+
 			<!-- the output will be saved in folder <SceneDataFolder>/<DataFolder> -->
 			<SolverFolder>solveroutput/</SolverFolder>
 
