@@ -11,6 +11,13 @@
 			<Position>0.0 0.0 0.0</Position>
 			<Collision static="false"></Collision>
 		</TriMesh>
+		<TriMesh name="ball1" uniform = "false">
+			<Path>./models/spherelow.obj</Path>
+			<Position>0.0 2.0 0.0</Position>
+			<Collision static="false"></Collision>
+			<Scale>0.05 0.05 0.05</Scale>
+		</TriMesh>
+
 	</LoboScene>
 
 	<LoboDynamicScene>
@@ -56,6 +63,11 @@
 			<Index>2842</Index>
 			</ContactPoints>
 
+		</DynamicSimulator>
+
+		<DynamicSimulator type="GraspFingerSimulator" name ="ball1" precompute="true">
+		<TrimeshId>1</TrimeshId>
+		<ContactPoints>2187</ContactPoints>
 		</DynamicSimulator>
 
 	</LoboDynamicScene>

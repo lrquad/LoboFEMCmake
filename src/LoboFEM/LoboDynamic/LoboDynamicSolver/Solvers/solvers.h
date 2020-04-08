@@ -6,3 +6,4 @@
 #include "Autoencoder/CUDA/CUDAAESimulator.h"
 #include "ReducedSimulator/ReducedSimulator.h"
 #include "GraspSimulator/GraspSimulator.h"
+#include "GraspSimulator/GraspFingerSimulator.h"

@@ -175,6 +175,7 @@ void Lobo::GraspSimulator::stepForward()
     //kinetic_model->external_forces.setZero();
     kinetic_model->external_forces+=bind_tetMesh->tet_vertice_force*1.0;
     time_integraion->stepFoward();
+    
 
     bind_tetMesh->updateTetVertices(&(time_integraion->q));
 
