@@ -149,6 +149,7 @@ public:
     Eigen::MatrixXi tet_indices_col;
 
 
+
     //for test
     std::vector<unsigned int> tet_faces_glint;
     std::vector<unsigned int> vertices_flags;
@@ -178,7 +179,6 @@ public:
     Eigen::VectorXi tri_vertices_idl; //tri vertex to tet node
     Eigen::VectorXd tri_ele_weights;
 
-
     virtual void updateTetAttri(Eigen::VectorXd &inputattri, int offset, int attrisize, int totalsize);
     virtual void updateTetAttri(const double* inputattri,int size, int offset, int attrisize, int totalsize);
 
@@ -192,6 +192,15 @@ protected:
     virtual void computeElementVolume(int elementid);
     virtual void computeElementShapeFunctionDerivate(int elementid);
     virtual void searchNeighborNodes();
+    virtual void constructSurfaceMesh();
+
+    void correct_face_order(std::vector<int> face_order,Eigen::Vector3i &face_index);
+
+
+    Eigen::MatrixXd tet_sur_vertice_col;
+    Eigen::MatrixXi tet_sur_faces_col;
+    Eigen::MatrixXd tet_sur_vertice_normal;
+
 
     tinyobj::material_t default_material;
     LoboMesh *lobomesh_binding;

@@ -88,7 +88,8 @@
         "scoped_allocator": "cpp",
         "shared_mutex": "cpp",
         "typeindex": "cpp",
-        "strstream": "cpp"
+        "strstream": "cpp",
+        "hash_set": "cpp"
     },
     "C_Cpp.configurationWarnings": "Disabled"
 }

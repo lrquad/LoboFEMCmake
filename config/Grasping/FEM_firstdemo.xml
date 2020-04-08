@@ -13,7 +13,7 @@
 		</TriMesh>
 		<TriMesh name="ball1" uniform = "false">
 			<Path>./models/spherelow.obj</Path>
-			<Position>0.0 2.0 0.0</Position>
+			<Position>0.0 1.0 0.0</Position>
 			<Collision static="false"></Collision>
 			<Scale>0.05 0.05 0.05</Scale>
 		</TriMesh>
@@ -49,7 +49,7 @@
 				<ConstraintsFile>constraints/constrainedDoFs.txt</ConstraintsFile>
 			</ConstraintModel>
 
-			<CollisionModel weight="5.0" friction="1.0" trigger="true">
+			<CollisionModel weight="10.0" friction="1.0" trigger="true">
 			</CollisionModel>
 
 			<TimeIntegration method="ImplicitSparse" timestep="0.01" damping="0.9995" skipsteps="1" recordq="false">
@@ -66,8 +66,9 @@
 		</DynamicSimulator>
 
 		<DynamicSimulator type="GraspFingerSimulator" name ="ball1" precompute="true">
-		<TrimeshId>1</TrimeshId>
-		<ContactPoints>2187</ContactPoints>
+			<TargetTetMesh id="0"></TargetTetMesh>
+			<TrimeshId>2</TrimeshId>
+			<ContactPoints>151</ContactPoints>
 		</DynamicSimulator>
 
 	</LoboDynamicScene>
