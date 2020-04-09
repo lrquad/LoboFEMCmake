@@ -1,28 +1,48 @@
 #pragma once
 #include "LoboDynamic/LoboDynamicSolver/LoboDynamicModel/DynamicModel.h"
 #include "Utils/pugixml/pugiconfig.hpp"
+#include "LoboMesh/LoboMesh.h"
+#include "LoboDynamic/LoboDynamicScene.h"
 
-namespace Lobo
-{
-    class LoboTetMesh;
+namespace Lobo {
+class LoboTetMesh;
 
-    class GraspContactModel: public DynamicModel
-    {
-        public:
-        GraspContactModel(LoboTetMesh* tetmesh_);
-        ~GraspContactModel();
+class GraspContactModel : public DynamicModel {
+   public:
+    GraspContactModel(LoboDynamicScene* scene_, LoboTetMesh* tetmesh_);
+    ~GraspContactModel();
 
-        virtual void runXMLscript(pugi::xml_node &xml_node);
+    virtual void precompute();
 
-        virtual void computeEnergySparse(Eigen::VectorXd* free_variables,double * energy, Eigen::VectorXd* jacobi, Eigen::SparseMatrix<double>* hessian, int computationflags);
-        virtual void computeEnergyDense(Eigen::VectorXd* free_variables,double * energy, Eigen::VectorXd* jacobi, Eigen::MatrixXd* hessian, int computationflags){};
+    virtual void runXMLscript(pugi::xml_node& xml_node);
 
-        virtual void setContactPointsIndex(std::vector<int> index_){};
+    virtual void computeEnergySparse(Eigen::VectorXd* free_variables,
+                                     double* energy, Eigen::VectorXd* jacobi,
+                                     Eigen::SparseMatrix<double>* hessian,
+                                     int computationflags);
+    virtual void computeEnergyDense(Eigen::VectorXd* free_variables,
+                                    double* energy, Eigen::VectorXd* jacobi,
+                                    Eigen::MatrixXd* hessian,
+                                    int computationflags){};
 
-        double weight_stiffness;
+    virtual void setContactPointsIndex(std::vector<int> index_){};
 
-        protected:
-        std::vector<int> contact_points_list; //the grasping force will apply to
-        LoboTetMesh* tetmesh;
-    };
-}
+    virtual void setpForward(int step);
+
+
+    double weight_stiffness;
+    double friction_ratio;
+    double radius;
+    Eigen::VectorXd q_1;
+    Eigen::VectorXd q_vel_1;
+
+   protected:
+    std::vector<int> contact_points_list;  // the grasping force will apply to
+    std::vector<Lobo::LoboMesh*> trimesh_list;
+    std::vector<Eigen::Vector3d> contact_normal;
+    std::vector<Eigen::Vector3d> contact_center;
+
+    LoboTetMesh* tetmesh;
+    LoboDynamicScene* scene;
+};
+}  // namespace Lobo

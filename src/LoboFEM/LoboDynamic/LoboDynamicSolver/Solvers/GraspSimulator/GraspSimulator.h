@@ -8,6 +8,7 @@ class HyperelasticModel;
 class KineticModel;
 class LoboTimeIntegration;
 class LoboTetMesh;
+class GraspContactModel;
 
 class GraspSimulator: public DynamicSimulator
 {
@@ -23,6 +24,7 @@ public:
     virtual void stepForward();
     virtual int getCurStep();
 
+    GraspContactModel* graspmodel;
     ConstrainModel *constrainmodel;
     CollisionModel *collisionmodel;
     HyperelasticModel *hyperelastic_model;
