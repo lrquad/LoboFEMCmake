@@ -75,6 +75,7 @@ void Lobo::GraspContactModel::precompute() {
 }
 
 void Lobo::GraspContactModel::computeEnergySparse(
+
     Eigen::VectorXd *free_variables, double *energy, Eigen::VectorXd *jacobi,
     Eigen::SparseMatrix<double> *hessian, int computationflags) {
     if (computationflags & Computeflags_reset) {
@@ -103,8 +104,16 @@ void Lobo::GraspContactModel::computeEnergySparse(
             double distance_norm = distance.norm();
             if(distance_norm<radius)
             {
+                Eigen::Vector3d normal = -distance.normlized();
                 //add this energy
-                
+                double displacement = radius-distance_norm;
+                Eigen::Vector3d target_displacement = normal*displacement;
+
+                for(int k=0;k<3;k++)
+                {
+                    
+                }
+
 
             }
         }
