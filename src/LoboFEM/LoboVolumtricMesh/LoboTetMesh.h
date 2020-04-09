@@ -172,6 +172,8 @@ public:
     void getNodeRestPosition(int nodeid,Eigen::Vector3d &p);
     Eigen::Vector3d getNodeRestPosition(int nodeid);
 
+    Eigen::Vector3d getNodeNormal(int nodeid);
+
     LoboMesh * getBindMesh(){return lobomesh_binding;};
 
     //for triangle mesh binding
@@ -194,12 +196,13 @@ protected:
     virtual void searchNeighborNodes();
     virtual void constructSurfaceMesh();
 
-    void correct_face_order(std::vector<int> face_order,Eigen::Vector3i &face_index);
+    void correct_face_order(int eleid,std::vector<int> face_order,Eigen::Vector3i &face_index);
 
 
     Eigen::MatrixXd tet_sur_vertice_col;
     Eigen::MatrixXi tet_sur_faces_col;
     Eigen::MatrixXd tet_sur_vertice_normal;
+    std::vector<int> surface_vertce_map;
 
 
     tinyobj::material_t default_material;
@@ -214,6 +217,7 @@ protected:
 
     double mesh_total_volume;
     int clicked_face;
+    bool render_normals;
 
 };
 } // namespace Lobo

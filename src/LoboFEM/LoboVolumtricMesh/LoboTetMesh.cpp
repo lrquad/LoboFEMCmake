@@ -25,6 +25,7 @@
 
 Lobo::LoboTetMesh::LoboTetMesh() {
     initializedGL = false;
+    render_normals = false;
     tetgen_command = "pq1.414";
     status_flags = 0;
     default_material.ambient[0] = 0.0;
@@ -103,6 +104,10 @@ void Lobo::LoboTetMesh::drawImGui(bool *p_open) {
                 lobomesh_binding->shader_config.visiable =
                     !lobomesh_binding->shader_config.visiable;
             }
+        }
+
+        if (ImGui::Button("hide normal")) {
+            render_normals = !render_normals;
         }
 
         if (ImGui::TreeNodeEx("TetMeshConfig##1",
@@ -300,7 +305,7 @@ void Lobo::LoboTetMesh::paintGL(LoboShader *shader) {
 
     glDrawElements(GL_TRIANGLES, tet_faces_glint.size(), GL_UNSIGNED_INT, 0);
 
-    if (status_flags & TetMeshStatusFlags_precomputed) {
+    if (status_flags & TetMeshStatusFlags_precomputed && render_normals) {
         glLineWidth(2.5);
         glColor3f(1.0, 0.0, 0.0);
         // glBegin(GL_LINES);
@@ -869,6 +874,23 @@ Eigen::Vector3d Lobo::LoboTetMesh::getNodeRestPosition(int nodeid) {
     return tmp;
 }
 
+Eigen::Vector3d Lobo::LoboTetMesh::getNodeNormal(int nodeid)
+{
+    Eigen::Vector3d tmp;
+    tmp.setZero();
+    if(surface_vertce_map[nodeid] == -1)
+    {
+        return tmp;
+    }
+    int sur_node_id = surface_vertce_map[nodeid];
+
+    tmp.data()[0] = tet_sur_vertice_normal.data()[tet_sur_vertice_normal.rows()*0+sur_node_id];
+    tmp.data()[1] = tet_sur_vertice_normal.data()[tet_sur_vertice_normal.rows()*1+sur_node_id];
+    tmp.data()[2] = tet_sur_vertice_normal.data()[tet_sur_vertice_normal.rows()*2+sur_node_id];
+
+    return tmp;
+}
+
 void Lobo::LoboTetMesh::correctElementNodeOrder(int elementid) {
     int ni[4];
     Eigen::Vector3d node_p[4];
@@ -1096,7 +1118,7 @@ void Lobo::LoboTetMesh::constructSurfaceMesh() {
 
     igl::tet_tet_adjacency(tet_indices_col, TT);
     std::vector<bool> surface_vertce_flag(tet_vertice_col.rows());
-    std::vector<int> surface_vertce_map(tet_vertice_col.rows());
+    surface_vertce_map.resize(tet_vertice_col.rows());
 
     std::fill(surface_vertce_flag.begin(), surface_vertce_flag.end(), false);
     std::fill(surface_vertce_map.begin(), surface_vertce_map.end(), -1);
@@ -1146,7 +1168,7 @@ void Lobo::LoboTetMesh::constructSurfaceMesh() {
                     face_selected_tmp.data()[k] = vertex_index;
                 }
 
-
+                correct_face_order(i,face_order[j],face_selected_tmp);
                 surface_faces.push_back(face_selected_tmp);
             }
         }
@@ -1194,12 +1216,23 @@ void Lobo::LoboTetMesh::constructSurfaceMesh() {
 
 void Lobo::LoboTetMesh::correct_face_order(int eleid, std::vector<int> face_order,Eigen::Vector3i &face_index)
 {
-    int n0 = tet_indices_col.data()[face_order[0] * tet_indices_col.rows() + eleid];
-    int n1 = tet_indices_col.data()[face_order[1] * tet_indices_col.rows() + eleid];
-    int n2 = tet_indices_col.data()[face_order[2] * tet_indices_col.rows() + eleid];
-    int n3 = tet_indices_col.data()[face_order[3] * tet_indices_col.rows() + eleid];
+    int n[4];
+    Eigen::Vector3d nodep[4];
 
-    
+    for(int i=0;i<4;i++)
+    {
+        n[i] = tet_indices_col.data()[face_order[i] * tet_indices_col.rows() + eleid];
+        nodep[i] = this->getNodeRestPosition(n[i]);
+    }
 
-
+    //compute face_normal 
+    Eigen::Vector3d direction_v;
+    Lobo::computeTriangleNorm(nodep[0], nodep[1], nodep[2], direction_v);
+    Eigen::Vector3d n3n0 = nodep[3] - nodep[0];
+    if (n3n0.dot(direction_v) > 0) {
+        // element->node_indices[1] = n2;
+        // element->node_indices[2] = n1;
+        face_index[1] = n[2];
+        face_index[2] = n[1];
+    }
 }

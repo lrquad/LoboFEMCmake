@@ -22,6 +22,7 @@ class GraspFingerSimulator : public DynamicSimulator {
     Lobo::LoboMesh* trimesh;
     int contact_index;
     int simulation_step;
+    Eigen::Vector3d contact_normal;
 };
 
 }  // namespace Lobo

@@ -28,67 +28,70 @@ void Lobo::GraspFingerSimulator::runXMLscript(pugi::xml_node &solver_node) {
         std::cout << "contact index" << contact_index << std::endl;
     }
 
-    if (solver_node.attribute("precompute").as_bool())
-    {
+    if (solver_node.attribute("precompute").as_bool()) {
         precompute();
     }
 }
 
 void Lobo::GraspFingerSimulator::precompute() {
     DynamicSimulator::precompute();
-    std::cout<<"Grasp simulator precomptued" << std::endl;
+    std::cout << "Grasp simulator precomptued" << std::endl;
 
     int numtrinode = trimesh->attrib.vertices.size() / 3;
     Eigen::VectorXd buffer(numtrinode * 3);
     trimesh->getCurVertices(buffer.data());
-    
+
     Eigen::Vector3d tri_mesh_center;
     tri_mesh_center.setZero();
-    for(int i=0;i<numtrinode;i++)
-    {
-        tri_mesh_center.data()[0]+=buffer.data()[i*3+0];
-        tri_mesh_center.data()[1]+=buffer.data()[i*3+1];
-        tri_mesh_center.data()[2]+=buffer.data()[i*3+2];
+    for (int i = 0; i < numtrinode; i++) {
+        tri_mesh_center.data()[0] += buffer.data()[i * 3 + 0];
+        tri_mesh_center.data()[1] += buffer.data()[i * 3 + 1];
+        tri_mesh_center.data()[2] += buffer.data()[i * 3 + 2];
     }
-    tri_mesh_center/=numtrinode;
+    tri_mesh_center /= numtrinode;
 
-    //move to index 
-    Eigen::Vector3d target_position = this->bind_tetMesh->getNodeRestPosition(contact_index);
+    // move to index
+    Eigen::Vector3d target_position =
+        this->bind_tetMesh->getNodeRestPosition(contact_index);
+
+    // compute node normal direction
+    contact_normal = this->bind_tetMesh->getNodeNormal(contact_index);
+    target_position += contact_normal * 0.05;
 
     Eigen::Vector3d translation_ = target_position - tri_mesh_center;
-    //compute node normal direction
-    
 
-
-    for(int i=0;i<numtrinode;i++)
-    {
-        buffer.data()[i*3+0]+=translation_.data()[0];
-        buffer.data()[i*3+1]+=translation_.data()[1];
-        buffer.data()[i*3+2]+=translation_.data()[2];
+    for (int i = 0; i < numtrinode; i++) {
+        buffer.data()[i * 3 + 0] += translation_.data()[0];
+        buffer.data()[i * 3 + 1] += translation_.data()[1];
+        buffer.data()[i * 3 + 2] += translation_.data()[2];
     }
 
     trimesh->updateVertices(buffer.data());
-    
-
-    
 }
 
 void Lobo::GraspFingerSimulator::stepForward() {
-
     int numtrinode = trimesh->attrib.vertices.size() / 3;
     Eigen::VectorXd buffer(numtrinode * 3);
     buffer.setZero();
     trimesh->getCurVertices(buffer.data());
-    for (int i = 0; i < numtrinode; i++) {
-        buffer.data()[i*3+1] += -0.01;
-    }
-    trimesh->updateVertices(buffer.data());
 
+    if (simulation_step < 100) {
+        for (int i = 0; i < numtrinode; i++) {
+            buffer.data()[i * 3 + 0] += -contact_normal.data()[0] * 0.001;
+            buffer.data()[i * 3 + 1] += -contact_normal.data()[1] * 0.001;
+            buffer.data()[i * 3 + 2] += -contact_normal.data()[2] * 0.001;
+        }
+    }else
+    {
+        for (int i = 0; i < numtrinode; i++) {
+            buffer.data()[i * 3 + 1] += 0.001;
+        }
+    }
+    
+
+    trimesh->updateVertices(buffer.data());
 
     simulation_step++;
 }
 
-int Lobo::GraspFingerSimulator::getCurStep() {
-    
-    return simulation_step;
-}
+int Lobo::GraspFingerSimulator::getCurStep() { return simulation_step; }
