@@ -96,12 +96,17 @@ void Lobo::GraspContactModel::computeEnergySparse(
     for(int i=0;i<num_vertex;i++)
     {
         Eigen::Vector3d node_position;
-        
+
         for(int j=0;j<contact_points_list.size();j++)
         {
-            
+            Eigen::Vector3d distance = contact_center[j]-node_position;
+            double distance_norm = distance.norm();
+            if(distance_norm<radius)
+            {
+                //add this energy
+                
 
-
+            }
         }
     }
 
