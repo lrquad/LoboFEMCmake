@@ -251,7 +251,7 @@ void Lobo::LoboTetMesh::mouseDrag() {
             int vid = tet_faces.data()[clicked_face * 3 + i];
             for (int j = 0; j < 3; j++) {
                 tet_vertice_force.data()[vid * 3 + j] +=
-                    cur_scene_pose.data()[j] - face_center.data()[j];
+                    (cur_scene_pose.data()[j] - face_center.data()[j])*100.0;
             }
         }
     }
@@ -1143,7 +1143,7 @@ void Lobo::LoboTetMesh::constructSurfaceMesh() {
     face_order[2][0] = 1;
     face_order[2][1] = 2;
     face_order[2][2] = 3;
-    face_order[2][3] = 4;
+    face_order[2][3] = 0;
 
     face_order[3].resize(4);
     face_order[3][0] = 2;
@@ -1221,6 +1221,7 @@ void Lobo::LoboTetMesh::correct_face_order(int eleid, std::vector<int> face_orde
 
     for(int i=0;i<4;i++)
     {
+        
         n[i] = tet_indices_col.data()[face_order[i] * tet_indices_col.rows() + eleid];
         nodep[i] = this->getNodeRestPosition(n[i]);
     }

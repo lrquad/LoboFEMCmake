@@ -8,7 +8,7 @@ Lobo::GraspContactModel::GraspContactModel(Lobo::LoboDynamicScene *scene_,
     : tetmesh(tetmesh_) {
     weight_stiffness = 1000.0;
     friction_ratio = 1.0;
-    radius = 0.025;
+    radius = 0.1;
     this->scene = scene_;
 }
 
@@ -59,7 +59,7 @@ void Lobo::GraspContactModel::precompute() {
             this->tetmesh->getNodeRestPosition(contact_points_list[n]);
         Eigen::Vector3d contact_normal_ =
             this->tetmesh->getNodeNormal(contact_points_list[n]);
-        target_position += contact_normal_ * 0.05;
+        target_position += contact_normal_ * 0.0;
 
         contact_normal.push_back(contact_normal_);
         contact_center.push_back(target_position);
@@ -92,33 +92,36 @@ void Lobo::GraspContactModel::computeEnergySparse(
         }
     }
 
-    //collision detect
-    int num_vertex = tetmesh->getNumVertex();
-    for(int i=0;i<num_vertex;i++)
+    // collision detect
+    for(int i=0;i<contact_points_list.size();i++)
     {
-        Eigen::Vector3d node_position;
+        int nodeid = contact_points_list[i];
+        Eigen::Vector3d node_position = tetmesh->getNodeRestPosition(nodeid);
+        node_position.data()[0]+=free_variables->data()[nodeid*3+0];
+        node_position.data()[1]+=free_variables->data()[nodeid*3+1];
+        node_position.data()[2]+=free_variables->data()[nodeid*3+2];
 
-        for(int j=0;j<contact_points_list.size();j++)
+        for(int j=0;j<3;j++)
         {
-            Eigen::Vector3d distance = contact_center[j]-node_position;
-            double distance_norm = distance.norm();
-            if(distance_norm<radius)
+            int dof_id = nodeid*3+j;
+            double loss = node_position.data()[j]-contact_center[i].data()[j];
+
+            if (computationflags & Computeflags_energy) {
+                *energy += weight_stiffness*loss*loss;
+            }
+
+            if (computationflags & Computeflags_fisrt)
             {
-                Eigen::Vector3d normal = -distance.normlized();
-                //add this energy
-                double displacement = radius-distance_norm;
-                Eigen::Vector3d target_displacement = normal*displacement;
+                jacobi->data()[dof_id]+=2.0*weight_stiffness*loss;
+            }
 
-                for(int k=0;k<3;k++)
-                {
-                    
-                }
-
-
+            if (computationflags & Computeflags_second)
+            {
+                 hessian->valuePtr()[diagonal_[dof_id]]+=2.0*weight_stiffness;
             }
         }
     }
-
+        
 }
 
 void Lobo::GraspContactModel::setpForward(int step) {
@@ -128,24 +131,24 @@ void Lobo::GraspContactModel::setpForward(int step) {
         Eigen::VectorXd buffer(numtrinode * 3);
         buffer.setZero();
         trimesh->getCurVertices(buffer.data());
-
-        if (step < 100) {
+        double speed = 0.001;
+        if (step < 50) {
             for (int j = 0; j < numtrinode; j++) {
                 buffer.data()[j * 3 + 0] +=
-                    -contact_normal[i].data()[0] * 0.001;
+                    -contact_normal[i].data()[0] * speed;
                 buffer.data()[j * 3 + 1] +=
-                    -contact_normal[i].data()[1] * 0.001;
+                    -contact_normal[i].data()[1] * speed;
                 buffer.data()[j * 3 + 2] +=
-                    -contact_normal[i].data()[2] * 0.001;
+                    -contact_normal[i].data()[2] * speed;
             }
-            contact_center[i].data()[0] += -contact_normal[i].data()[0] * 0.001;
-            contact_center[i].data()[1] += -contact_normal[i].data()[1] * 0.001;
-            contact_center[i].data()[2] += -contact_normal[i].data()[2] * 0.001;
+            contact_center[i].data()[0] += -contact_normal[i].data()[0] * speed;
+            contact_center[i].data()[1] += -contact_normal[i].data()[1] * speed;
+            contact_center[i].data()[2] += -contact_normal[i].data()[2] * speed;
         } else {
             for (int j = 0; j < numtrinode; j++) {
-                buffer.data()[j * 3 + 1] += 0.001;
+                buffer.data()[j * 3 + 1] += speed;
             }
-            contact_center[i].data()[1] += 0.001;
+            contact_center[i].data()[1] += speed;
         }
         trimesh->updateVertices(buffer.data());
     }

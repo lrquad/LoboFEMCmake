@@ -110,7 +110,7 @@ void Lobo::GraspSimulator::runXMLscript(pugi::xml_node &solver_node) {
                 if (modelnode.attribute("recordq").as_bool()) {
                     flags |= IntegratorFlags_recordq;
                 }
-
+            skipsteps = skip_step;
             time_integraion = new Lobo::ImplicitSparseIntegration(
                 kinetic_model, kinetic_model->num_DOFs, damping_ratio,
                 time_step, skip_step, flags);
@@ -136,7 +136,6 @@ void Lobo::GraspSimulator::precompute() {
 }
 
 void Lobo::GraspSimulator::stepForward() {
-
     graspmodel->setpForward(time_integraion->step);
 
     kinetic_model->external_forces = kinetic_model->gravity_force;
@@ -151,6 +150,14 @@ int Lobo::GraspSimulator::getCurStep() {
     int tmp = 0;
     if (time_integraion) {
         tmp = time_integraion->step;
+    }
+    return tmp;
+}
+
+int Lobo::GraspSimulator::getSaveCurStep() {
+    int tmp = 0;
+    if (time_integraion) {
+        tmp = time_integraion->step/skipsteps;
     }
     return tmp;
 }

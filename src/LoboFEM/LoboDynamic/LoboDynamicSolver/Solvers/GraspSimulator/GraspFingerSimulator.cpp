@@ -1,6 +1,7 @@
 #include "GraspFingerSimulator.h"
 #include "LoboDynamic/LoboDynamic.h"
 #include "OpenGLutils/LoboScene.h"
+#include <Eigen/Geometry>
 
 Lobo::GraspFingerSimulator::GraspFingerSimulator(
     Lobo::LoboDynamicScene *parent_scene_)
@@ -56,7 +57,7 @@ void Lobo::GraspFingerSimulator::precompute() {
 
     // compute node normal direction
     contact_normal = this->bind_tetMesh->getNodeNormal(contact_index);
-    target_position += contact_normal * 0.05;
+    target_position += contact_normal * 0.12;
 
     Eigen::Vector3d translation_ = target_position - tri_mesh_center;
 
@@ -67,6 +68,11 @@ void Lobo::GraspFingerSimulator::precompute() {
     }
 
     trimesh->updateVertices(buffer.data());
+
+    // force direction
+    contact_normal = target_position;
+    contact_normal.data()[1] = 0.0;
+    contact_normal.normalize();
 }
 
 void Lobo::GraspFingerSimulator::stepForward() {
@@ -74,24 +80,45 @@ void Lobo::GraspFingerSimulator::stepForward() {
     Eigen::VectorXd buffer(numtrinode * 3);
     buffer.setZero();
     trimesh->getCurVertices(buffer.data());
-
-    if (simulation_step < 100) {
+    double speed = 0.001;
+    if (simulation_step < 80) {
         for (int i = 0; i < numtrinode; i++) {
-            buffer.data()[i * 3 + 0] += -contact_normal.data()[0] * 0.001;
-            buffer.data()[i * 3 + 1] += -contact_normal.data()[1] * 0.001;
-            buffer.data()[i * 3 + 2] += -contact_normal.data()[2] * 0.001;
+            buffer.data()[i * 3 + 0] += -contact_normal.data()[0] * speed;
+            buffer.data()[i * 3 + 1] += -contact_normal.data()[1] * speed;
+            buffer.data()[i * 3 + 2] += -contact_normal.data()[2] * speed;
         }
-    }else
-    {
+    } else if (simulation_step < 600) {
         for (int i = 0; i < numtrinode; i++) {
-            buffer.data()[i * 3 + 1] += 0.001;
+            buffer.data()[i * 3 + 1] += speed*0.6;
+        }
+    } else if (simulation_step < 1200) {
+        Eigen::Matrix3d m;
+        m = Eigen::AngleAxisd(speed * 2.5, Eigen::Vector3d::UnitY());
+
+        for (int i = 0; i < numtrinode; i++) {
+            Eigen::Vector3d tmp;
+            tmp.data()[0] = buffer.data()[i * 3 + 0];
+            tmp.data()[1] = buffer.data()[i * 3 + 1];
+            tmp.data()[2] = buffer.data()[i * 3 + 2];
+            tmp = m * tmp;
+            buffer.data()[i * 3 + 0] = tmp.data()[0];
+            buffer.data()[i * 3 + 1] = tmp.data()[1];
+            buffer.data()[i * 3 + 2] = tmp.data()[2];
+        }
+
+    } else if (simulation_step < 1800) {
+        for (int i = 0; i < numtrinode; i++) {
+            buffer.data()[i * 3 + 2] += speed*0.8;
+        }
+    } else {
+        for (int i = 0; i < numtrinode; i++) {
+            buffer.data()[i * 3 + 1] = 100;
         }
     }
-    
 
     trimesh->updateVertices(buffer.data());
 
     simulation_step++;
 }
 
-int Lobo::GraspFingerSimulator::getCurStep() { return simulation_step; }
+int Lobo::GraspFingerSimulator::getCurStep() { return 0; }

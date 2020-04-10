@@ -416,12 +416,12 @@ void Lobo::LoboFEM::saveCurScreenImagePNG(const char *imagename)
 
 void Lobo::LoboFEM::saveCurScreenImagePNGAnimaition(const char *imagebase)
 {
-    if(this->dynamic_scene->getStep()>2000)
+    if(this->dynamic_scene->getSaveStep()>2000)
     {
         return;
     }
     std::ostringstream stringStream;
-    stringStream << imagebase << std::setfill('0') << std::setw(5) << this->dynamic_scene->getStep() << ".png";
+    stringStream << imagebase << std::setfill('0') << std::setw(5) << this->dynamic_scene->getSaveStep() << ".png";
     std::string pngfile = stringStream.str();
     saveCurScreenImagePNG(pngfile.c_str());
 }

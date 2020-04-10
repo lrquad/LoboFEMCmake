@@ -9,6 +9,7 @@ Lobo::DynamicSimulator::DynamicSimulator(LoboDynamicScene *parent_scene_)
 {
     bind_tetMesh = NULL;
     target_tetmesh_id = -1;
+    skipsteps = 1;
     
 }
 

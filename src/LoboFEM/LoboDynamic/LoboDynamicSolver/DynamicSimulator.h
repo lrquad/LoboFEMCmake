@@ -24,6 +24,8 @@ public:
     virtual void stepForward() = 0;
     virtual int getCurStep() = 0;
 
+    virtual int getSaveCurStep(){return 0;};
+
     virtual void runXMLscript(pugi::xml_node &solver_node);
 
     virtual void precompute();
@@ -37,5 +39,6 @@ public:
     LoboDynamicScene *parent_scene;
     int target_tetmesh_id;
     LoboTetMesh *bind_tetMesh;
+    int skipsteps;
 };
 } // namespace Lobo

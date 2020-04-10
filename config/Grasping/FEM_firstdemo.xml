@@ -3,31 +3,38 @@
 	<LoboScene>
 		<TriMesh name="floor" uniform = "false">
 			<Path>./models/floor_wood.obj</Path>
-			<Position>0.0 -0.4 -1.0</Position>
+			<Position>0.0 -0.15 -1.0</Position>
 			<Collision static="true"></Collision>
 		</TriMesh>
-		<TriMesh name="bunny" uniform = "true">
-			<Path>./models/bunny_low.obj</Path>
+		<TriMesh name="bunny" uniform = "true" smooth="false">
+			<Path>./models/bar/barnew_sqaure.obj</Path>
 			<Position>0.0 0.0 0.0</Position>
+			<Scale>1.0 2.0 2.0</Scale>
 			<Collision static="false"></Collision>
 		</TriMesh>
-		<TriMesh name="ball1" uniform = "false">
+		<TriMesh name="cube" uniform = "true" smooth="false">
 			<Path>./models/spherelow.obj</Path>
-			<Position>0.0 1.0 0.0</Position>
-			<!-- <Collision static="false"></Collision> -->
-			<Scale>0.05 0.05 0.05</Scale>
+			<Position>0.0 0.0 0.0</Position>
+			<Collision static="false"></Collision>
+			<Scale>0.2 0.2 0.2</Scale>
 		</TriMesh>
-		<TriMesh name="ball2" uniform = "false">
+		<TriMesh name="cube" uniform = "true" smooth="false">
 			<Path>./models/spherelow.obj</Path>
-			<Position>0.0 1.0 0.0</Position>
-			<!-- <Collision static="false"></Collision> -->
-			<Scale>0.05 0.05 0.05</Scale>
+			<Position>0.0 0.0 0.0</Position>
+			<Collision static="false"></Collision>
+			<Scale>0.2 0.2 0.2</Scale>
 		</TriMesh>
-		<TriMesh name="ball3" uniform = "false">
+		<TriMesh name="cube" uniform = "true" smooth="false">
 			<Path>./models/spherelow.obj</Path>
-			<Position>0.0 1.0 0.0</Position>
-			<!-- <Collision static="false"></Collision> -->
-			<Scale>0.05 0.05 0.05</Scale>
+			<Position>0.0 0.0 0.0</Position>
+			<Collision static="false"></Collision>
+			<Scale>0.2 0.2 0.2</Scale>
+		</TriMesh>
+		<TriMesh name="bar" uniform = "false" smooth="true">
+			<Path>./models/shape/cylinder.obj</Path>
+			<Position>0.0 0.0 0.5</Position>
+			<Scale>0.5 0.5 0.5</Scale>
+			<Collision static="true"></Collision>
 		</TriMesh>
 
 	</LoboScene>
@@ -51,9 +58,9 @@
 			<TargetTetMesh id="0"></TargetTetMesh>
 			<HyperelasticModel invertible="true" useMCSFD="false" trigger="true">
 				<Material type="NeoHookean">
-					<YoungsModulus value = "400.0"></YoungsModulus>
-					<PossionRatio value = "0.3"></PossionRatio>
-					<Density value = "2.0"></Density>
+					<YoungsModulus value = "250000.0"></YoungsModulus>
+					<PossionRatio value = "0.4"></PossionRatio>
+					<Density value = "1000.0"></Density>
 				</Material>
 			</HyperelasticModel>
 
@@ -61,38 +68,38 @@
 				<ConstraintsFile>constraints/constrainedDoFs.txt</ConstraintsFile>
 			</ConstraintModel>
 
-			<CollisionModel weight="20.0" friction="5.0" trigger="true">
+			<CollisionModel weight="10000.0" friction="1000.0" trigger="true">
 			</CollisionModel>
 
-			<TimeIntegration method="ImplicitSparse" timestep="0.002" damping="0.9950" skipsteps="2" recordq="false">
+			<TimeIntegration method="ImplicitSparse" timestep="0.001" damping="0.9990" skipsteps="5" recordq="false">
 				<Optimization method="newton" maxiter="20" tol="0.001"></Optimization>
 			</TimeIntegration>
 
 
-			<GraspModel weight="100.0" friction="1.0">
-			<Index triid = "2">1425</Index>
-			<Index triid = "3">1160</Index>
-			<Index triid = "4">623</Index>
+			<GraspModel weight="1000000.0" friction="0.0">
+				<!-- <Index triid = "2">2366</Index>
+				<Index triid = "3">558</Index>
+				<Index triid = "4">547</Index> -->
 			</GraspModel>
 
 		</DynamicSimulator>
 
-		<!-- <DynamicSimulator type="GraspFingerSimulator" name ="ball1" precompute="true">
+		<DynamicSimulator type="GraspFingerSimulator" name ="ball1" precompute="true">
 			<TargetTetMesh id="0"></TargetTetMesh>
 			<TrimeshId>2</TrimeshId>
-			<ContactPoints>1425</ContactPoints>
+			<ContactPoints>2366</ContactPoints>
 		</DynamicSimulator>
 		<DynamicSimulator type="GraspFingerSimulator" name ="ball2" precompute="true">
 			<TargetTetMesh id="0"></TargetTetMesh>
 			<TrimeshId>3</TrimeshId>
-			<ContactPoints>1160</ContactPoints>
-		</DynamicSimulator>
+			<ContactPoints>558</ContactPoints>
+		</DynamicSimulator> -->
 
 		<DynamicSimulator type="GraspFingerSimulator" name ="ball3" precompute="true">
 			<TargetTetMesh id="0"></TargetTetMesh>
 			<TrimeshId>4</TrimeshId>
-			<ContactPoints>623</ContactPoints>
-		</DynamicSimulator> -->
+			<ContactPoints>547</ContactPoints>
+		</DynamicSimulator>
 
 	</LoboDynamicScene>
 

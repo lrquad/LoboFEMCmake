@@ -23,6 +23,7 @@ public:
     virtual void precompute();
     virtual void stepForward();
     virtual int getCurStep();
+    virtual int getSaveCurStep();
 
     GraspContactModel* graspmodel;
     ConstrainModel *constrainmodel;
