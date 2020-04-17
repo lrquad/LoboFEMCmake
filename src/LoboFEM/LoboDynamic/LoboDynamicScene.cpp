@@ -214,6 +214,11 @@ void Lobo::LoboDynamicScene::paintGL(LoboShader *shader, bool depth_render) {
             tetmesh_in_scene[i]->paintGL(shader);
         }
     }
+
+    for (int i = 0; i < dynamic_solvers.size(); i++) {
+        dynamic_solvers[i]->paintGL(shader);
+    }
+
 }
 
 void Lobo::LoboDynamicScene::initialGL() {

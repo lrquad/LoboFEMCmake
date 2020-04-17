@@ -14,6 +14,8 @@ class GraspContactModel : public DynamicModel {
 
     virtual void precompute();
 
+    virtual void paintGL(LoboShader *shader);
+
     virtual void runXMLscript(pugi::xml_node& xml_node);
 
     virtual void computeEnergySparse(Eigen::VectorXd* free_variables,
@@ -37,10 +39,16 @@ class GraspContactModel : public DynamicModel {
     Eigen::VectorXd q_vel_1;
 
    protected:
+    std::vector<int> finger_list;
     std::vector<int> contact_points_list;  // the grasping force will apply to
+
     std::vector<Lobo::LoboMesh*> trimesh_list;
     std::vector<Eigen::Vector3d> contact_normal;
     std::vector<Eigen::Vector3d> contact_center;
+
+    std::vector<Eigen::Vector3d> contact_pressure;
+    std::vector<Eigen::Vector3d> contact_friction_force;
+    Eigen::Vector3d net_contact_force;
 
     LoboTetMesh* tetmesh;
     LoboDynamicScene* scene;

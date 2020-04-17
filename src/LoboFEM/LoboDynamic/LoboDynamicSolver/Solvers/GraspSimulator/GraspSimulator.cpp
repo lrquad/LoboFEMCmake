@@ -3,6 +3,8 @@
 #include "imgui.h"
 #include "GraspContactModel.h"
 #include "GraspKineticModel.h"
+#include "Shaders/LoboShader.h"
+
 Lobo::GraspSimulator::GraspSimulator(Lobo::LoboDynamicScene *parent_scene_)
     : DynamicSimulator(parent_scene_) {
     hyperelastic_model = NULL;
@@ -36,6 +38,14 @@ void Lobo::GraspSimulator::drawImGui() {
         ImGui::Text("Damping_ratio %.4f", time_integraion->damping_ratio);
         ImGui::Text("Step %d", time_integraion->step);
         ImGui::Text("Skip steps %d", time_integraion->skip_steps);
+    }
+}
+
+void Lobo::GraspSimulator::paintGL(LoboShader *shader)
+{
+    if(graspmodel!=NULL)
+    {
+        graspmodel->paintGL(shader);
     }
 }
 

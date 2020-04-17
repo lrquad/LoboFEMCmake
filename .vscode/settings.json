@@ -89,7 +89,8 @@
         "shared_mutex": "cpp",
         "typeindex": "cpp",
         "strstream": "cpp",
-        "hash_set": "cpp"
+        "hash_set": "cpp",
+        "*.ipp": "cpp"
     },
     "C_Cpp.configurationWarnings": "Disabled"
 }

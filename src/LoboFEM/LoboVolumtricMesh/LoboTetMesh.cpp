@@ -414,6 +414,18 @@ void Lobo::LoboTetMesh::updateTetVertices(Eigen::VectorXd *u) {
     tet_vertice_col =
         Lobo::eigen_vec_2_mat(tet_vertice, tet_vertice.size() / 3, 3);
     updateTetAttri(tet_vertice, 0, 3, 11);
+    
+    for(int i=0;i<surface_vertice_map_inverse.size();i++)
+    {
+        for(int k=0;k<3;k++)
+        {
+            int origin_index = surface_vertice_map_inverse[i];
+            tet_sur_vertice_col.data()[k*tet_sur_vertice_col.rows()+i]
+            = tet_vertice_col.data()[k*tet_vertice_col.rows()+origin_index];
+        }
+    }
+    igl::per_vertex_normals(tet_sur_vertice_col, tet_sur_faces_col,
+    tet_sur_vertice_normal);
 
     // update tri mesh
     if (lobomesh_binding != NULL) {
@@ -874,6 +886,16 @@ Eigen::Vector3d Lobo::LoboTetMesh::getNodeRestPosition(int nodeid) {
     return tmp;
 }
 
+Eigen::Vector3d Lobo::LoboTetMesh::getNodeCurPosition(int nodeid)
+{
+    Eigen::Vector3d tmp;
+    tmp.setZero();
+    for (int j = 0; j < 3; j++) {
+        tmp.data()[j] = tet_vertice.data()[nodeid * 3 + j];
+    }
+    return tmp;
+}
+
 Eigen::Vector3d Lobo::LoboTetMesh::getNodeNormal(int nodeid)
 {
     Eigen::Vector3d tmp;
@@ -1185,10 +1207,12 @@ void Lobo::LoboTetMesh::constructSurfaceMesh() {
     tet_sur_vertice_col.resize(surface_vertex_count, 3);
     tet_sur_faces_col.resize(surface_faces.size(), 3);
     tet_sur_vertice_normal.resize(surface_vertex_count, 3);
+    surface_vertice_map_inverse.resize(surface_vertex_count,3);
 
     surface_vertex_count = 0;
     for (int i = 0; i < surface_vertce_flag.size(); i++) {
         if (surface_vertce_flag[i] == true) {
+            surface_vertice_map_inverse[surface_vertex_count] = i;
             for (int j = 0; j < 3; j++) {
                 tet_sur_vertice_col.data()[j * tet_sur_vertice_col.rows() +
                                            surface_vertex_count] =

@@ -18,6 +18,8 @@ class GraspFingerSimulator : public DynamicSimulator {
     virtual void stepForward();
     virtual int getCurStep();
 
+    virtual void paintGL(LoboShader *shader);
+
     protected:
     Lobo::LoboMesh* trimesh;
     int contact_index;

@@ -12,6 +12,7 @@ class LoboTetMesh;
 
 class ConstrainModel;
 class CollisionModel;
+class LoboShader;
 
 class DynamicSimulator
 {
@@ -31,6 +32,8 @@ public:
     virtual void precompute();
 
     virtual void setBindTetmeshFromScene(int tetmesh_id);
+
+    virtual void paintGL(LoboShader *shader){};
 
     std::vector<DynamicModel *> models;
 

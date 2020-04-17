@@ -18,6 +18,11 @@ void Lobo::GraspFingerSimulator::drawImGui() {
     DynamicSimulator::drawImGui();
 }
 
+void Lobo::GraspFingerSimulator::paintGL(LoboShader *shader)
+{
+
+}
+
 void Lobo::GraspFingerSimulator::runXMLscript(pugi::xml_node &solver_node) {
     DynamicSimulator::runXMLscript(solver_node);
     if (solver_node.child("TrimeshId")) {

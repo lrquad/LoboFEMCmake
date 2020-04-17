@@ -9,7 +9,7 @@ class KineticModel;
 class LoboTimeIntegration;
 class LoboTetMesh;
 class GraspContactModel;
-
+class LoboShader;
 class GraspSimulator: public DynamicSimulator
 {
 public: 
@@ -24,6 +24,8 @@ public:
     virtual void stepForward();
     virtual int getCurStep();
     virtual int getSaveCurStep();
+
+    virtual void paintGL(LoboShader *shader);
 
     GraspContactModel* graspmodel;
     ConstrainModel *constrainmodel;
