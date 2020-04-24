@@ -40,6 +40,10 @@ Collision (friction force stiffnes 1.0)
 ![scene](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/screen_recored7.gif)
 
 
+Grasp
+![scene](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/sphere_grasp.gif)
+
+
 ## Install
 
 Require MKL

@@ -110,7 +110,6 @@ void Lobo::GraspContactModel::precompute() {
 }
 
 void Lobo::GraspContactModel::paintGL(LoboShader *shader) {
-    
     glLineWidth(2.5);
     glColor3f(1.0, 0.0, 0.0);
     double force_scale = 100.0;
@@ -222,7 +221,7 @@ void Lobo::GraspContactModel::computeEnergySparse(
 void Lobo::GraspContactModel::setpForward(int step) {
     double speed = 0.002;
     int steps[4];
-    steps[0] = 15;
+    steps[0] = 50;
     steps[1] = 100;
     steps[2] = 400;
     steps[3] = 700;
@@ -235,7 +234,7 @@ void Lobo::GraspContactModel::setpForward(int step) {
             contact_center[i].data()[1] += -contact_normal[i].data()[1] * speed;
             contact_center[i].data()[2] += -contact_normal[i].data()[2] * speed;
         } else if (step < steps[1]) {
-            contact_center[i].data()[1] += speed*3.0;
+            contact_center[i].data()[1] += speed * 3.0;
         } else if (step < steps[2]) {
             contact_center[i] = m * contact_center[i];
         } else if (step < steps[3]) {
@@ -265,24 +264,27 @@ void Lobo::GraspContactModel::setpForward(int step) {
             }
         } else if (step < steps[1]) {
             for (int j = 0; j < numtrinode; j++) {
-                buffer.data()[j * 3 + 1] += speed*3.0;
+                buffer.data()[j * 3 + 1] += speed * 3.0;
             }
         } else if (step < steps[2]) {
-            Eigen::Vector3d tmp;
-            tmp.data()[0] = buffer.data()[i * 3 + 0];
-            tmp.data()[1] = buffer.data()[i * 3 + 1];
-            tmp.data()[2] = buffer.data()[i * 3 + 2];
-            tmp = m * tmp;
-            buffer.data()[i * 3 + 0] = tmp.data()[0];
-            buffer.data()[i * 3 + 1] = tmp.data()[1];
-            buffer.data()[i * 3 + 2] = tmp.data()[2];
+            for (int j = 0; j < numtrinode; j++) {
+                Eigen::Vector3d tmp;
+                tmp.data()[0] = buffer.data()[j * 3 + 0];
+                tmp.data()[1] = buffer.data()[j * 3 + 1];
+                tmp.data()[2] = buffer.data()[j * 3 + 2];
+                tmp = m * tmp;
+                buffer.data()[j * 3 + 0] = tmp.data()[0];
+                buffer.data()[j * 3 + 1] = tmp.data()[1];
+                buffer.data()[j * 3 + 2] = tmp.data()[2];
+            }
+
         } else if (step < steps[3]) {
-            for (int i = 0; i < numtrinode; i++) {
-                buffer.data()[i * 3 + 2] += speed * 0.8;
+            for (int j = 0; j < numtrinode; j++) {
+                buffer.data()[j * 3 + 2] += speed * 0.8;
             }
         } else {
-            for (int i = 0; i < numtrinode; i++) {
-                buffer.data()[i * 3 + 1] = 100;
+            for (int j = 0; j < numtrinode; j++) {
+                buffer.data()[j * 3 + 1] = 100;
             }
         }
 
