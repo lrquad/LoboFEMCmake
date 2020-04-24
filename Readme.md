@@ -43,7 +43,7 @@ Grasp (friction test failed)
 
 ![scene](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/sphere_grasp_failed.gif)
 
-Grasp (stable)
+Grasp (stable, squeeze more)
 
 ![scene](https://github.com/lrquad/LoboFEMCmake/blob/master/demo/default/Images/sphere_grasp.gif)
 
