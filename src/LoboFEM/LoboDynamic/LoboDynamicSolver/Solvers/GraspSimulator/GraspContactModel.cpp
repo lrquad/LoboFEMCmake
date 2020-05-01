@@ -221,7 +221,7 @@ void Lobo::GraspContactModel::computeEnergySparse(
 void Lobo::GraspContactModel::setpForward(int step) {
     double speed = 0.002;
     int steps[4];
-    steps[0] = 15;
+    steps[0] = 50;
     steps[1] = 100;
     steps[2] = 400;
     steps[3] = 700;
